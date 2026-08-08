@@ -20,7 +20,7 @@ const playlistCache = new Map();
 export function isValidThumbnail(url) {
   if (!url || typeof url !== 'string') return false;
   const trimmed = url.trim();
-  if (trimmed === '' || trimmed.includes('no_thumbnail') || trimmed.includes('default_mq.jpg')) return false;
+  if (trimmed === '' || trimmed.includes('no_thumbnail')) return false;
   return true;
 }
 

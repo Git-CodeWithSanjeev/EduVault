@@ -90,27 +90,34 @@ export function VideoHub() {
     };
   }, [selectedMainCategory, selectedClassNum, selectedSubject, searchQuery]);
 
-  // Filter static educational videos & REMOVE any video without a thumbnail
+  // Filter static educational videos with fallback thumbnail resolution
   const filteredVideos = useMemo(() => {
-    return educationalVideos.filter((v) => {
-      if (!v || !v.thumbnail || !isValidThumbnail(v.thumbnail)) return false;
+    return educationalVideos
+      .map((v) => {
+        if (!v) return null;
+        const vId = v.videoId || v.id;
+        const thumb = v.thumbnail || (vId ? `https://img.youtube.com/vi/${vId}/hqdefault.jpg` : null);
+        return { ...v, thumbnail: thumb };
+      })
+      .filter((v) => {
+        if (!v || !v.title) return false;
 
-      const matchesCat =
-        selectedMainCategory === 'All' ||
-        selectedMainCategory === 'Class 1 to 12 School Curriculum' ||
-        selectedMainCategory === 'Government Exam Prep (UPSC/SSC/Bank)' ||
-        v.category === selectedMainCategory;
+        const matchesCat =
+          selectedMainCategory === 'All' ||
+          selectedMainCategory === 'Class 1 to 12 School Curriculum' ||
+          selectedMainCategory === 'Government Exam Prep (UPSC/SSC/Bank)' ||
+          v.category === selectedMainCategory;
 
-      const matchesChan =
-        selectedChannel === 'All' ||
-        v.channel.toLowerCase().includes(selectedChannel.split(' ')[0].toLowerCase());
+        const matchesChan =
+          selectedChannel === 'All' ||
+          (v.channel && v.channel.toLowerCase().includes(selectedChannel.split(' ')[0].toLowerCase()));
 
-      const matchesSearch =
-        !searchQuery.trim() ||
-        Object.values(v).join(' ').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch =
+          !searchQuery.trim() ||
+          Object.values(v).join(' ').toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesCat && matchesChan && matchesSearch;
-    });
+        return matchesCat && matchesChan && matchesSearch;
+      });
   }, [selectedMainCategory, selectedChannel, searchQuery]);
 
   // Combine static and dynamic YouTube API playlists

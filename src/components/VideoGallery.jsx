@@ -53,7 +53,7 @@ export function VideoGallery({
     setShowApiKeyModal(false);
   };
 
-  // Normalize list of videos & STRICTLY REMOVE items without valid thumbnail
+  // Normalize list of videos with fallback thumbnail resolution
   const normalizedVideos = useMemo(() => {
     if (!Array.isArray(videos) || videos.length === 0) return [];
     return videos
@@ -67,9 +67,11 @@ export function VideoGallery({
             thumbnail: `https://img.youtube.com/vi/${v}/hqdefault.jpg`,
           };
         }
-        return v;
+        const vId = v.videoId || v.id;
+        const thumb = v.thumbnail || (vId ? `https://img.youtube.com/vi/${vId}/hqdefault.jpg` : null);
+        return { ...v, thumbnail: thumb };
       })
-      .filter((v) => v && v.thumbnail && isValidThumbnail(v.thumbnail));
+      .filter((v) => v && v.title);
   }, [videos]);
 
   const focusAreas = useMemo(() => {
