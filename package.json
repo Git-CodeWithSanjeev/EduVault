@@ -1,0 +1,25 @@
+{
+  "name": "eduvault",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "server": "node server.js",
+    "dev:all": "start cmd /k node server.js && vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router-dom": "latest"
+  },
+  "devDependencies": {
+    "express": "^4.21.2",
+    "node-fetch": "^2.7.0",
+    "cors": "^2.8.5"
+  }
+}
