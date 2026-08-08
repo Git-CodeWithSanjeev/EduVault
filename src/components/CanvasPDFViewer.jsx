@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const PROXY_BASE = 'http://localhost:3001/pdf/proxy';
+// Priority: VITE_PROXY_URL env -> /api/proxy (Vercel Serverless Function) -> localhost:3001 (Local Dev)
+const PROXY_BASE = import.meta.env.VITE_PROXY_URL || (import.meta.env.DEV ? 'http://localhost:3001/pdf/proxy' : '/api/proxy');
 
 /** Build the backend proxy URL */
 function proxyUrl(originalUrl) {
   if (!originalUrl) return '';
-  if (originalUrl.startsWith('http://localhost:3001')) return originalUrl;
+  if (originalUrl.startsWith('http://localhost:3001') || originalUrl.startsWith('/api/proxy')) return originalUrl;
   return `${PROXY_BASE}?url=${encodeURIComponent(originalUrl)}`;
 }
 
