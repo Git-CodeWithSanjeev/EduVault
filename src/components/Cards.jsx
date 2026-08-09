@@ -30,16 +30,13 @@ export function Cards({ list, saved, toggle }) {
             <BookCover item={b} />
             <div className="resource-info">
               <div className="badges">
-                <span>{b.license}</span>
+                <span className="badge-license">{b.license}</span>
                 <button
+                  className={`wishlist-btn ${isSaved ? 'saved' : ''}`}
                   onClick={() => handleSave(b.id)}
-                  style={{
-                    color: isSaved ? 'var(--p)' : '#716e7d',
-                    fontWeight: isSaved ? 800 : 700,
-                  }}
                   title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
                 >
-                  {isSaved ? '★ Saved to Wishlist' : '☆ Save Wishlist'}
+                  {isSaved ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
               <h3>{b.title}</h3>
@@ -55,7 +52,7 @@ export function Cards({ list, saved, toggle }) {
                 <Link className="detail" to={'/resource/' + b.id}>
                   Details
                 </Link>
-                <ExternalLink item={b}>
+                <ExternalLink item={b} className="detail external-btn">
                   {b.source === 'NCERT' ? 'Download ↗' : 'Open ↗'}
                 </ExternalLink>
               </div>

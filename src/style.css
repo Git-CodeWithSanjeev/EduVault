@@ -1527,48 +1527,235 @@ footer a {
   100% { transform: scale(1); }
 }
 
-/* ── Native PDF Viewer Layout ────────────────────────────────────── */
+/* ── Native PDF & Canvas Viewer Layout ───────────────────────────── */
 
 .pdf-viewer-root {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  min-height: 520px;
   background: #13131b;
 }
 
-.pdf-viewer-topbar {
+.pdf-toolbar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  background: #0f0f17;
-  border-bottom: 1px solid #232334;
-  gap: 12px;
-  flex-shrink: 0;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.pdf-viewer-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #b0acd0;
+.pdf-toolbar-info h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  max-width: 480px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.active-chap-tag {
+  color: #a496ff;
+  font-weight: 700;
+}
+
+/* Mobile Chapter Bar (visible only on mobile view) */
+.mobile-chapter-bar {
+  display: none;
+  background: #12121c;
+  padding: 8px 12px;
+  border-bottom: 1px solid #232336;
+  gap: 8px;
+  align-items: center;
+}
+
+.mobile-chap-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9894b5;
+  white-space: nowrap;
+}
+
+.mobile-chap-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-chap-pill {
+  background: #1a1a28;
+  color: #b0acd0;
+  border: 1px solid #28283d;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.mobile-chap-pill.active {
+  background: var(--p);
+  color: #ffffff;
+  border-color: var(--p);
+  font-weight: 800;
+}
+
+/* PDF Viewer Controls Topbar */
+.pdf-viewer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #0d0d14;
+  border-bottom: 1px solid #232334;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.pdf-title-block {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.pdf-viewer-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #c4c0e5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.pdf-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #181824;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #28283c;
+}
+
+.pdf-ctrl-btn {
+  background: #242436;
+  color: #e0dcf5;
+  border: 1px solid #363650;
+  border-radius: 5px;
+  padding: 3px 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-ctrl-btn:hover:not(:disabled) {
+  background: var(--p);
+  color: #ffffff;
+  border-color: var(--p);
+}
+
+.pdf-ctrl-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pdf-page-indicator {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c0b8f0;
+  padding: 0 4px;
+  min-width: 48px;
+  text-align: center;
+}
+
+.pdf-divider {
+  width: 1px;
+  height: 14px;
+  background: #323248;
+  margin: 0 2px;
+}
+
+.pdf-zoom-level {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9894b5;
+  min-width: 36px;
+  text-align: center;
+}
+
+.pdf-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Canvas Stage */
 .pdf-viewer-stage {
   flex: 1;
   position: relative;
-  overflow: hidden;
-  background: #1c1c26;
+  overflow: auto;
+  background: #181822;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16px 8px;
+  min-height: 480px;
+  -webkit-overflow-scrolling: touch;
 }
 
-.pdf-embed {
+.pdf-canvas-wrapper {
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.pdf-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto !important;
+  background: #ffffff;
+}
+
+.pdf-render-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(15, 15, 23, 0.85);
+  color: #b0a4ff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.pdf-fallback-container {
   width: 100%;
   height: 100%;
+  min-height: 500px;
+}
+
+.pdf-iframe-fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
   border: 0;
-  display: block;
 }
 
 .pdf-loading-overlay {
@@ -2631,29 +2818,74 @@ footer a {
     padding: 16px;
   }
 
-  /* PDF Reader Mobile Layout */
-  .reader-layout {
-    flex-direction: column-reverse;
+  /* PDF Reader Mobile Layout — Single Book Focus */
+  .pdf-reader-container {
+    border-radius: 8px;
+    margin-top: 4px;
+    min-height: calc(100vh - 80px);
   }
 
-  .reader-sidebar {
+  .pdf-toolbar {
+    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pdf-toolbar-header {
+    justify-content: space-between;
     width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    height: 180px;
-    border-left: 0;
-    border-top: 1px solid #232334;
-    padding: 10px;
+  }
+
+  .pdf-toolbar-info h3 {
+    font-size: 14px;
+    max-width: 220px;
+  }
+
+  .pdf-toolbar-actions {
+    justify-content: flex-end;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .mobile-chapter-bar {
+    display: flex;
+  }
+
+  .reader-body-layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  /* Hide large desktop sidebar in mobile view to keep focus strictly on the active book */
+  .reader-sidebar {
+    display: none;
   }
 
   .pdf-viewer-topbar {
-    padding: 6px 10px;
+    padding: 8px 10px;
     gap: 8px;
+    justify-content: space-between;
   }
 
   .pdf-viewer-title {
     font-size: 11px;
-    max-width: 140px;
+    max-width: 130px;
+  }
+
+  .pdf-controls-group {
+    padding: 3px 6px;
+    gap: 4px;
+  }
+
+  .pdf-ctrl-btn {
+    padding: 2px 7px;
+    font-size: 11px;
+  }
+
+  .pdf-page-indicator {
+    font-size: 10px;
+    min-width: 40px;
   }
 
   /* Footer */
@@ -2694,14 +2926,39 @@ footer a {
     padding: 14px;
   }
 
-  .actions {
-    flex-direction: column;
+  .badges {
+    flex-wrap: wrap;
     gap: 6px;
+  }
+
+  .wishlist-btn {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: #716e7d;
+  }
+
+  .wishlist-btn.saved {
+    color: var(--p);
+    font-weight: 800;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .actions a, .actions button {
     text-align: center;
     width: 100%;
+    box-sizing: border-box;
+  }
+
+  .actions .read-btn {
+    grid-column: span 2;
   }
 
   /* Modal Dialogs */

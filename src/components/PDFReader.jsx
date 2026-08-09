@@ -65,13 +65,14 @@ export function PDFReader({ saved, toggle }) {
 
       {/* ── Toolbar ── */}
       <div className="pdf-toolbar">
-        <Link to="/library" className="pdf-btn secondary">← Library</Link>
-
-        <div>
-          <h3>{b.title}</h3>
-          <small style={{ color: '#a0a0b0', fontSize: '11px' }}>
-            {b.source} · {b.subject} · {activeChapter.name}
-          </small>
+        <div className="pdf-toolbar-header">
+          <Link to="/library" className="pdf-btn secondary">← Library</Link>
+          <div className="pdf-toolbar-info">
+            <h3 title={b.title}>{b.title}</h3>
+            <small style={{ color: '#a0a0b0', fontSize: '11px' }}>
+              {b.source} · {b.subject} · <span className="active-chap-tag">{activeChapter.name}</span>
+            </small>
+          </div>
         </div>
 
         <div className="pdf-toolbar-actions">
@@ -86,10 +87,28 @@ export function PDFReader({ saved, toggle }) {
         </div>
       </div>
 
-      {/* ── Body: PDF viewer (left) + chapter list (right) ── */}
+      {/* ── Mobile Chapter Bar (visible only on mobile screens) ── */}
+      {chapterPdfs.length > 1 && (
+        <div className="mobile-chapter-bar">
+          <span className="mobile-chap-label">📖 Select Chapter:</span>
+          <div className="mobile-chap-pills">
+            {chapterPdfs.map((ch, idx) => (
+              <button
+                key={ch.id}
+                className={`mobile-chap-pill ${activeChapIdx === idx ? 'active' : ''}`}
+                onClick={() => setActiveChapIdx(idx)}
+              >
+                {ch.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Body: PDF viewer (left) + chapter list (right desktop) ── */}
       <div className="reader-body-layout">
 
-        {/* PDF Viewer — backend proxy handles CORS */}
+        {/* PDF Viewer */}
         <div className="reader-stage-container">
           <CanvasPDFViewer
             key={activeChapter.pdfUrl}
@@ -98,7 +117,7 @@ export function PDFReader({ saved, toggle }) {
           />
         </div>
 
-        {/* Chapter Sidebar */}
+        {/* Chapter Sidebar (Desktop View) */}
         <div className="reader-sidebar">
           <div className="reader-sidebar-title">
             <span>📚 Chapters</span>
