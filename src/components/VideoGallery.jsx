@@ -98,7 +98,6 @@ export function VideoGallery({
       {/* Gallery Header */}
       {(title || subtitle) && (
         <div className="video-gallery-header">
-          <p className="eyebrow">HIGH-QUALITY PLAYLISTS</p>
           <div>
             {title && <h2 className="video-gallery-title">{title}</h2>}
             {subtitle && <p className="video-gallery-subtitle">{subtitle}</p>}

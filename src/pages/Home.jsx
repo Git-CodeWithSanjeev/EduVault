@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ncertBooks } from '../ncertBooks';
@@ -9,6 +9,35 @@ import { VideoGallery } from '../components/VideoGallery';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 
 export function VideoCarousel({ title, videosList }) {
+  const trackRef = useRef(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const onMouseDown = useCallback((e) => {
+    isDragging.current = true;
+    startX.current = e.pageX - trackRef.current.offsetLeft;
+    scrollLeft.current = trackRef.current.scrollLeft;
+    trackRef.current.style.cursor = 'grabbing';
+    trackRef.current.style.userSelect = 'none';
+  }, []);
+
+  const onMouseMove = useCallback((e) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - trackRef.current.offsetLeft;
+    const walk = (x - startX.current) * 1.4;
+    trackRef.current.scrollLeft = scrollLeft.current - walk;
+  }, []);
+
+  const stopDrag = useCallback(() => {
+    isDragging.current = false;
+    if (trackRef.current) {
+      trackRef.current.style.cursor = 'grab';
+      trackRef.current.style.userSelect = '';
+    }
+  }, []);
+
   if (!videosList || videosList.length === 0) return null;
 
   return (
@@ -20,11 +49,19 @@ export function VideoCarousel({ title, videosList }) {
         </Link>
       </div>
       <div className="carousel-track-wrapper">
-        <div className="carousel-track">
+        <div
+          className="carousel-track"
+          ref={trackRef}
+          style={{ cursor: 'grab' }}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={stopDrag}
+          onMouseLeave={stopDrag}
+        >
           {videosList.map((vid) => (
-            <div key={vid.id} className="carousel-item" style={{ minWidth: '300px' }}>
-              <div className="video-card" style={{ height: '100%' }}>
-                <div className="video-thumb-wrap">
+            <div key={vid.id} className="carousel-item" style={{ minWidth: '280px', maxWidth: '320px' }}>
+              <div className="video-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Link to={'/video/' + vid.id} className="video-thumb-wrap" style={{ display: 'block', textDecoration: 'none' }}>
                   <img
                     src={vid.thumbnail}
                     alt={vid.title}
@@ -35,18 +72,22 @@ export function VideoCarousel({ title, videosList }) {
                     }}
                   />
                   <div className="play-badge">▶</div>
-                </div>
-                <div className="video-info">
+                </Link>
+                <div className="video-info" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                   <div className="video-meta">
                     <span>{vid.category}</span>
                     <span style={{ color: 'var(--muted)' }}>{vid.level}</span>
                   </div>
-                  <h3 style={{ fontSize: '14px', lineHeight: 1.3 }}>{vid.title}</h3>
+                  <h3 style={{ fontSize: '14px', lineHeight: 1.3, margin: '6px 0' }}>
+                    <Link to={'/video/' + vid.id} style={{ color: 'inherit', textDecoration: 'none' }}>
+                      {vid.title}
+                    </Link>
+                  </h3>
                   <small style={{ color: 'var(--muted)', fontWeight: 700, marginBottom: '10px', marginTop: 'auto' }}>
                     📺 Channel: {vid.channel}
                   </small>
-                  <Link to={'/video/' + vid.id} className="hero-link" style={{ textAlign: 'center', display: 'block', fontSize: '12px', padding: '6px 12px' }}>
-                    ▶ Watch Course Playlist
+                  <Link to={'/video/' + vid.id} className="hero-link" style={{ textAlign: 'center', display: 'block', fontSize: '12px', padding: '8px 12px', minHeight: '40px' }}>
+                    ▶ Start Video Course
                   </Link>
                 </div>
               </div>
@@ -75,27 +116,85 @@ export function Home({ saved, toggle, recentIds }) {
   return (
     <>
       <section className="hero">
-        <div>
-          <p className="eyebrow">OPEN EDUCATION & FREE VIDEO HUB</p>
-          <h1>
-            Your trusted library
-            <br />
-            for <span className="highlight-text">textbooks &amp; video masterclasses.</span>
-          </h1>
-          <p className="intro">
-            {ncertBooks.length}+ official NCERT textbooks (Classes I–XII), OpenStax college series, plus curated video course playlists from CodeWithHarry, Apna College, and Physics Wallah.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link className="hero-link" to="/library">
-              Explore Open Textbooks →
-            </Link>
-            <Link className="hero-link" style={{ background: '#4c34af' }} to="/videos">
-              ▶ Watch Video Playlists →
-            </Link>
+        <div className="hero-container">
+          {/* Left Text Content Column */}
+          <div>
+            <p className="eyebrow">OPEN EDUCATION & FREE VIDEO HUB</p>
+            <h1 style={{ fontSize: 'clamp(36px, 4.5vw, 54px)', lineHeight: 1.15 }}>
+              Your trusted library
+              <br />
+              for <span className="highlight-text">textbooks &amp; video masterclasses.</span>
+            </h1>
+            <p className="intro">
+              {ncertBooks.length}+ official NCERT textbooks (Classes I–XII), OpenStax college series, plus curated video course playlists from CodeWithHarry, Apna College, and Physics Wallah.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
+              <Link className="hero-link" to="/library">
+                Explore Open Textbooks →
+              </Link>
+              <Link className="hero-link" style={{ background: 'var(--p)' }} to="/videos">
+                ▶ Watch Video Playlists →
+              </Link>
+            </div>
+            <p className="safe">
+              ✓ Legal source material only · Rights-cleared video playlists & textbooks
+            </p>
           </div>
-          <p className="safe">
-            ✓ Legal source material only · Rights-cleared video playlists & textbooks
-          </p>
+
+          {/* Right Column: Animated Educational Hub Graphic */}
+          <div className="hero-graphic-wrap">
+            {/* Top Left Floating Glass Card */}
+            <div className="hero-float-card hero-float-1">
+              <span>📚</span>
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800 }}>200+ Open Books</div>
+                <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>NCERT & OpenStax Series</div>
+              </div>
+            </div>
+
+            {/* Main Interactive Showcase Card */}
+            <div className="hero-main-card">
+              <div className="hero-card-preview">
+                <img
+                  src="https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg"
+                  alt="Featured Video Course"
+                />
+                <Link to="/video/cwh-c" className="hero-play-pulse" title="Play Featured Masterclass">
+                  ▶
+                </Link>
+              </div>
+              <div style={{ marginTop: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, padding: '3px 8px', borderRadius: '6px', background: '#ccfbf1', color: 'var(--p-dark)' }}>
+                    FEATURED MASTERCLASS
+                  </span>
+                  <span style={{ fontSize: '11px', color: 'var(--p)', fontWeight: 800 }}>
+                    76 Video Lessons
+                  </span>
+                </div>
+                <h3 style={{ fontSize: '15px', fontWeight: 800, margin: '6px 0', color: 'var(--ink)' }}>
+                  C Language Complete Course In Hindi
+                </h3>
+                <p style={{ fontSize: '12px', color: 'var(--muted)', margin: 0 }}>
+                  CodeWithHarry · Beginner to Advanced
+                </p>
+                <div className="hero-subject-chips">
+                  <span className="hero-chip">💻 Programming</span>
+                  <span className="hero-chip">📐 Class 1-12</span>
+                  <span className="hero-chip">⚛ Physics & Math</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Right Floating Glass Card */}
+            <div className="hero-float-card hero-float-2">
+              <div className="pulse-dot" />
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>100% Free & Verified</div>
+                <div style={{ fontSize: '11px', color: '#10b981', fontWeight: 700 }}>✓ Zero Ads or Paywalls</div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -340,15 +340,24 @@ export function CanvasPDFViewer({ url, title }) {
       <div className="pdf-viewer-stage">
         {status === 'loading' && (
           <div className="pdf-loading-overlay">
-            <div className="pdf-spinner" />
-            <span>{loadingMsg}</span>
+            <div className="pdf-loading-card">
+              <div className="pdf-spinner" />
+              <span className="pdf-loading-title">{title}</span>
+              <span className="pdf-loading-msg">{loadingMsg}</span>
+              <div className="pdf-loading-pulse-bar">
+                <div className="pdf-loading-pulse-fill" />
+              </div>
+            </div>
           </div>
         )}
 
         {status === 'ready' && (
           <div className="pdf-canvas-wrapper">
             {rendering && (
-              <div className="pdf-render-badge">Rendering page {pageNum}…</div>
+              <div className="pdf-render-badge">
+                <span className="pdf-spinner" style={{ width: '14px', height: '14px', borderWidth: '2px' }} />
+                <span>Rendering page {pageNum}…</span>
+              </div>
             )}
             <canvas ref={canvasRef} className="pdf-canvas" />
           </div>

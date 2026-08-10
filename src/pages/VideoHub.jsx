@@ -8,7 +8,7 @@ import { classCurriculumData } from '../data/classCurriculumData';
 
 export function VideoHub() {
   const [selectedMainCategory, setSelectedMainCategory] = useState('All');
-  const [selectedClassNum, setSelectedClassNum] = useState(10); // Default to Class 10
+  const [selectedClassNum, setSelectedClassNum] = useState(10);
   const [selectedSubject, setSelectedSubject] = useState('All');
   const [selectedChannel, setSelectedChannel] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,10 +49,8 @@ export function VideoHub() {
     'freeCodeCamp.org',
   ];
 
-  // Active Class Object
   const currentClassObject = classCurriculumData[selectedClassNum] || classCurriculumData[10];
 
-  // Dynamically query YouTube API when a Class, Subject, or Search Query is selected
   useEffect(() => {
     let activeQuery = '';
 
@@ -78,7 +76,6 @@ export function VideoHub() {
 
     searchYouTubePlaylists(activeQuery).then((results) => {
       if (isMounted) {
-        // STRICT THUMBNAIL FILTER: Remove any playlist item that does not have a valid thumbnail
         const validResults = results.filter((p) => p && p.thumbnail && isValidThumbnail(p.thumbnail));
         setApiPlaylists(validResults);
         setIsSearchingApi(false);
@@ -90,7 +87,6 @@ export function VideoHub() {
     };
   }, [selectedMainCategory, selectedClassNum, selectedSubject, searchQuery]);
 
-  // Filter static educational videos with fallback thumbnail resolution
   const filteredVideos = useMemo(() => {
     return educationalVideos
       .map((v) => {
@@ -120,7 +116,6 @@ export function VideoHub() {
       });
   }, [selectedMainCategory, selectedChannel, searchQuery]);
 
-  // Combine static and dynamic YouTube API playlists
   const displayList = useMemo(() => {
     if (apiPlaylists.length > 0) {
       return [...apiPlaylists, ...filteredVideos];
@@ -129,7 +124,7 @@ export function VideoHub() {
   }, [apiPlaylists, filteredVideos]);
 
   return (
-    <section className="page">
+    <section className="page" style={{ padding: '16px' }}>
       {/* Featured High Quality Educational Video Gallery */}
       <VideoGallery
         videos={educationalGalleryData}
@@ -139,25 +134,47 @@ export function VideoHub() {
         columns={3}
       />
 
-      <hr style={{ border: 0, borderTop: '1px solid var(--line)', margin: '40px 0' }} />
+      <hr style={{ border: 0, borderTop: '1px solid var(--line)', margin: '32px 0' }} />
 
       <p className="eyebrow">COMPLETE K-12 & HIGHER ED CURRICULUM</p>
-      <h2>Class 1 to 12 All Subjects Video Vault</h2>
-      <p className="intro">
+      <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '8px 0 12px', color: 'var(--ink)' }}>
+        Class 1 to 12 All Subjects Video Vault
+      </h2>
+      <p className="intro" style={{ maxWidth: '800px', margin: '0 0 20px', color: 'var(--muted)', fontSize: '14px', lineHeight: 1.6 }}>
         Select any class from Class 1 to 12 to explore dedicated full-length course playlists for Mathematics, Physics, Chemistry, Biology, Social Studies, English, Hindi, Accountancy, Economics, and Computer Science.
       </p>
 
-      {/* Main Category Tabs */}
-      <div className="mode-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', margin: '20px 0 16px', background: 'transparent', padding: 0 }}>
+      {/* Main Category Tabs - Mobile Scrollable */}
+      <div
+        className="mode-tabs"
+        style={{
+          display: 'flex',
+          flexWrap: 'nowrap',
+          overflowX: 'auto',
+          gap: '8px',
+          margin: '16px 0',
+          paddingBottom: '8px',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
         {mainCategories.map((cat) => (
           <button
             key={cat}
+            type="button"
             className={`mode-btn ${selectedMainCategory === cat ? 'active' : ''}`}
             onClick={() => {
               setSelectedMainCategory(cat);
               setSelectedSubject('All');
             }}
-            style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '12px' }}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              minHeight: '40px',
+              flexShrink: 0,
+            }}
           >
             {cat}
           </button>
@@ -166,8 +183,8 @@ export function VideoHub() {
 
       {/* Dedicated Class 1 to 12 Selector Bar */}
       {selectedMainCategory === 'Class 1 to 12 School Curriculum' && (
-        <div style={{ background: '#faf9fc', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
-          <h4 style={{ margin: '0 0 10px', color: 'var(--ink)' }}>Select Class (Class 1 to 12):</h4>
+        <div style={{ background: '#f8fafc', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px', marginBottom: '24px' }}>
+          <h4 style={{ margin: '0 0 10px', color: 'var(--ink)', fontSize: '14px' }}>Select Class (Class 1 to 12):</h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
               <button
@@ -186,7 +203,7 @@ export function VideoHub() {
                   color: selectedClassNum === num ? '#ffffff' : 'var(--ink)',
                   border: selectedClassNum === num ? '1px solid var(--p)' : '1px solid var(--line)',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  minHeight: '40px',
                 }}
               >
                 Class {num}
@@ -194,7 +211,7 @@ export function VideoHub() {
             ))}
           </div>
 
-          <h4 style={{ margin: '14px 0 8px', color: 'var(--ink)' }}>
+          <h4 style={{ margin: '14px 0 8px', color: 'var(--ink)', fontSize: '14px' }}>
             {currentClassObject.title} - Subjects:
           </h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -202,14 +219,15 @@ export function VideoHub() {
               type="button"
               onClick={() => setSelectedSubject('All')}
               style={{
-                padding: '5px 12px',
+                padding: '6px 12px',
                 borderRadius: '6px',
-                fontSize: '11px',
+                fontSize: '12px',
                 fontWeight: selectedSubject === 'All' ? 800 : 600,
-                background: selectedSubject === 'All' ? '#efecff' : '#ffffff',
+                background: selectedSubject === 'All' ? '#eff6ff' : '#ffffff',
                 color: selectedSubject === 'All' ? 'var(--p)' : 'var(--ink)',
                 border: selectedSubject === 'All' ? '1px solid var(--p)' : '1px solid var(--line)',
                 cursor: 'pointer',
+                minHeight: '38px',
               }}
             >
               All Subjects
@@ -220,14 +238,15 @@ export function VideoHub() {
                 type="button"
                 onClick={() => setSelectedSubject(sub)}
                 style={{
-                  padding: '5px 12px',
+                  padding: '6px 12px',
                   borderRadius: '6px',
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontWeight: selectedSubject === sub ? 800 : 600,
-                  background: selectedSubject === sub ? '#efecff' : '#ffffff',
+                  background: selectedSubject === sub ? '#eff6ff' : '#ffffff',
                   color: selectedSubject === sub ? 'var(--p)' : 'var(--ink)',
                   border: selectedSubject === sub ? '1px solid var(--p)' : '1px solid var(--line)',
                   cursor: 'pointer',
+                  minHeight: '38px',
                 }}
               >
                 📖 {sub}
@@ -238,27 +257,31 @@ export function VideoHub() {
       )}
 
       {/* Search & Channel Filter Bar */}
-      <div className="filters" style={{ margin: '20px 0 14px' }}>
+      <div className="filters" style={{ margin: '20px 0 14px', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search any topic (e.g. Class 10 Light, Class 12 Calculus, Microeconomics)..."
-          style={{ minWidth: '320px' }}
+          placeholder="Search topics (e.g. Class 10 Light, Calculus)..."
+          style={{ flex: 1, minWidth: '240px', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--line)', minHeight: '44px' }}
         />
-        <select value={selectedChannel} onChange={(e) => setSelectedChannel(e.target.value)}>
+        <select
+          value={selectedChannel}
+          onChange={(e) => setSelectedChannel(e.target.value)}
+          style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--line)', minHeight: '44px' }}
+        >
           {channels.map((ch) => (
             <option key={ch} value={ch}>
               Channel: {ch}
             </option>
           ))}
         </select>
-        <span>{displayList.length} verified playlists</span>
+        <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--muted)' }}>{displayList.length} courses found</span>
       </div>
 
       {/* Loading Indicator */}
       {isSearchingApi && (
-        <div style={{ padding: '12px', background: '#efecff', color: 'var(--p)', borderRadius: '8px', marginBottom: '16px', fontWeight: 700, fontSize: '13px' }}>
-          ⚡ Loading Playlists for Class {selectedClassNum} {selectedSubject !== 'All' ? `(${selectedSubject})` : ''}...
+        <div style={{ padding: '12px 16px', background: '#eff6ff', color: 'var(--p)', borderRadius: '8px', marginBottom: '16px', fontWeight: 700, fontSize: '13px' }}>
+          ⚡ Searching Playlists for Class {selectedClassNum} {selectedSubject !== 'All' ? `(${selectedSubject})` : ''}...
         </div>
       )}
 

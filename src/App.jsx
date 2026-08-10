@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { items } from './data/openItems';
 import { useSaved, useRecentlyVisited, useWelcomeBack } from './hooks/useEduVault';
 import { Shell } from './components/Shell';
@@ -15,6 +15,16 @@ import { VideoTheater } from './pages/VideoTheater';
 import { Outbound } from './pages/Outbound';
 import { Form } from './pages/Form';
 
+import { SavedPage } from './pages/SavedPage';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 export default function App() {
   const [saved, toggle] = useSaved();
   const [recentIds] = useRecentlyVisited();
@@ -22,6 +32,7 @@ export default function App() {
 
   return (
     <Shell welcomeMsg={welcomeMsg}>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -40,17 +51,7 @@ export default function App() {
         <Route path="/category/:slug" element={<CategoryView saved={saved} toggle={toggle} />} />
         <Route
           path="/saved"
-          element={
-            <section className="page">
-              <p className="eyebrow">MY LIBRARY</p>
-              <h2>Saved resources</h2>
-              <Cards
-                list={items.filter((x) => saved.includes(x.id))}
-                saved={saved}
-                toggle={toggle}
-              />
-            </section>
-          }
+          element={<SavedPage saved={saved} toggle={toggle} />}
         />
         <Route path="/upload" element={<Form />} />
         <Route path="/copyright" element={<Form report />} />
