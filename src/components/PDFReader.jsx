@@ -3,10 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { CanvasPDFViewer, DownloadPDFButton } from './CanvasPDFViewer';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 /** Generate the list of chapter PDF URLs for an NCERT book */
 export function getChapterPdfUrls(book) {
   if (book.source === 'NCERT' && book.url) {
@@ -32,14 +28,19 @@ export function getChapterPdfUrls(book) {
   ];
 }
 
-// ---------------------------------------------------------------------------
-// PDFReader Component
-// ---------------------------------------------------------------------------
-
 export function PDFReader({ saved, toggle }) {
   const { id } = useParams();
   const b = items.find((x) => x.id === id);
   const [activeChapIdx, setActiveChapIdx] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isChapterDrawerOpen, setIsChapterDrawerOpen] = useState(false);
+
+  // Screen resize tracking
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Track recently opened books
   useEffect(() => {
@@ -57,100 +58,186 @@ export function PDFReader({ saved, toggle }) {
     );
   }
 
-  const chapterPdfs     = getChapterPdfUrls(b);
-  const activeChapter   = chapterPdfs[activeChapIdx] ?? chapterPdfs[0];
+  const chapterPdfs   = getChapterPdfUrls(b);
+  const activeChapter = chapterPdfs[activeChapIdx] ?? chapterPdfs[0];
 
   return (
-    <div className="pdf-reader-container" id="pdf-reader-stage">
+    <div className={`pdf-reader-fullscreen-shell ${isMobile ? 'is-mobile-screen' : ''}`}>
 
-      {/* ── Toolbar ── */}
-      <div className="pdf-toolbar">
-        <div className="pdf-toolbar-header">
-          <Link to="/library" className="pdf-btn secondary">← Library</Link>
-          <div className="pdf-toolbar-info">
-            <h3 title={b.title}>{b.title}</h3>
-            <small style={{ color: '#a0a0b0', fontSize: '11px' }}>
-              {b.source} · {b.subject} · <span className="active-chap-tag">{activeChapter.name}</span>
-            </small>
+      {/* ─── 2. BOOK INFORMATION BAR (Fixed Header Row) ─── */}
+      {isMobile ? (
+        <div className="mobile-reader-header">
+          <Link to="/library" className="mobile-back-btn">
+            ‹ Library
+          </Link>
+
+          <div className="mobile-book-info">
+            <h4 title={b.title}>{b.title}</h4>
+            <span className="mobile-active-chap-badge">{activeChapter.name}</span>
           </div>
-        </div>
 
-        <div className="pdf-toolbar-actions">
-          <button className="pdf-btn secondary" onClick={() => toggle(b.id)}>
-            {saved.includes(b.id) ? '★ Saved' : '☆ Save'}
+          <button
+            className="mobile-chapter-menu-btn"
+            onClick={() => setIsChapterDrawerOpen(true)}
+          >
+            📖 Chapters ({chapterPdfs.length})
           </button>
-          <DownloadPDFButton
-            url={activeChapter.pdfUrl}
-            filename={`${b.title} - ${activeChapter.name}.pdf`}
-            label="📥 Download PDF"
-          />
         </div>
-      </div>
+      ) : (
+        <div className="pdf-toolbar">
+          <div className="pdf-toolbar-header">
+            <Link to="/library" className="pdf-btn secondary">← Library</Link>
+            <div className="pdf-toolbar-info">
+              <h3 title={b.title}>{b.title}</h3>
+              <small style={{ color: '#94a3b8', fontSize: '12px' }}>
+                {b.source} · {b.subject || 'General'} · <span className="active-chap-tag">{activeChapter.name}</span>
+              </small>
+            </div>
+          </div>
 
-      {/* ── Mobile Chapter Bar (visible only on mobile screens) ── */}
-      {chapterPdfs.length > 1 && (
-        <div className="mobile-chapter-bar">
-          <span className="mobile-chap-label">📖 Select Chapter:</span>
-          <div className="mobile-chap-pills">
-            {chapterPdfs.map((ch, idx) => (
-              <button
-                key={ch.id}
-                className={`mobile-chap-pill ${activeChapIdx === idx ? 'active' : ''}`}
-                onClick={() => setActiveChapIdx(idx)}
-              >
-                {ch.name}
-              </button>
-            ))}
+          <div className="pdf-toolbar-actions">
+            <button className="pdf-btn secondary" onClick={() => toggle(b.id)}>
+              {saved.includes(b.id) ? '★ Saved' : '☆ Save'}
+            </button>
+            <DownloadPDFButton
+              url={activeChapter.pdfUrl}
+              filename={`${b.title} - ${activeChapter.name}.pdf`}
+              label="📥 Download PDF"
+            />
           </div>
         </div>
       )}
 
-      {/* ── Body: PDF viewer (left) + chapter list (right desktop) ── */}
-      <div className="reader-body-layout">
+      {/* ─── MOBILE CHAPTER STRIP ─── */}
+      {isMobile && chapterPdfs.length > 1 && (
+        <div className="mobile-chap-pill-strip">
+          {chapterPdfs.map((ch, idx) => (
+            <button
+              key={ch.id}
+              className={`mobile-chap-pill ${activeChapIdx === idx ? 'active' : ''}`}
+              onClick={() => setActiveChapIdx(idx)}
+            >
+              {ch.name}
+            </button>
+          ))}
+        </div>
+      )}
 
-        {/* PDF Viewer */}
+      {/* ─── 3. READER BODY LAYOUT ─── */}
+      <div className="reader-body-layout">
+        {/* PDF Stage Viewport Container */}
         <div className="reader-stage-container">
           <CanvasPDFViewer
             key={activeChapter.pdfUrl}
             url={activeChapter.pdfUrl}
             title={activeChapter.name}
+            isMobile={isMobile}
           />
         </div>
 
-        {/* Chapter Sidebar (Desktop View) */}
-        <div className="reader-sidebar">
-          <div className="reader-sidebar-title">
-            <span>📚 Chapters</span>
-            <span style={{ fontSize: '10px', background: '#2a2840', color: '#9b8bf4', padding: '2px 8px', borderRadius: '4px' }}>
-              {chapterPdfs.length} PDFs
-            </span>
+        {/* Fixed Desktop Chapter Sidebar */}
+        {!isMobile && (
+          <div className="reader-sidebar">
+            <div className="reader-sidebar-title">
+              <span>CHAPTERS</span>
+              <span className="sidebar-count-badge">
+                {chapterPdfs.length} PDFs
+              </span>
+            </div>
+
+            <div className="chapter-list-scroll">
+              {chapterPdfs.map((ch, idx) => (
+                <div
+                  key={ch.id}
+                  className={`chapter-nav-item ${activeChapIdx === idx ? 'active' : ''}`}
+                  onClick={() => setActiveChapIdx(idx)}
+                >
+                  <span className="chapter-nav-name">{ch.name}</span>
+                  <span className="chapter-badge">PDF</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="sidebar-footer-archive">
+              <div className="archive-title">Official Archive</div>
+              <Link
+                to={`/go/${b.id}`}
+                className="archive-download-btn"
+              >
+                📥 Download Full Zip ↗
+              </Link>
+            </div>
           </div>
+        )}
+      </div>
 
-          {chapterPdfs.map((ch, idx) => (
-            <div
-              key={ch.id}
-              className={`chapter-nav-item ${activeChapIdx === idx ? 'active' : ''}`}
-              onClick={() => setActiveChapIdx(idx)}
-            >
-              <span>{ch.name}</span>
-              <span className="chapter-badge">PDF</span>
-            </div>
-          ))}
-
-          <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid #282834' }}>
-            <div style={{ fontSize: '11px', color: '#8d8aa0', marginBottom: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Official Archive
-            </div>
-            <Link
-              to={`/go/${b.id}`}
-              style={{ fontSize: '12px', color: '#9b8bf4', textDecoration: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 12px', background: '#1c1c2e', borderRadius: '8px', border: '1px solid #2e2e44' }}
-            >
-              📥 Download Full Book Zip ↗
-            </Link>
+      {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
+      {isMobile && (
+        <div className="mobile-reader-bottombar">
+          <button
+            className="mobile-bottom-btn"
+            onClick={() => setIsChapterDrawerOpen(true)}
+          >
+            📖 Chapters
+          </button>
+          <button
+            className={`mobile-bottom-btn ${saved.includes(b.id) ? 'saved' : ''}`}
+            onClick={() => toggle(b.id)}
+          >
+            {saved.includes(b.id) ? '★ Saved' : '☆ Save'}
+          </button>
+          <div className="mobile-bottom-dl">
+            <DownloadPDFButton
+              url={activeChapter.pdfUrl}
+              filename={`${b.title} - ${activeChapter.name}.pdf`}
+              label="📥 Download"
+              className="pdf-btn"
+            />
           </div>
         </div>
+      )}
 
-      </div>
+      {/* ─── MOBILE CHAPTER DRAWER SHEET ─── */}
+      {isMobile && isChapterDrawerOpen && (
+        <div className="mobile-chapter-sheet-backdrop" onClick={() => setIsChapterDrawerOpen(false)}>
+          <div className="mobile-chapter-sheet-card" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-sheet-header">
+              <div className="mobile-sheet-title">
+                <h3>📚 Select Chapter</h3>
+                <small>{b.title}</small>
+              </div>
+              <button
+                className="mobile-sheet-close"
+                onClick={() => setIsChapterDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mobile-sheet-list">
+              {chapterPdfs.map((ch, idx) => (
+                <button
+                  key={ch.id}
+                  className={`mobile-sheet-item ${activeChapIdx === idx ? 'active' : ''}`}
+                  onClick={() => {
+                    setActiveChapIdx(idx);
+                    setIsChapterDrawerOpen(false);
+                  }}
+                >
+                  <span className="mobile-sheet-item-name">{ch.name}</span>
+                  {activeChapIdx === idx ? (
+                    <span className="mobile-sheet-active-tag">Reading Now</span>
+                  ) : (
+                    <span className="mobile-sheet-pdf-tag">PDF</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default PDFReader;

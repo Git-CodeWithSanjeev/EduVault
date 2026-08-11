@@ -380,7 +380,15 @@ export const otherItems = [
   },
 ];
 
-export const items = [...ncertBooks, ...otherItems];
+export function hasAccessiblePdf(item) {
+  if (!item) return false;
+  if (item.source === 'NCERT' && item.url && item.url.includes('dd.zip')) return true;
+  if (item.pdfUrl || (item.url && item.url.toLowerCase().includes('.pdf'))) return true;
+  return false;
+}
+
+export const items = ncertBooks.filter(hasAccessiblePdf);
+
 
 export const cats = [
   'Board Books',

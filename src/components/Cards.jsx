@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BookCover } from './BookCover';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,12 +12,13 @@ export function ExternalLink({ item, children, className }) {
 }
 
 export function Cards({ list, saved, toggle }) {
-  const { isLoggedIn, openAuthModal } = useAuth();
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleSave = (id) => {
     toggle(id);
     if (!isLoggedIn) {
-      openAuthModal();
+      navigate('/login');
     }
   };
 
@@ -63,3 +64,5 @@ export function Cards({ list, saved, toggle }) {
     </div>
   );
 }
+
+export default Cards;
