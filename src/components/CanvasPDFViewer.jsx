@@ -280,7 +280,7 @@ const PDFPageCard = memo(function PDFPageCard({
   const startDrawing = (e) => {
     if (activeTool === 'cursor') return;
     isDrawingRef.current = true;
-    const ctx = drawCanvasRef.current?.getContext('2d');
+    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
     const pos = getPos(e);
@@ -308,7 +308,7 @@ const PDFPageCard = memo(function PDFPageCard({
 
   const draw = (e) => {
     if (!isDrawingRef.current || activeTool === 'cursor') return;
-    const ctx = drawCanvasRef.current?.getContext('2d');
+    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
     const pos = getPos(e);
     ctx.lineTo(pos.x, pos.y);
@@ -318,7 +318,7 @@ const PDFPageCard = memo(function PDFPageCard({
   const stopDrawing = () => {
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
-    const ctx = drawCanvasRef.current?.getContext('2d');
+    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
     if (ctx) ctx.closePath();
   };
 
@@ -350,7 +350,7 @@ const PDFPageCard = memo(function PDFPageCard({
         canvas.style.width = `${Math.floor(responsiveViewport.width)}px`;
         canvas.style.height = `${Math.floor(responsiveViewport.height)}px`;
 
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
         context.scale(dpr, dpr);
 
         const renderTask = page.render({
