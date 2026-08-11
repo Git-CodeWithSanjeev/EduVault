@@ -49,8 +49,11 @@ export function Register() {
 
     try {
       const res = await register(name, email, password);
-      // STEP 3: Navigate to Email Verification Screen on successful registration
-      navigate('/verify-email', { state: { email: res.email } });
+      if (res?.autoConfirmed) {
+        navigate('/', { replace: true });
+      } else {
+        navigate('/verify-email', { state: { email: res.email } });
+      }
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {

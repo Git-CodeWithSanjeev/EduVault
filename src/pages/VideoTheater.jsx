@@ -56,6 +56,7 @@ export function VideoTheater() {
   const [playbackSpeed, setPlaybackSpeed] = useState('1');
   const [toastMessage, setToastMessage] = useState('');
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Determine playlistId
   const playlistId = vid
@@ -137,10 +138,12 @@ export function VideoTheater() {
 
   const outcomes = vid.whatYoullLearn || defaultOutcomes;
 
-  // Embed URL with timestamp & autoplay support
-  const activeEmbedUrl = playlistId
-    ? `https://www.youtube.com/embed/${targetVidId}?list=${playlistId}&autoplay=1&enablejsapi=1&rel=0${startTimestamp ? `&start=${startTimestamp}` : ''}`
-    : `https://www.youtube.com/embed/${targetVidId}?autoplay=1&enablejsapi=1&rel=0${startTimestamp ? `&start=${startTimestamp}` : ''}`;
+  // Embed URL with youtube-nocookie, mobile playsinline, autoplay, and timestamp support
+  const activeEmbedUrl = targetVidId
+    ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
+    : playlistId
+    ? `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`
+    : `https://www.youtube-nocookie.com/embed/tVzUXW6siu0?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`;
 
   // Course Progress calculation
   const totalLessonsCount = lessons.length;
@@ -156,6 +159,7 @@ export function VideoTheater() {
     if (activeLessonIdx > 0) {
       setActiveLessonIdx(activeLessonIdx - 1);
       setStartTimestamp(0);
+      setIsPlaying(false);
     }
   };
 
@@ -163,18 +167,14 @@ export function VideoTheater() {
     if (activeLessonIdx < lessons.length - 1) {
       setActiveLessonIdx(activeLessonIdx + 1);
       setStartTimestamp(0);
+      setIsPlaying(false);
     }
   };
-
-  // Auto scroll upward to top when lesson or video changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-  }, [id, activeLessonIdx]);
 
   // Timestamp Seeking
   const handleSeekChapter = (seconds) => {
     setStartTimestamp(seconds);
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    setIsPlaying(true);
     showToast(`Jumped to chapter timestamp (${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')})`);
   };
 
@@ -199,12 +199,12 @@ export function VideoTheater() {
   const courseTitle = apiDetails?.title || vid.title || 'Video Course';
 
   return (
-    <section className="page" style={{ maxWidth: '1400px', padding: '16px' }}>
+    <section className="page video-theater-page">
       {/* Toast Notification Popup */}
       {toastMessage && <div className="toast-notification">{toastMessage}</div>}
 
       {/* Back Navigation Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div className="theater-top-bar">
         <Link to="/videos" className="action-btn" style={{ textDecoration: 'none' }}>
           ← Back to Video Hub
         </Link>
@@ -233,21 +233,78 @@ export function VideoTheater() {
                 </button>
               </div>
             ) : (
-              <iframe
-                key={`${vid.id}-${targetVidId}-${activeLessonIdx}-${startTimestamp}`}
-                src={activeEmbedUrl}
-                title={activeLesson.title || courseTitle}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                onError={() => setHasPlayerError(true)}
-              />
+              <>
+                {!isPlaying && (
+                  <div
+                    onClick={() => setIsPlaying(true)}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: `#0f172a url(https://i.ytimg.com/vi/${targetVidId}/hqdefault.jpg) center/cover no-repeat`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      zIndex: 20,
+                    }}
+                  >
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(2px)' }} />
+
+                    <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '16px' }}>
+                      <div style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '26px',
+                        margin: '0 auto 10px',
+                        boxShadow: '0 8px 24px rgba(239, 68, 68, 0.5)',
+                        paddingLeft: '4px',
+                      }}>
+                        ▶
+                      </div>
+                      <p style={{ color: '#ffffff', fontSize: '15px', fontWeight: 800, margin: '0 0 4px', textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
+                        Tap to Play Video
+                      </p>
+                      <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: 600 }}>
+                        {activeLesson.title || courseTitle}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <iframe
+                  key={`${vid.id}-${targetVidId}-${activeLessonIdx}-${startTimestamp}-${isPlaying}`}
+                  src={activeEmbedUrl}
+                  title={activeLesson.title || courseTitle}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  onError={() => setHasPlayerError(true)}
+                />
+              </>
             )}
           </div>
 
+          {/* Direct YouTube link fallback for mobile devices */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px', marginBottom: '8px' }}>
+            <a
+              href={`https://www.youtube.com/watch?v=${targetVidId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, textDecoration: 'none' }}
+            >
+              ↗ Open in YouTube App
+            </a>
+          </div>
+
           {/* Interactive Player Quick Controls */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', background: 'var(--card)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--line)', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>Playback Speed:</span>
+          <div className="player-speed-bar">
+            <div className="player-speed-group">
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)' }}>Speed:</span>
               {['0.75', '1', '1.25', '1.5', '2'].map((speed) => (
                 <button
                   key={speed}
@@ -257,7 +314,7 @@ export function VideoTheater() {
                     showToast(`Speed set to ${speed}x`);
                   }}
                   style={{
-                    padding: '3px 8px',
+                    padding: '3px 6px',
                     borderRadius: '6px',
                     fontSize: '11px',
                     fontWeight: 700,
@@ -272,7 +329,7 @@ export function VideoTheater() {
               ))}
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className="player-nav-group">
               <button
                 type="button"
                 className="action-btn"

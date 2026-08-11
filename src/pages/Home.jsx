@@ -144,7 +144,7 @@ export function Home({ saved, toggle, recentIds }) {
             <p className="intro">
               {ncertBooks.length}+ official NCERT textbooks (Classes I–XII), OpenStax college series, plus curated video course playlists from CodeWithHarry, Apna College, and Physics Wallah.
             </p>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
+            <div className="hero-cta-group" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '16px' }}>
               <Link className="hero-link" to="/library">
                 Explore Open Textbooks →
               </Link>

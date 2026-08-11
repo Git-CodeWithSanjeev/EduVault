@@ -53,8 +53,11 @@ const mapAuthError = (err) => {
   if (msg.includes('Invalid token') || msg.includes('otp')) {
     return 'Invalid verification code. Please try again.';
   }
+  if (msg.includes('Error sending confirmation email') || msg.includes('confirmation email')) {
+    return 'Unable to send confirmation email. Supabase email rate limit reached (max 3/hour on free tier). Please wait a few minutes, or set up Custom SMTP in Supabase.';
+  }
   if (msg.includes('Rate limit') || msg.includes('magic link')) {
-    return 'Email rate limit reached. Please wait a few minutes or enter the 6-digit code sent to your email.';
+    return 'Email rate limit reached. Please wait a few minutes before trying again.';
   }
   return msg;
 };
@@ -144,6 +147,28 @@ export function AuthProvider({ children }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: cleanName, email: cleanEmail, password }),
     }).catch(() => {});
+
+    // If "Confirm email" is disabled in Supabase, data.session will be returned immediately
+    if (data.session && data.user) {
+      const formatted = formatUser(data.user);
+      setUser(formatted);
+      setSession(data.session);
+
+      try {
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          full_name: cleanName,
+          email: cleanEmail,
+          updated_at: new Date().toISOString(),
+        });
+      } catch {}
+
+      return {
+        success: true,
+        autoConfirmed: true,
+        user: formatted,
+      };
+    }
 
     setPendingEmail(cleanEmail);
 

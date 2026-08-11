@@ -969,22 +969,16 @@ const pdfDocumentCache = new Map();
         </div>
       )}
 
-      {/* MOBILE COMPACT TOPBAR */}
-      {isMobile && (
-        <div className="pdf-viewer-topbar mobile-only">
-          <div className="pdf-title-block">
-            <span className="pdf-viewer-title" title={title}>📄 {title}</span>
-          </div>
-          {status === 'ready' && (
-            <div className="pdf-controls-group">
-              <button className="pdf-ctrl-btn" onClick={prevPage} disabled={pageNum <= 1}>◀</button>
-              <span className="pdf-page-total">{pageNum} / {numPages}</span>
-              <button className="pdf-ctrl-btn" onClick={nextPage} disabled={pageNum >= numPages}>▶</button>
-              <button className="pdf-ctrl-btn" onClick={zoomOut}>-</button>
-              <span className="pdf-zoom-level">{Math.round(scale * 100)}%</span>
-              <button className="pdf-ctrl-btn" onClick={zoomIn}>+</button>
-            </div>
-          )}
+      {/* MOBILE FLOATING CONTROLS TOOLBAR */}
+      {isMobile && status === 'ready' && (
+        <div className="mobile-pdf-toolbar">
+          <button onClick={prevPage} disabled={pageNum <= 1} aria-label="Previous Page">◀</button>
+          <span className="mobile-pdf-page-indicator">{pageNum} / {numPages}</span>
+          <button onClick={nextPage} disabled={pageNum >= numPages} aria-label="Next Page">▶</button>
+          <span style={{ opacity: 0.3, margin: '0 2px' }}>|</span>
+          <button onClick={zoomOut} aria-label="Zoom Out">-</button>
+          <span style={{ fontSize: '11px', fontWeight: 700 }}>{Math.round(scale * 100)}%</span>
+          <button onClick={zoomIn} aria-label="Zoom In">+</button>
           <DownloadPDFButton url={url} filename={title + '.pdf'} label="📥" className="pdf-btn" />
         </div>
       )}

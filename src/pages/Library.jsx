@@ -84,6 +84,8 @@ export function Library({ saved, toggle }) {
     }).slice(0, visibleCount);
   }, [activeCat, visibleCount]);
 
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+
   return (
     <section className="lib-page">
       {/* ── Hero Header ── */}
@@ -119,6 +121,80 @@ export function Library({ saved, toggle }) {
             📂 By Category
           </button>
         </div>
+      )}
+
+      {/* Mobile Filter Sheet Button */}
+      {!q && (
+        <div style={{ padding: '0 16px', marginBottom: '12px' }}>
+          <button
+            className="mobile-filter-trigger-btn"
+            onClick={() => setFilterSheetOpen(true)}
+          >
+            🎛️ Filter &amp; Select {tab === 'class' ? `Class (${activeClass})` : `Category (${activeCat})`}
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Filter Bottom Sheet Modal */}
+      {filterSheetOpen && (
+        <>
+          <div className="mobile-filter-sheet-overlay" onClick={() => setFilterSheetOpen(false)} />
+          <div className="mobile-filter-sheet">
+            <div className="sheet-handle" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h3 style={{ margin: 0 }}>Select {tab === 'class' ? 'NCERT Class' : 'Category'}</h3>
+              <button
+                onClick={() => setFilterSheetOpen(false)}
+                style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}
+              >
+                ✕
+              </button>
+            </div>
+            {tab === 'class' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                {NCERT_CLASSES.map((cls) => (
+                  <button
+                    key={cls}
+                    onClick={() => { setActiveClass(cls); setActiveSub('All'); setFilterSheetOpen(false); }}
+                    style={{
+                      padding: '12px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      borderRadius: '10px',
+                      border: activeClass === cls ? '2px solid var(--p)' : '1px solid var(--line)',
+                      background: activeClass === cls ? 'rgba(13, 148, 136, 0.12)' : 'var(--bg2)',
+                      color: activeClass === cls ? 'var(--p-dark)' : 'var(--ink)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {cls}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {cats.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => { setActiveCat(c); setFilterSheetOpen(false); }}
+                    style={{
+                      padding: '12px 14px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      borderRadius: '10px',
+                      border: activeCat === c ? '2px solid var(--p)' : '1px solid var(--line)',
+                      background: activeCat === c ? 'rgba(13, 148, 136, 0.12)' : 'var(--bg2)',
+                      color: activeCat === c ? 'var(--p-dark)' : 'var(--ink)',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {/* ════════════════════════════════════════════
@@ -198,7 +274,7 @@ export function Library({ saved, toggle }) {
       {tab === 'category' && (
         <div className="lib-split">
           {/* Category Rail */}
-          <div className="lib-class-rail">
+          <div className="lib-class-rail lib-cat-rail">
             <div className="lib-rail-label">Categories</div>
             {cats.map((c) => (
               <button
