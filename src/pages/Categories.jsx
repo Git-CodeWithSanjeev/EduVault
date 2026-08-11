@@ -15,7 +15,7 @@ export function Categories() {
             <Link key={x} to={'/category/' + slug}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {x}
-                <small style={{ background: '#efecff', color: 'var(--p)', padding: '2px 7px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
+                <small style={{ background: '#ccfbf1', color: 'var(--p-dark)', padding: '2px 7px', borderRadius: '12px', fontSize: '11px', fontWeight: 700 }}>
                   {count}
                 </small>
               </span>

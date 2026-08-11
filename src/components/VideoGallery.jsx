@@ -121,7 +121,7 @@ export function VideoGallery({
             <h4 style={{ margin: 0, color: 'var(--ink)' }}>
               Cloud API Configuration
             </h4>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--p)', background: '#efecff', padding: '3px 8px', borderRadius: '6px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--p-dark)', background: '#ccfbf1', padding: '3px 8px', borderRadius: '6px' }}>
               Default Key Active
             </span>
           </div>

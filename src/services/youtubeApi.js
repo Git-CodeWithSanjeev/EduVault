@@ -186,8 +186,8 @@ export async function fetchYouTubePlaylistItems(playlistId, apiKey = getStoredYo
         playlistCache.set(cacheKey, numberedVideos);
         return numberedVideos;
       }
-    } catch (err) {
-      console.warn(`YouTube Data API fetch failed for playlist ${playlistId}:`, err);
+    } catch (_) {
+      // Data API fallback silent handling
     }
   }
 
@@ -228,8 +228,8 @@ export async function fetchYouTubePlaylistItems(playlistId, apiKey = getStoredYo
         }
       }
     }
-  } catch (rssErr) {
-    console.warn(`YouTube RSS fallback failed for playlist ${playlistId}:`, rssErr);
+  } catch (_) {
+    // RSS CORS fallback silent handling
   }
 
   return null;

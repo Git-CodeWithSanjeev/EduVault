@@ -144,17 +144,14 @@ export function VideoHub() {
         Select any class from Class 1 to 12 to explore dedicated full-length course playlists for Mathematics, Physics, Chemistry, Biology, Social Studies, English, Hindi, Accountancy, Economics, and Computer Science.
       </p>
 
-      {/* Main Category Tabs - Mobile Scrollable */}
+      {/* Main Category Tabs - Clean Wrap without Horizontal Scrollbar */}
       <div
         className="mode-tabs"
         style={{
           display: 'flex',
-          flexWrap: 'nowrap',
-          overflowX: 'auto',
+          flexWrap: 'wrap',
           gap: '8px',
-          margin: '16px 0',
-          paddingBottom: '8px',
-          WebkitOverflowScrolling: 'touch',
+          margin: '16px 0 20px',
         }}
       >
         {mainCategories.map((cat) => (

@@ -344,6 +344,109 @@ export const educationalGalleryData = [
         "duration": "Lesson"
       }
     ]
+  },
+  {
+    "id": "pw-class12-physics",
+    "playlistId": "PLu0W_9lII9aiXlHcLx-mDH1Qul38wD3aR",
+    "videoId": "ZSPZob_1TOk",
+    "title": "Class 12 Physics Complete Masterclass Series",
+    "channel": "Physics Wallah - Alakh Pandey",
+    "focusArea": "Class 11 & 12 Physics",
+    "whyHighQuality": "Comprehensive conceptual coverage of Class 12 Physics for Board exams and competitive entrance exams by Alakh Pandey Sir.",
+    "duration": "38 Videos Playlist",
+    "videoCount": 38,
+    "thumbnail": "https://img.youtube.com/vi/ZSPZob_1TOk/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "ZSPZob_1TOk", "title": "1. Electrostatics & Electric Charges One Shot", "duration": "Lesson" },
+      { "id": 2, "videoId": "ZSPZob_1TOk", "title": "2. Electrostatic Potential & Capacitance", "duration": "Lesson" },
+      { "id": 3, "videoId": "ZSPZob_1TOk", "title": "3. Current Electricity Full Concept Revision", "duration": "Lesson" },
+      { "id": 4, "videoId": "ZSPZob_1TOk", "title": "4. Moving Charges & Magnetism", "duration": "Lesson" },
+      { "id": 5, "videoId": "ZSPZob_1TOk", "title": "5. Electromagnetic Induction (EMI)", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "bharat-panchal-chemistry",
+    "playlistId": "PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
+    "videoId": "j8nAHeVKL08",
+    "title": "Class 12 Chemistry One Shot & Concept Revision",
+    "channel": "Bharat Panchal - Chemistry Guruji",
+    "focusArea": "Class 11 & 12 Chemistry",
+    "whyHighQuality": "Step-by-step organic mechanisms, physical chemistry formulas, and in-depth NCERT problem solving.",
+    "duration": "42 Videos Playlist",
+    "videoCount": 42,
+    "thumbnail": "https://img.youtube.com/vi/j8nAHeVKL08/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "j8nAHeVKL08", "title": "1. Solutions Complete Chapter One Shot", "duration": "Lesson" },
+      { "id": 2, "videoId": "j8nAHeVKL08", "title": "2. Electrochemistry Numerical Formulas & Concepts", "duration": "Lesson" },
+      { "id": 3, "videoId": "j8nAHeVKL08", "title": "3. Chemical Kinetics Full Revision", "duration": "Lesson" },
+      { "id": 4, "videoId": "j8nAHeVKL08", "title": "4. d and f Block Elements Masterclass", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "neha-maths-class12",
+    "playlistId": "PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+    "videoId": "PkZNo7MFNFg",
+    "title": "Class 12 Mathematics Complete Chapterwise Series",
+    "channel": "Neha Agrawal Mathematically Inclined",
+    "focusArea": "Class 11 & 12 Mathematics",
+    "whyHighQuality": "Shortcut tricks, calculus, vectors, 3D geometry, and algebra problem-solving by Neha Ma'am.",
+    "duration": "56 Videos Playlist",
+    "videoCount": 56,
+    "thumbnail": "https://img.youtube.com/vi/PkZNo7MFNFg/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "PkZNo7MFNFg", "title": "1. Matrices & Determinants Full Revision", "duration": "Lesson" },
+      { "id": 2, "videoId": "PkZNo7MFNFg", "title": "2. Continuity & Differentiability One Shot", "duration": "Lesson" },
+      { "id": 3, "videoId": "PkZNo7MFNFg", "title": "3. Application of Derivatives (AOD) Shortcuts", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "striver-dsa-a2z",
+    "playlistId": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+    "videoId": "z9bZufPHFLU",
+    "title": "A2Z Data Structures & Algorithms Masterclass",
+    "channel": "takeUforward (Striver)",
+    "focusArea": "Data Structures & Algorithms",
+    "whyHighQuality": "Industry standard DSA roadmap covering arrays, trees, dynamic programming, and placement prep by Striver.",
+    "duration": "85 Videos Playlist",
+    "videoCount": 85,
+    "thumbnail": "https://img.youtube.com/vi/z9bZufPHFLU/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "z9bZufPHFLU", "title": "1. Array Problems (Easy to Hard) - Striver A2Z", "duration": "Lesson" },
+      { "id": 2, "videoId": "z9bZufPHFLU", "title": "2. Binary Search Masterclass & Problem Solving", "duration": "Lesson" },
+      { "id": 3, "videoId": "z9bZufPHFLU", "title": "3. Linked List Complete Series", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "campusx-data-science",
+    "playlistId": "PLsyeobzWxl7poL9JTVyndKe62ieoN-MZ3",
+    "videoId": "vLqTf2b6GZw",
+    "title": "Python for Data Science & Artificial Intelligence",
+    "channel": "CampusX",
+    "focusArea": "Data Science & AI",
+    "whyHighQuality": "Real-world Python data analysis, NumPy, Pandas, Matplotlib, and Machine Learning algorithms.",
+    "duration": "64 Videos Playlist",
+    "videoCount": 64,
+    "thumbnail": "https://img.youtube.com/vi/vLqTf2b6GZw/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "vLqTf2b6GZw", "title": "1. Python Basics to Advanced for Data Science", "duration": "Lesson" },
+      { "id": 2, "videoId": "vLqTf2b6GZw", "title": "2. NumPy & Pandas Full Tutorial for Analytics", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "rajat-arora-commerce",
+    "playlistId": "PLfqMhTWNBTe3LtFWcvwpqTkUSlB32kJop",
+    "videoId": "yRpLlJmRo2w",
+    "title": "Class 12 Accountancy & Macroeconomics Series",
+    "channel": "Rajat Arora",
+    "focusArea": "Commerce & Economics",
+    "whyHighQuality": "Partnership accounting, company accounts, macroeconomics concepts, and Indian economic development.",
+    "duration": "48 Videos Playlist",
+    "videoCount": 48,
+    "thumbnail": "https://img.youtube.com/vi/yRpLlJmRo2w/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "yRpLlJmRo2w", "title": "1. Accounting for Partnership Firms Fundamentals", "duration": "Lesson" },
+      { "id": 2, "videoId": "yRpLlJmRo2w", "title": "2. Reconstitution of Partnership: Admission & Retirement", "duration": "Lesson" }
+    ]
   }
 ];
 

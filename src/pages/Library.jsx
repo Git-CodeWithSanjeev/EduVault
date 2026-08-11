@@ -90,7 +90,7 @@ export function Library({ saved, toggle }) {
     <section className="lib-page">
       {/* ── Hero Header ── */}
       <div className="lib-hero">
-        <p className="eyebrow">📚 RESOURCE LIBRARY</p>
+        <p className="eyebrow">RESOURCE LIBRARY</p>
         <h1 className="lib-hero-title">Free Books &amp; Study Material</h1>
         <p className="lib-hero-sub">
           {items.length}+ verified free textbooks · NCERT · OpenStax · Open License
@@ -98,7 +98,12 @@ export function Library({ saved, toggle }) {
 
         {/* Global Search */}
         <div className="lib-search-bar">
-          <span className="lib-search-icon">🔍</span>
+          <span className="lib-search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
           <input
             value={q}
             onChange={(e) => { setQ(e.target.value); if (e.target.value) setTab('search'); else setTab('class'); }}
@@ -115,10 +120,10 @@ export function Library({ saved, toggle }) {
       {!q && (
         <div className="lib-tabs">
           <button className={`lib-tab ${tab === 'class' ? 'active' : ''}`} onClick={() => setTab('class')}>
-            🏫 By Class
+            By Class
           </button>
           <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
-            📂 By Category
+            By Category
           </button>
         </div>
       )}

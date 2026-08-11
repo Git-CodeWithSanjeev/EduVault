@@ -41,7 +41,7 @@ export function VideoCarousel({ title, videosList }) {
   if (!videosList || videosList.length === 0) return null;
 
   return (
-    <div className="carousel-section" style={{ marginBottom: '32px' }}>
+    <div className="carousel-section" style={{ marginTop: '8px', marginBottom: '28px' }}>
       <div className="carousel-header">
         <h2>{title}</h2>
         <Link to="/videos" className="pdf-btn secondary" style={{ fontSize: '11px', textDecoration: 'none' }}>
@@ -149,7 +149,7 @@ export function Home({ saved, toggle, recentIds }) {
                 Explore Open Textbooks →
               </Link>
               <Link className="hero-link" style={{ background: 'var(--p)' }} to="/videos">
-                ▶ Watch Video Playlists →
+                Watch Video Playlists →
               </Link>
             </div>
             <p className="safe">
@@ -161,7 +161,10 @@ export function Home({ saved, toggle, recentIds }) {
           <div className="hero-graphic-wrap">
             {/* Top Left Floating Glass Card */}
             <div className="hero-float-card hero-float-1">
-              <span>📚</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 800 }}>200+ Open Books</div>
                 <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>NCERT & OpenStax Series</div>
@@ -176,7 +179,9 @@ export function Home({ saved, toggle, recentIds }) {
                   alt="Featured Video Course"
                 />
                 <Link to="/video/cwh-c" className="hero-play-pulse" title="Play Featured Masterclass">
-                  ▶
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
                 </Link>
               </div>
               <div style={{ marginTop: '14px' }}>
@@ -195,9 +200,9 @@ export function Home({ saved, toggle, recentIds }) {
                   CodeWithHarry · Beginner to Advanced
                 </p>
                 <div className="hero-subject-chips">
-                  <span className="hero-chip">💻 Programming</span>
-                  <span className="hero-chip">📐 Class 1-12</span>
-                  <span className="hero-chip">⚛ Physics & Math</span>
+                  <span className="hero-chip">Programming</span>
+                  <span className="hero-chip">Class 1-12</span>
+                  <span className="hero-chip">Physics & Math</span>
                 </div>
               </div>
             </div>
@@ -226,9 +231,8 @@ export function Home({ saved, toggle, recentIds }) {
       </section>
 
       {/* Featured Educational Videos Carousel */}
-      <section className="page" style={{ paddingTop: '10px', minHeight: 'auto' }}>
-        <p className="eyebrow">FREE VIDEO HUB SHOWCASE</p>
-        <VideoCarousel title="🎥 Featured Video Masterclasses & Playlists" videosList={featuredVideos} />
+      <section className="page" style={{ paddingTop: '0px', minHeight: 'auto' }}>
+        <VideoCarousel title="Featured Video Masterclasses & Playlists" videosList={featuredVideos} />
       </section>
 
       {recentItems.length > 0 && (
@@ -241,10 +245,9 @@ export function Home({ saved, toggle, recentIds }) {
 
       {/* Horizontal Scroll Book Showcase Rails */}
       <section className="page" style={{ paddingTop: '10px' }}>
-        <p className="eyebrow">FEATURED OPEN COLLECTIONS</p>
-        <BookCarousel title="📖 Official NCERT Textbooks (Classes 1–12)" itemsList={ncertFeatured} saved={saved} toggle={toggle} />
-        <BookCarousel title="🧪 OpenStax Peer-Reviewed College Series" itemsList={openStaxFeatured} saved={saved} toggle={toggle} />
-        <BookCarousel title="💻 Computer Science, Tech & Engineering Books" itemsList={techFeatured} saved={saved} toggle={toggle} />
+        <BookCarousel title="Official NCERT Textbooks (Classes 1–12)" itemsList={ncertFeatured} saved={saved} toggle={toggle} />
+        <BookCarousel title="OpenStax Peer-Reviewed College Series" itemsList={openStaxFeatured} saved={saved} toggle={toggle} />
+        <BookCarousel title="Computer Science, Tech & Engineering Books" itemsList={techFeatured} saved={saved} toggle={toggle} />
       </section>
     </>
   );

@@ -160,25 +160,52 @@ export function Shell({ children, welcomeMsg }) {
             </div>
             <nav className="mobile-drawer-nav">
               <NavLink to="/" onClick={closeDrawer}>
-                🏠 Home
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Home</span>
               </NavLink>
               <NavLink to="/library" onClick={closeDrawer}>
-                📚 Textbook Library
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  <line x1="9" y1="7" x2="15" y2="7" />
+                  <line x1="9" y1="11" x2="13" y2="11" />
+                </svg>
+                <span>Textbook Library</span>
               </NavLink>
               <NavLink to="/videos" onClick={closeDrawer}>
-                🎬 Video Courses
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="3" width="20" height="18" rx="4" />
+                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
+                </svg>
+                <span>Video Courses</span>
               </NavLink>
               <NavLink to="/categories" onClick={closeDrawer}>
-                🏷️ Categories &amp; Subjects
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+                <span>Categories &amp; Subjects</span>
               </NavLink>
               <NavLink to="/saved" onClick={closeDrawer}>
-                🔖 My Saved List
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>My Saved List</span>
               </NavLink>
 
               {isLoggedIn ? (
                 <>
                   <NavLink to="/profile" onClick={closeDrawer}>
-                    👤 Account &amp; Profile ({user.name})
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>Account &amp; Profile ({user.name})</span>
                   </NavLink>
                   <button
                     onClick={() => {
@@ -348,7 +375,7 @@ export function Shell({ children, welcomeMsg }) {
               {!searchQuery && (
                 <div>
                   <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '10px' }}>
-                    🔥 POPULAR SEARCHES
+                    POPULAR SEARCHES
                   </div>
                   <div className="global-search-chip-group">
                     {['Class 12 Physics', 'Chemistry NCERT', 'Mathematics', 'Biology', 'Python Programming', 'CodeWithHarry', 'Class 10 Science'].map((term) => (
@@ -357,7 +384,7 @@ export function Shell({ children, welcomeMsg }) {
                         className="global-search-chip"
                         onClick={() => setSearchQuery(term)}
                       >
-                        🔍 {term}
+                        {term}
                       </button>
                     ))}
                   </div>

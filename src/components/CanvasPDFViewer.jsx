@@ -318,8 +318,9 @@ const PDFPageCard = memo(function PDFPageCard({
   const drawCanvasRef = useRef(null);
   const isDrawingRef = useRef(false);
   const renderTaskRef = useRef(null);
+  const lastRenderedKeyRef = useRef('');
+  const aspectRatioRef = useRef(1.414);
   const [isRendered, setIsRendered] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState(1.414);
 
   // Sync drawing canvas overlay size with PDF canvas size
   useEffect(() => {
@@ -396,6 +397,9 @@ const PDFPageCard = memo(function PDFPageCard({
   useEffect(() => {
     if (!shouldRender || !pdfDoc || !canvasRef.current) return;
 
+    const renderKey = `${pIndex}_${scale}_${containerWidth}`;
+    if (lastRenderedKeyRef.current === renderKey && isRendered) return;
+
     let isCancelled = false;
 
     const drawPage = async () => {
@@ -411,11 +415,15 @@ const PDFPageCard = memo(function PDFPageCard({
 
         const viewport = page.getViewport({ scale: 1.0 });
         if (viewport.width > 0 && viewport.height > 0) {
-          setAspectRatio(viewport.height / viewport.width);
+          aspectRatioRef.current = viewport.height / viewport.width;
         }
 
-        const targetWidth = Math.max(containerWidth || 800, 320);
-        const baseFitScale = targetWidth / viewport.width;
+        const availableWidth = containerWidth && containerWidth > 0
+          ? containerWidth
+          : (typeof window !== 'undefined' && window.innerWidth < 768
+              ? Math.max(window.innerWidth - 24, 300)
+              : 800);
+        const baseFitScale = availableWidth / viewport.width;
         const finalScale = baseFitScale * scale;
         const responsiveViewport = page.getViewport({ scale: finalScale });
 
@@ -455,6 +463,7 @@ const PDFPageCard = memo(function PDFPageCard({
         context.clearRect(0, 0, renderWidth, renderHeight);
         context.drawImage(offscreen, 0, 0);
 
+        lastRenderedKeyRef.current = renderKey;
         setIsRendered(true);
       } catch (err) {
         if (err?.name !== 'RenderingCancelledException') {
@@ -475,15 +484,20 @@ const PDFPageCard = memo(function PDFPageCard({
     };
   }, [shouldRender, pdfDoc, pIndex, scale, containerWidth]);
 
-  const targetW = Math.max(containerWidth || 800, 320) * scale;
-  const minCardHeight = Math.floor(targetW * aspectRatio);
+  const availableW = containerWidth && containerWidth > 0
+    ? containerWidth
+    : (typeof window !== 'undefined' && window.innerWidth < 768
+        ? Math.max(window.innerWidth - 24, 300)
+        : 800);
+  const targetW = availableW * scale;
+  const minCardHeight = Math.floor(targetW * aspectRatioRef.current);
 
   return (
     <div
       id={`pdf-page-${pIndex}`}
       data-page-num={pIndex}
       ref={(el) => registerPageRef(pIndex, el)}
-      className={`pdf-page-card ${isActive ? 'active-page' : ''}`}
+      className="pdf-page-card"
       style={{ minHeight: `${minCardHeight}px` }}
     >
       <div className={`pdf-canvas-container ${activeTool !== 'cursor' ? 'annotating' : ''}`}>
@@ -777,40 +791,102 @@ const pdfDocumentCache = new Map();
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  // Mobile Touch Gestures
-  const handleTouchStart = (e) => {
-    if (e.touches.length === 2) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      touchStartDistRef.current = dist;
-      touchStartScaleRef.current = scale;
-    } else if (e.touches.length === 1) {
-      const now = Date.now();
-      if (now - lastTapTimeRef.current < 300) {
+  // Silky Smooth 60fps Midpoint-Anchored Pinch-in / Pinch-out Touch Zoom System
+  useEffect(() => {
+    const stageEl = rootRef.current;
+    if (!stageEl) return;
+
+    let initialDist = 0;
+    let initialScale = 1.0;
+    let currentFactor = 1.0;
+    let isPinching = false;
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
         if (e.cancelable) e.preventDefault();
-        setScale((s) => (s > 1.2 ? 1.0 : 1.8));
+        isPinching = true;
+        initialDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = scaleRef.current;
+        currentFactor = 1.0;
+
+        if (scrollContainerRef.current) {
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          const rect = scrollContainerRef.current.getBoundingClientRect();
+          scrollContainerRef.current.style.transformOrigin = `${midX - rect.left}px ${midY - rect.top}px`;
+          scrollContainerRef.current.style.transition = 'none';
+          scrollContainerRef.current.style.willChange = 'transform';
+        }
       }
-      lastTapTimeRef.current = now;
-    }
-  };
+    };
 
-  const handleTouchMove = (e) => {
-    if (e.touches.length === 2 && touchStartDistRef.current) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const factor = dist / touchStartDistRef.current;
-      const newScale = Math.min(Math.max(touchStartScaleRef.current * factor, 0.7), 2.5);
-      setScale(newScale);
-    }
-  };
+    const onTouchMove = (e) => {
+      if (e.touches.length === 2 && initialDist > 0 && isPinching) {
+        if (e.cancelable) e.preventDefault();
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        currentFactor = dist / initialDist;
+        const targetScale = Math.min(Math.max(initialScale * currentFactor, 0.5), 3.5);
 
-  const handleTouchEnd = () => {
-    touchStartDistRef.current = null;
-  };
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.style.transform = `scale(${targetScale / initialScale})`;
+        }
+      }
+    };
+
+    const onTouchEnd = (e) => {
+      if (isPinching && e.touches.length < 2) {
+        isPinching = false;
+        const finalScale = Math.min(Math.max(initialScale * currentFactor, 0.6), 3.0);
+
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.style.willChange = 'auto';
+          scrollContainerRef.current.style.transition = 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)';
+          scrollContainerRef.current.style.transform = 'scale(1)';
+
+          setTimeout(() => {
+            if (scrollContainerRef.current) {
+              scrollContainerRef.current.style.transition = 'none';
+              scrollContainerRef.current.style.transform = 'none';
+            }
+          }, 150);
+        }
+
+        if (initialDist > 0 && Math.abs(currentFactor - 1.0) > 0.03) {
+          setScale(finalScale);
+        }
+        initialDist = 0;
+        currentFactor = 1.0;
+      }
+    };
+
+    const onWheel = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.cancelable) e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.15 : -0.15;
+        setScale((prev) => Math.min(Math.max(prev + delta, 0.6), 3.0));
+      }
+    };
+
+    stageEl.addEventListener('touchstart', onTouchStart, { passive: false });
+    stageEl.addEventListener('touchmove', onTouchMove, { passive: false });
+    stageEl.addEventListener('touchend', onTouchEnd, { passive: false });
+    stageEl.addEventListener('touchcancel', onTouchEnd, { passive: false });
+    stageEl.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => {
+      stageEl.removeEventListener('touchstart', onTouchStart);
+      stageEl.removeEventListener('touchmove', onTouchMove);
+      stageEl.removeEventListener('touchend', onTouchEnd);
+      stageEl.removeEventListener('touchcancel', onTouchEnd);
+      stageEl.removeEventListener('wheel', onWheel);
+    };
+  }, []);
 
   // Keyboard Shortcuts System
   useEffect(() => {
@@ -969,19 +1045,7 @@ const pdfDocumentCache = new Map();
         </div>
       )}
 
-      {/* MOBILE FLOATING CONTROLS TOOLBAR */}
-      {isMobile && status === 'ready' && (
-        <div className="mobile-pdf-toolbar">
-          <button onClick={prevPage} disabled={pageNum <= 1} aria-label="Previous Page">◀</button>
-          <span className="mobile-pdf-page-indicator">{pageNum} / {numPages}</span>
-          <button onClick={nextPage} disabled={pageNum >= numPages} aria-label="Next Page">▶</button>
-          <span style={{ opacity: 0.3, margin: '0 2px' }}>|</span>
-          <button onClick={zoomOut} aria-label="Zoom Out">-</button>
-          <span style={{ fontSize: '11px', fontWeight: 700 }}>{Math.round(scale * 100)}%</span>
-          <button onClick={zoomIn} aria-label="Zoom In">+</button>
-          <DownloadPDFButton url={url} filename={title + '.pdf'} label="📥" className="pdf-btn" />
-        </div>
-      )}
+
 
       {/* PDF STAGE VIEWPORT — SCROLLABLE FULL-WIDTH CONTAINER */}
       <div className="pdf-viewer-stage">
@@ -1005,12 +1069,9 @@ const pdfDocumentCache = new Map();
           <div
             className="pdf-vertical-scroll-container"
             ref={scrollContainerRef}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
           >
             {Array.from({ length: numPages }, (_, i) => i + 1).map((pIndex) => {
-              const bufferWindow = isMobile ? 2 : 3;
+              const bufferWindow = 15;
               const shouldRender = Math.abs(pIndex - pageNum) <= bufferWindow;
               return (
                 <PDFPageCard

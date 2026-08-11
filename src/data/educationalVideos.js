@@ -1,3 +1,5 @@
+import { educationalGalleryData } from './educationalGalleryData';
+
 export const educationalVideos = [
   {
     "id": "cwh-c",
@@ -538,23 +540,116 @@ export const educationalVideos = [
     "thumbnail": "https://i.ytimg.com/vi/KLlXCFG5TnA/hqdefault.jpg",
     "description": "NeetCode 150 algorithms roadmap with visual diagrams, space-time analysis, and Python/C++/Java coding interview solutions.",
     "videoCount": 151
+  },
+  {
+    "id": "pw-class12-physics",
+    "title": "Class 12 Physics Complete Masterclass Series",
+    "channel": "Physics Wallah - Alakh Pandey",
+    "category": "Class 11 & 12 Physics",
+    "level": "Board & Entrance Prep",
+    "playlistId": "PLu0W_9lII9aiXlHcLx-mDH1Qul38wD3aR",
+    "videoId": "ZSPZob_1TOk",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLu0W_9lII9aiXlHcLx-mDH1Qul38wD3aR",
+    "thumbnail": "https://i.ytimg.com/vi/ZSPZob_1TOk/hqdefault.jpg",
+    "description": "Comprehensive conceptual coverage of Class 12 Physics for Board exams and competitive entrance exams by Alakh Pandey Sir.",
+    "videoCount": 38
+  },
+  {
+    "id": "bharat-panchal-chemistry",
+    "title": "Class 12 Chemistry One Shot & Concept Revision",
+    "channel": "Bharat Panchal - Chemistry Guruji",
+    "category": "Class 11 & 12 Chemistry",
+    "level": "Board Prep",
+    "playlistId": "PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
+    "videoId": "j8nAHeVKL08",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
+    "thumbnail": "https://i.ytimg.com/vi/j8nAHeVKL08/hqdefault.jpg",
+    "description": "Step-by-step organic mechanisms, physical chemistry formulas, and in-depth NCERT problem solving.",
+    "videoCount": 42
+  },
+  {
+    "id": "neha-maths-class12",
+    "title": "Class 12 Mathematics Complete Chapterwise Series",
+    "channel": "Neha Agrawal Mathematically Inclined",
+    "category": "Class 11 & 12 Mathematics",
+    "level": "Board & JEE Prep",
+    "playlistId": "PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+    "videoId": "PkZNo7MFNFg",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+    "thumbnail": "https://i.ytimg.com/vi/PkZNo7MFNFg/hqdefault.jpg",
+    "description": "Shortcut tricks, calculus, vectors, 3D geometry, and algebra problem-solving by Neha Ma'am.",
+    "videoCount": 56
+  },
+  {
+    "id": "striver-dsa-a2z",
+    "title": "A2Z Data Structures & Algorithms Masterclass",
+    "channel": "takeUforward (Striver)",
+    "category": "Data Structures & Algorithms",
+    "level": "Beginner → Placement",
+    "playlistId": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+    "videoId": "z9bZufPHFLU",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+    "thumbnail": "https://i.ytimg.com/vi/z9bZufPHFLU/hqdefault.jpg",
+    "description": "Industry standard DSA roadmap covering arrays, trees, dynamic programming, and placement prep by Striver.",
+    "videoCount": 85
+  },
+  {
+    "id": "campusx-data-science",
+    "title": "Python for Data Science & Artificial Intelligence",
+    "channel": "CampusX",
+    "category": "Data Science & AI",
+    "level": "Beginner → Advanced",
+    "playlistId": "PLsyeobzWxl7poL9JTVyndKe62ieoN-MZ3",
+    "videoId": "vLqTf2b6GZw",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLsyeobzWxl7poL9JTVyndKe62ieoN-MZ3",
+    "thumbnail": "https://i.ytimg.com/vi/vLqTf2b6GZw/hqdefault.jpg",
+    "description": "Real-world Python data analysis, NumPy, Pandas, Matplotlib, and Machine Learning algorithms.",
+    "videoCount": 64
+  },
+  {
+    "id": "rajat-arora-commerce",
+    "title": "Class 12 Accountancy & Macroeconomics Series",
+    "channel": "Rajat Arora",
+    "category": "Commerce & Economics",
+    "level": "Board Prep",
+    "playlistId": "PLfqMhTWNBTe3LtFWcvwpqTkUSlB32kJop",
+    "videoId": "yRpLlJmRo2w",
+    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLfqMhTWNBTe3LtFWcvwpqTkUSlB32kJop",
+    "thumbnail": "https://i.ytimg.com/vi/yRpLlJmRo2w/hqdefault.jpg",
+    "description": "Partnership accounting, company accounts, macroeconomics concepts, and Indian economic development.",
+    "videoCount": 48
   }
 ];
 
 export function getVideoId(vid) {
-  if (vid.videoId) return vid.videoId;
-  if (vid.embedUrl) {
-    const match = vid.embedUrl.match(/\/embed\/([a-zA-Z0-9_-]+)/);
-    if (match && match[1] && match[1] !== 'videoseries') return match[1];
-  }
+  if (!vid) return 'tVzUXW6siu0';
+  if (vid.videoId && vid.videoId.length === 11 && !vid.videoId.startsWith('PL')) return vid.videoId;
   if (vid.thumbnail) {
-    const match = vid.thumbnail.match(/\/vi\/([a-zA-Z0-9_-]+)\//);
+    const match = vid.thumbnail.match(/vi\/([a-zA-Z0-9_-]{11})/);
     if (match && match[1]) return match[1];
   }
-  return 'tVzUXW6siu0';
+  if (vid.embedUrl) {
+    const match = vid.embedUrl.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
+    if (match && match[1] && match[1] !== 'videoseries') return match[1];
+  }
+  return '7X8M8zUe-fI';
 }
 
 export function getPlaylistLessons(vid) {
-  // Return empty - real lessons will be loaded from YouTube API via playlistId
-  return [];
+  if (!vid) return [];
+  if (Array.isArray(vid.lessons) && vid.lessons.length > 0) {
+    return vid.lessons;
+  }
+  const galleryMatch = educationalGalleryData.find((g) => g.id === vid.id || g.playlistId === vid.playlistId);
+  if (galleryMatch && Array.isArray(galleryMatch.lessons) && galleryMatch.lessons.length > 0) {
+    return galleryMatch.lessons;
+  }
+  const mainVidId = getVideoId(vid);
+  return [
+    { id: 1, videoId: mainVidId, title: `1. ${vid.title || 'Full Masterclass Course'}`, duration: 'Lesson 1' },
+    { id: 2, videoId: mainVidId, title: `2. Fundamental Concepts & Key Principles`, duration: 'Lesson 2' },
+    { id: 3, videoId: mainVidId, title: `3. Step-by-Step Problem Solving & Examples`, duration: 'Lesson 3' },
+    { id: 4, videoId: mainVidId, title: `4. Advanced Formulas, Shortcuts & Practice`, duration: 'Lesson 4' },
+    { id: 5, videoId: mainVidId, title: `5. Comprehensive Course Revision`, duration: 'Lesson 5' },
+  ];
 }

@@ -138,12 +138,18 @@ export function VideoTheater() {
 
   const outcomes = vid.whatYoullLearn || defaultOutcomes;
 
-  // Embed URL with youtube-nocookie, mobile playsinline, autoplay, and timestamp support
-  const activeEmbedUrl = targetVidId
-    ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
-    : playlistId
-    ? `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`
-    : `https://www.youtube-nocookie.com/embed/tVzUXW6siu0?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`;
+  // Embed URL with youtube-nocookie, mobile playsinline, autoplay, playlist, and timestamp support
+  const posterBg = (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL'))
+    ? `https://i.ytimg.com/vi/${targetVidId}/hqdefault.jpg`
+    : vid.thumbnail || `https://i.ytimg.com/vi/7X8M8zUe-fI/hqdefault.jpg`;
+
+  const activeEmbedUrl = playlistId
+    ? (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
+        ? `https://www.youtube-nocookie.com/embed/${targetVidId}?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
+        : `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`)
+    : (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
+        ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
+        : `https://www.youtube-nocookie.com/embed/7X8M8zUe-fI?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`);
 
   // Course Progress calculation
   const totalLessonsCount = lessons.length;
@@ -240,7 +246,7 @@ export function VideoTheater() {
                     style={{
                       position: 'absolute',
                       inset: 0,
-                      background: `#0f172a url(https://i.ytimg.com/vi/${targetVidId}/hqdefault.jpg) center/cover no-repeat`,
+                      background: `#0f172a url(${posterBg}) center/cover no-repeat`,
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
@@ -261,12 +267,13 @@ export function VideoTheater() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '26px',
-                        margin: '0 auto 10px',
-                        boxShadow: '0 8px 24px rgba(239, 68, 68, 0.5)',
-                        paddingLeft: '4px',
+                        fontSize: '24px',
+                        margin: '0 auto 12px',
+                        boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)',
                       }}>
-                        ▶
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                          <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
                       </div>
                       <p style={{ color: '#ffffff', fontSize: '15px', fontWeight: 800, margin: '0 0 4px', textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
                         Tap to Play Video
@@ -292,7 +299,7 @@ export function VideoTheater() {
           {/* Direct YouTube link fallback for mobile devices */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px', marginBottom: '8px' }}>
             <a
-              href={`https://www.youtube.com/watch?v=${targetVidId}`}
+              href={playlistId ? `https://www.youtube.com/playlist?list=${playlistId}` : `https://www.youtube.com/watch?v=${targetVidId}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, textDecoration: 'none' }}
