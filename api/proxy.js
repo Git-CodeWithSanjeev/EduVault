@@ -32,15 +32,17 @@ export default async function handler(req, res) {
   try {
     const fetchPDF = (targetUrl, attempt = 1) => {
       return new Promise((resolve, reject) => {
-        const lib = targetUrl.startsWith('https') ? https : http;
+        const isHttps = targetUrl.startsWith('https');
+        const lib = isHttps ? https : http;
         const parsed = new URL(targetUrl);
 
         const options = {
           hostname: parsed.hostname,
-          port: parsed.port || (targetUrl.startsWith('https') ? 443 : 80),
+          port: parsed.port || (isHttps ? 443 : 80),
           path: parsed.pathname + parsed.search,
           method: 'GET',
           timeout: 20000,
+          agent: isHttps ? new https.Agent({ rejectUnauthorized: false, keepAlive: false }) : undefined,
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
             'Accept': 'application/pdf,*/*;q=0.8',

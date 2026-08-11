@@ -1,6 +1,46 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 
-const PROXY_BASE = import.meta.env.VITE_PROXY_URL || (import.meta.env.DEV ? 'http://localhost:3001/pdf/proxy' : '/api/proxy');
+// Global prototype patch to ensure all 2D canvas contexts default to willReadFrequently: true
+if (typeof window !== 'undefined') {
+  const patchCanvasContext = (proto) => {
+    if (!proto || !proto.getContext || proto._willReadFrequentlyPatched) return;
+    const originalGetContext = proto.getContext;
+    proto.getContext = function (type, attributes) {
+      if (type === '2d') {
+        attributes = Object.assign({ willReadFrequently: true }, attributes);
+      }
+      return originalGetContext.call(this, type, attributes);
+    };
+    proto._willReadFrequentlyPatched = true;
+  };
+
+  patchCanvasContext(HTMLCanvasElement.prototype);
+  if (typeof OffscreenCanvas !== 'undefined') {
+    patchCanvasContext(OffscreenCanvas.prototype);
+  }
+
+  // Filter out noisy non-critical PDF worker warning logs
+  const origWarn = console.warn;
+  const origLog = console.log;
+  const isPdfWorkerSpam = (msg) => {
+    if (typeof msg !== 'string') return false;
+    return (
+      msg.includes('Unknown colorspace') ||
+      msg.includes('Unsupported header type') ||
+      msg.includes('fetchStandardFontData')
+    );
+  };
+  console.warn = function (...args) {
+    if (isPdfWorkerSpam(args[0])) return;
+    origWarn.apply(console, args);
+  };
+  console.log = function (...args) {
+    if (isPdfWorkerSpam(args[0])) return;
+    origLog.apply(console, args);
+  };
+}
+
+const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/proxy';
 
 const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const WORKER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -8,7 +48,7 @@ const WORKER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.w
 /** Build backend proxy URL */
 export function proxyUrl(originalUrl) {
   if (!originalUrl) return '';
-  if (originalUrl.startsWith('http://localhost:3001') || originalUrl.startsWith('/api/proxy')) return originalUrl;
+  if (originalUrl.startsWith('/api/proxy') || originalUrl.startsWith('/pdf/proxy')) return originalUrl;
   return `${PROXY_BASE}?url=${encodeURIComponent(originalUrl)}`;
 }
 
@@ -16,13 +56,17 @@ export function proxyUrl(originalUrl) {
 function loadPdfJsScript() {
   return new Promise((resolve, reject) => {
     if (window.pdfjsLib) {
+      window.pdfjsLib.verbosity = 0;
       resolve(window.pdfjsLib);
       return;
     }
 
     const existing = document.getElementById('pdfjs-script');
     if (existing) {
-      existing.addEventListener('load', () => resolve(window.pdfjsLib));
+      existing.addEventListener('load', () => {
+        if (window.pdfjsLib) window.pdfjsLib.verbosity = 0;
+        resolve(window.pdfjsLib);
+      });
       existing.addEventListener('error', reject);
       return;
     }
@@ -33,6 +77,7 @@ function loadPdfJsScript() {
     script.onload = () => {
       if (window.pdfjsLib) {
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_CDN;
+        window.pdfjsLib.verbosity = 0;
         resolve(window.pdfjsLib);
       } else {
         reject(new Error('PDF.js failed to initialize'));
@@ -231,7 +276,32 @@ function KeyboardShortcutsModal({ isOpen, onClose }) {
   );
 }
 
-/* ─── Memoized PDF Page Card Component with Interactive Drawing Overlay ─────── */
+/* ─── PDF.js Canvas Factory for smooth rendering without getImageData warnings ─── */
+const pdfCanvasFactory = {
+  create(width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    return { canvas, context };
+  },
+  reset(canvasAndContext, width, height) {
+    if (canvasAndContext?.canvas) {
+      canvasAndContext.canvas.width = width;
+      canvasAndContext.canvas.height = height;
+    }
+  },
+  destroy(canvasAndContext) {
+    if (canvasAndContext?.canvas) {
+      canvasAndContext.canvas.width = 0;
+      canvasAndContext.canvas.height = 0;
+      canvasAndContext.canvas = null;
+      canvasAndContext.context = null;
+    }
+  },
+};
+
+/* ─── Memoized PDF Page Card Component with Double-Buffered Offscreen Rendering ─────── */
 const PDFPageCard = memo(function PDFPageCard({
   pIndex,
   numPages,
@@ -249,6 +319,7 @@ const PDFPageCard = memo(function PDFPageCard({
   const isDrawingRef = useRef(false);
   const renderTaskRef = useRef(null);
   const [isRendered, setIsRendered] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(1.414);
 
   // Sync drawing canvas overlay size with PDF canvas size
   useEffect(() => {
@@ -329,7 +400,9 @@ const PDFPageCard = memo(function PDFPageCard({
 
     const drawPage = async () => {
       if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
+        try {
+          renderTaskRef.current.cancel();
+        } catch (_) {}
       }
 
       try {
@@ -337,30 +410,52 @@ const PDFPageCard = memo(function PDFPageCard({
         if (isCancelled || !canvasRef.current) return;
 
         const viewport = page.getViewport({ scale: 1.0 });
-        const targetWidth = Math.max(containerWidth || 800, 320);
+        if (viewport.width > 0 && viewport.height > 0) {
+          setAspectRatio(viewport.height / viewport.width);
+        }
 
+        const targetWidth = Math.max(containerWidth || 800, 320);
         const baseFitScale = targetWidth / viewport.width;
         const finalScale = baseFitScale * scale;
         const responsiveViewport = page.getViewport({ scale: finalScale });
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const canvas = canvasRef.current;
-        canvas.width = Math.floor(responsiveViewport.width * dpr);
-        canvas.height = Math.floor(responsiveViewport.height * dpr);
-        canvas.style.width = `${Math.floor(responsiveViewport.width)}px`;
-        canvas.style.height = `${Math.floor(responsiveViewport.height)}px`;
+        const renderWidth = Math.floor(responsiveViewport.width * dpr);
+        const renderHeight = Math.floor(responsiveViewport.height * dpr);
+        const cssWidth = `${Math.floor(responsiveViewport.width)}px`;
+        const cssHeight = `${Math.floor(responsiveViewport.height)}px`;
 
-        const context = canvas.getContext('2d', { willReadFrequently: true });
-        context.scale(dpr, dpr);
+        // Offscreen canvas for flicker-free double buffering
+        const offscreen = document.createElement('canvas');
+        offscreen.width = renderWidth;
+        offscreen.height = renderHeight;
+        const offscreenCtx = offscreen.getContext('2d', { willReadFrequently: true });
+        offscreenCtx.scale(dpr, dpr);
 
         const renderTask = page.render({
-          canvasContext: context,
+          canvasContext: offscreenCtx,
           viewport: responsiveViewport,
+          canvasFactory: pdfCanvasFactory,
         });
 
         renderTaskRef.current = renderTask;
         await renderTask.promise;
-        if (!isCancelled) setIsRendered(true);
+
+        if (isCancelled || !canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+        if (canvas.width !== renderWidth || canvas.height !== renderHeight) {
+          canvas.width = renderWidth;
+          canvas.height = renderHeight;
+        }
+        canvas.style.width = cssWidth;
+        canvas.style.height = cssHeight;
+
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        context.clearRect(0, 0, renderWidth, renderHeight);
+        context.drawImage(offscreen, 0, 0);
+
+        setIsRendered(true);
       } catch (err) {
         if (err?.name !== 'RenderingCancelledException') {
           console.error(`Page ${pIndex} render error:`, err);
@@ -373,10 +468,15 @@ const PDFPageCard = memo(function PDFPageCard({
     return () => {
       isCancelled = true;
       if (renderTaskRef.current) {
-        renderTaskRef.current.cancel();
+        try {
+          renderTaskRef.current.cancel();
+        } catch (_) {}
       }
     };
   }, [shouldRender, pdfDoc, pIndex, scale, containerWidth]);
+
+  const targetW = Math.max(containerWidth || 800, 320) * scale;
+  const minCardHeight = Math.floor(targetW * aspectRatio);
 
   return (
     <div
@@ -384,6 +484,7 @@ const PDFPageCard = memo(function PDFPageCard({
       data-page-num={pIndex}
       ref={(el) => registerPageRef(pIndex, el)}
       className={`pdf-page-card ${isActive ? 'active-page' : ''}`}
+      style={{ minHeight: `${minCardHeight}px` }}
     >
       <div className={`pdf-canvas-container ${activeTool !== 'cursor' ? 'annotating' : ''}`}>
         {!isRendered && (
@@ -451,56 +552,107 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     setPageNum(1);
     setPdfDoc(null);
 
-    loadPdfJsScript()
-      .then((pdfjs) => {
+    const loadDocument = async () => {
+      try {
+        const pdfjs = await loadPdfJsScript();
         if (isCancelled) return;
-        return pdfjs.getDocument({
-          url: proxyUrl(url),
-          cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+
+        const pdfParams = {
+          cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
           cMapPacked: true,
-        }).promise;
-      })
-      .then((doc) => {
-        if (isCancelled || !doc) return;
-        setPdfDoc(doc);
-        setNumPages(doc.numPages);
-        setStatus('ready');
-      })
-      .catch(() => {
-        if (isCancelled) return;
-        loadPdfJsScript()
-          .then((pdfjs) => {
-            return pdfjs.getDocument({
-              url: url,
-              cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-              cMapPacked: true,
-            }).promise;
-          })
-          .then((doc) => {
-            if (isCancelled || !doc) return;
+          standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/',
+          verbosity: 0,
+        };
+
+        const tryLoadUrl = async (fetchUrl) => {
+          const res = await fetch(fetchUrl);
+          if (!res.ok) throw new Error(`HTTP status ${res.status}`);
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('text/html')) {
+            throw new Error('Response is HTML page, expected PDF binary');
+          }
+          const arrayBuffer = await res.arrayBuffer();
+          const header = new TextDecoder().decode(arrayBuffer.slice(0, 5));
+          if (!header.startsWith('%PDF-')) {
+            throw new Error('Invalid PDF magic header');
+          }
+          return await pdfjs.getDocument({ ...pdfParams, data: new Uint8Array(arrayBuffer) }).promise;
+        };
+
+        // Attempt 1: Vite dev proxy or Server /api/proxy
+        try {
+          const doc = await tryLoadUrl(proxyUrl(url));
+          if (!isCancelled && doc) {
             setPdfDoc(doc);
             setNumPages(doc.numPages);
             setStatus('ready');
-          })
-          .catch((directErr) => {
-            console.error('PDF render error:', directErr);
-            if (!isCancelled) setStatus('error');
-          });
-      });
+            return;
+          }
+        } catch (e1) {
+          console.warn('Primary proxy fetch failed:', e1?.message);
+        }
+
+        // Attempt 2: Local Express server fallback (port 3001)
+        try {
+          const doc = await tryLoadUrl(`http://localhost:3001/pdf/proxy?url=${encodeURIComponent(url)}`);
+          if (!isCancelled && doc) {
+            setPdfDoc(doc);
+            setNumPages(doc.numPages);
+            setStatus('ready');
+            return;
+          }
+        } catch (e2) {
+          console.warn('Local server 3001 fallback failed:', e2?.message);
+        }
+
+        // Attempt 3: AllOrigins CORS proxy fallback
+        try {
+          const doc = await tryLoadUrl(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+          if (!isCancelled && doc) {
+            setPdfDoc(doc);
+            setNumPages(doc.numPages);
+            setStatus('ready');
+            return;
+          }
+        } catch (e3) {
+          console.warn('AllOrigins fallback failed:', e3?.message);
+        }
+
+        // Attempt 4: Direct getDocument
+        const doc = await pdfjs.getDocument({ ...pdfParams, url: url }).promise;
+        if (!isCancelled && doc) {
+          setPdfDoc(doc);
+          setNumPages(doc.numPages);
+          setStatus('ready');
+        }
+      } catch (err) {
+        console.error('PDF load error:', err);
+        if (!isCancelled) setStatus('error');
+      }
+    };
+
+    loadDocument();
 
     return () => {
       isCancelled = true;
     };
   }, [url]);
 
-  // Real-Time Container Width Observer utilizing full available width
+  const pageNumRef = useRef(pageNum);
+  useEffect(() => {
+    pageNumRef.current = pageNum;
+  }, [pageNum]);
+
+  // Real-Time Container Width Observer with width thresholding
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
+    let prevW = 0;
     const updateWidth = (measuredWidth) => {
-      const w = measuredWidth - (isMobile ? 24 : 48);
-      if (w > 300) {
-        setContainerWidth(Math.floor(w));
+      const w = Math.floor(measuredWidth - (isMobile ? 24 : 48));
+      if (w > 300 && Math.abs(w - prevW) >= 8) {
+        prevW = w;
+        setContainerWidth(w);
       }
     };
 
@@ -525,9 +677,9 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
             const pIndex = Number(entry.target.getAttribute('data-page-num'));
-            if (pIndex && pIndex !== pageNum) {
+            if (pIndex && pIndex !== pageNumRef.current) {
               setPageNum(pIndex);
             }
           }
@@ -535,7 +687,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
       },
       {
         root: scrollContainerRef.current,
-        threshold: [0.35, 0.7],
+        threshold: [0.3, 0.6],
       }
     );
 
@@ -544,7 +696,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     });
 
     return () => observer.disconnect();
-  }, [status, numPages, pageNum]);
+  }, [status, numPages]);
 
   // Scroll to Specific Page
   const scrollToPage = (p) => {
@@ -599,7 +751,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     } else if (e.touches.length === 1) {
       const now = Date.now();
       if (now - lastTapTimeRef.current < 300) {
-        e.preventDefault();
+        if (e.cancelable) e.preventDefault();
         setScale((s) => (s > 1.2 ? 1.0 : 1.8));
       }
       lastTapTimeRef.current = now;
@@ -826,7 +978,8 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
             onTouchEnd={handleTouchEnd}
           >
             {Array.from({ length: numPages }, (_, i) => i + 1).map((pIndex) => {
-              const shouldRender = Math.abs(pIndex - pageNum) <= 1;
+              const bufferWindow = isMobile ? 2 : 3;
+              const shouldRender = Math.abs(pIndex - pageNum) <= bufferWindow;
               return (
                 <PDFPageCard
                   key={pIndex}

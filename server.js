@@ -194,7 +194,7 @@ function fetchUrl(url, attempt = 1) {
       path:     parsed.pathname + parsed.search,
       method:   'GET',
       timeout:  25000,
-      agent:    new lib.Agent({ keepAlive: false }),
+      agent:    url.startsWith('https') ? new https.Agent({ rejectUnauthorized: false, keepAlive: false }) : new http.Agent({ keepAlive: false }),
       headers: {
         'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
         'Accept':          'application/pdf,*/*;q=0.8',

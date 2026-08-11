@@ -157,7 +157,7 @@ export function VideoCard({ video }) {
         </h3>
 
         {initialObj.whyHighQuality && (
-          <p className="video-card-reason" style={{ webkitLineClamp: 2, display: '-webkit-box', webkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p className="video-card-reason" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             <strong>Overview:</strong> {initialObj.whyHighQuality}
           </p>
         )}

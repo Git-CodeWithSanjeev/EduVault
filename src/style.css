@@ -2130,7 +2130,6 @@ footer a {
 .pdf-canvas {
   display: block;
   max-width: 100%;
-  height: auto !important;
   background: #ffffff;
 }
 
@@ -5776,7 +5775,6 @@ nav a,
   display: block;
   border-radius: 6px;
   max-width: 100%;
-  height: auto !important;
 }
 
 .pdf-page-placeholder {
