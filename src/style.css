@@ -51,6 +51,20 @@ textarea {
 
 button {
     cursor: pointer;
+    font-family: inherit;
+    border: none;
+    outline: none;
+    user-select: none;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:active,
+.btn:active,
+.action-btn:active,
+.outline:active,
+.hero-link:active,
+.load-more-btn:active {
+    transform: scale(0.97) translateY(0px) !important;
 }
 
 a {
@@ -127,24 +141,28 @@ nav a.active {
 
 .outline {
     border: 1.5px solid rgba(13, 148, 136, 0.35);
-    border-radius: 9px;
-    padding: 8px 16px;
-    color: var(--p);
-    font-size: 12px;
+    border-radius: 10px;
+    padding: 8px 18px;
+    color: var(--p-dark);
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.2s ease;
-    background: rgba(13, 148, 136, 0.05);
-    letter-spacing: 0.1px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    background: rgba(13, 148, 136, 0.06);
+    letter-spacing: 0.2px;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .outline:hover {
-    background: var(--p);
-    color: #fff;
-    border-color: var(--p);
-    box-shadow: 0 4px 14px var(--p-glow);
-    transform: translateY(-1px);
+    background: var(--p-gradient);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 6px 20px var(--p-glow);
+    transform: translateY(-2px);
 }
 
 .hero {
