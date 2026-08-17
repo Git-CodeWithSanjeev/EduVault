@@ -13,6 +13,7 @@
   "dependencies": {
     "@vitejs/plugin-react": "latest",
     "bcryptjs": "^3.0.3",
+    "ioredis": "^6.0.0",
     "mongoose": "^9.9.2",
     "react": "latest",
     "react-dom": "latest",

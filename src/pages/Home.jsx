@@ -93,17 +93,6 @@ export function Home({ saved, toggle, recentIds }) {
         <div className="hero-container">
           {/* Left Text Content Column */}
           <div>
-            {isLoggedIn && user && (
-              <div className="user-welcome-banner" style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: '12px', padding: '12px 16px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--ink)' }}>Welcome, {user.name}!</h4>
-                  <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--muted)' }}>
-                    User ID: <code style={{ fontFamily: 'monospace', fontSize: '11px', background: 'var(--bg2)', padding: '2px 6px', borderRadius: '4px' }}>{user.id}</code> · Email: <strong>{user.email}</strong>
-                  </p>
-                </div>
-                <span className="verification-badge verified">✓ Verified Account</span>
-              </div>
-            )}
             <p className="eyebrow">OPEN EDUCATION & FREE VIDEO HUB</p>
 
             <h1 style={{ fontSize: 'clamp(36px, 4.5vw, 54px)', lineHeight: 1.15 }}>

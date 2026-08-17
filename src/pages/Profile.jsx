@@ -19,7 +19,37 @@ export function Profile() {
   const [profileLoading, setProfileLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  const AVATAR_OPTIONS = ['🎓', '📚', '🚀', '💻', '🔬', '🎨', '🌟', '🦉', '⚛️', '🏆'];
+  const AVATAR_OPTIONS = [
+    // ── Ultra-Clean Minimal 3D Student Avatars ──
+    { id: '3d-scholar-boy', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Aiden&backgroundColor=b6e3f4', label: 'Scholar Boy' },
+    { id: '3d-scholar-girl', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Sophia&backgroundColor=ffd5dc', label: 'Scholar Girl' },
+    { id: '3d-coder', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Alex&backgroundColor=c0aede', label: 'Developer' },
+    { id: '3d-scientist', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Emma&backgroundColor=d1d4f9', label: 'Scientist' },
+    { id: '3d-thinker', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Oliver&backgroundColor=ffdfbf', label: 'Thinker' },
+    { id: '3d-creative', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Maya&backgroundColor=ffd5dc', label: 'Creative Designer' },
+    { id: '3d-ai-bot', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=EduVaultBot&backgroundColor=b6e3f4', label: 'AI Tutor' },
+    { id: '3d-cyber-bot', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Quantum&backgroundColor=c0aede', label: 'Cyber Bot' },
+    { id: '3d-adventurer-1', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Lucas&backgroundColor=b6e3f4', label: 'Explorer' },
+    { id: '3d-adventurer-2', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Chloe&backgroundColor=ffd5dc', label: 'Researcher' },
+    { id: '3d-lorelei-1', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Leo&backgroundColor=ffdfbf', label: 'High Achiever' },
+    { id: '3d-lorelei-2', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Zoe&backgroundColor=d1d4f9', label: 'Medic Scholar' },
+    { id: '3d-lorelei-3', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Felix&backgroundColor=c0aede', label: 'Professor' },
+    { id: '3d-lorelei-4', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Luna&backgroundColor=b6e3f4', label: 'Fast Learner' },
+    { id: '3d-notion-math', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Max&backgroundColor=ffd5dc', label: 'Math Genius' },
+    { id: '3d-notion-leader', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Elena&backgroundColor=b6e3f4', label: 'Young Leader' },
+
+    // ── Classic Student Icons ──
+    { id: 'em-grad', type: 'emoji', value: '🎓', label: 'Graduate' },
+    { id: 'em-books', type: 'emoji', value: '📚', label: 'Books' },
+    { id: 'em-rocket', type: 'emoji', value: '🚀', label: 'Rocket' },
+    { id: 'em-laptop', type: 'emoji', value: '💻', label: 'Laptop' },
+    { id: 'em-micro', type: 'emoji', value: '🔬', label: 'Science' },
+    { id: 'em-art', type: 'emoji', value: '🎨', label: 'Art' },
+    { id: 'em-star', type: 'emoji', value: '🌟', label: 'Star' },
+    { id: 'em-owl', type: 'emoji', value: '🦉', label: 'Owl' },
+    { id: 'em-atom', type: 'emoji', value: '⚛️', label: 'Physics' },
+    { id: 'em-trophy', type: 'emoji', value: '🏆', label: 'Trophy' },
+  ];
 
   useEffect(() => {
     if (user) {
@@ -75,35 +105,6 @@ export function Profile() {
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-
-    if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters long');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (typeof updatePassword === 'function') {
-        await updatePassword(newPassword);
-      }
-      setSuccess('Your password has been updated successfully!');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err) {
-      setError(err.message || 'Failed to update password');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleResendEmail = async () => {
     if (resendCooldown > 0) return;
     setError('');
@@ -122,10 +123,8 @@ export function Profile() {
     }
   };
 
-  const isGoogleUser = user.isGoogle || user.provider === 'google';
-
   return (
-    <div className="profile-container">
+    <div className="profile-container" style={{ maxWidth: '780px', margin: '0 auto' }}>
       <div className="profile-header-card">
         <div className="profile-avatar-large">
           {avatar && typeof avatar === 'string' && avatar.startsWith('http') ? (
@@ -133,6 +132,7 @@ export function Profile() {
               src={avatar}
               alt={user.name}
               className="profile-avatar-img"
+              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
               referrerPolicy="no-referrer"
             />
           ) : (
@@ -177,10 +177,12 @@ export function Profile() {
       <AuthAlert type="error" message={error} />
       <AuthAlert type="success" message={success} />
 
-      <div className="profile-grid">
+      <div className="profile-grid" style={{ gridTemplateColumns: '1fr' }}>
         {/* Edit Profile Options */}
         <div className="profile-card">
-          <h3>✏️ Edit Profile Settings</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>✏️</span> Edit Profile & 3D Avatars
+          </h3>
           <form onSubmit={handleProfileSave} className="auth-form" noValidate>
             <div className="auth-field">
               <label htmlFor="edit-name">Display Name</label>
@@ -195,26 +197,71 @@ export function Profile() {
             </div>
 
             <div className="auth-field">
-              <label>Choose Avatar Icon</label>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
-                {AVATAR_OPTIONS.map((icon) => (
-                  <button
-                    key={icon}
-                    type="button"
-                    onClick={() => setAvatar(icon)}
-                    style={{
-                      fontSize: '22px',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      border: avatar === icon ? '2px solid #008080' : '1px solid #ddd',
-                      background: avatar === icon ? '#e6f4f4' : '#fff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {icon}
-                  </button>
-                ))}
+              <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Choose 3D Avatar or Icon</span>
+                <span style={{ fontSize: '11px', color: 'var(--p)', fontWeight: 700 }}>
+                  Selected: {avatar.startsWith('http') ? '3D Avatar' : avatar}
+                </span>
+              </label>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))',
+                  gap: '12px',
+                  marginTop: '10px',
+                  padding: '16px',
+                  background: 'var(--bg)',
+                  borderRadius: '18px',
+                  border: '1px solid var(--line)',
+                }}
+              >
+                {AVATAR_OPTIONS.map((opt) => {
+                  const isSelected = opt.type === 'img' ? avatar === opt.url : avatar === opt.value;
+                  const targetVal = opt.type === 'img' ? opt.url : opt.value;
+
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setAvatar(targetVal)}
+                      title={opt.label}
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '50%',
+                        border: isSelected ? '2.5px solid var(--p)' : '1.5px solid var(--line)',
+                        background: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.85)',
+                        boxShadow: isSelected
+                          ? '0 0 0 3px rgba(13, 148, 136, 0.25), 0 4px 14px rgba(13, 148, 136, 0.2)'
+                          : '0 2px 6px rgba(0, 0, 0, 0.04)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                        padding: '3px',
+                        transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      {opt.type === 'img' ? (
+                        <img
+                          src={opt.url}
+                          alt={opt.label}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: '24px' }}>{opt.value}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -228,7 +275,7 @@ export function Profile() {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid #ccc',
+                  border: '1px solid var(--line)',
                   fontSize: '14px',
                 }}
               >
@@ -255,7 +302,7 @@ export function Profile() {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: '8px',
-                  border: '1px solid #ccc',
+                  border: '1px solid var(--line)',
                   fontSize: '14px',
                   fontFamily: 'inherit',
                   resize: 'vertical',
@@ -263,61 +310,10 @@ export function Profile() {
               />
             </div>
 
-            <button type="submit" className="auth-submit-btn" disabled={profileLoading}>
+            <button type="submit" className="auth-submit-btn" disabled={profileLoading} style={{ marginTop: '10px' }}>
               {profileLoading ? 'Saving Profile…' : '💾 Save Profile Changes'}
             </button>
           </form>
-        </div>
-
-        {/* Security & Password Card */}
-        <div className="profile-card">
-          <h3>🔐 Account Security</h3>
-          {isGoogleUser ? (
-            <div className="oauth-security-notice">
-              <div className="oauth-notice-icon">
-                <GoogleIcon size={28} />
-              </div>
-              <div>
-                <h4 style={{ margin: '0 0 6px 0', fontSize: '15px', color: 'var(--ink)' }}>
-                  Managed via Google
-                </h4>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--muted)', lineHeight: '1.5' }}>
-                  Your account is secured through Google Authentication. Your password and login credentials are protected by Google.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handlePasswordChange} className="auth-form" noValidate>
-              <div className="auth-field">
-                <label htmlFor="new-password">New Password</label>
-                <PasswordInput
-                  id="new-password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                  toggleVariant="emoji"
-                />
-              </div>
-
-              <div className="auth-field">
-                <label htmlFor="confirm-new-password">Confirm New Password</label>
-                <input
-                  id="confirm-new-password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="auth-submit-btn" disabled={loading}>
-                {loading ? 'Updating Password…' : 'Update Password →'}
-              </button>
-            </form>
-          )}
         </div>
       </div>
     </div>

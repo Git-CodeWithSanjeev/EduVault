@@ -28,12 +28,14 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           <Link className="detail read-btn" to={'/read/' + item.id}>
             Read PDF
           </Link>
-          <Link className="detail" to={'/resource/' + item.id}>
-            Details
-          </Link>
-          <ExternalLink item={item} className="detail external-btn">
-            {item.source === 'NCERT' ? 'Download' : 'Open'}
-          </ExternalLink>
+          <div className="actions-sub">
+            <Link className="detail" to={'/resource/' + item.id}>
+              Details
+            </Link>
+            <ExternalLink item={item} className="detail external-btn">
+              {item.source === 'NCERT' ? 'Download' : 'Open'}
+            </ExternalLink>
+          </div>
         </div>
       </div>
     </article>

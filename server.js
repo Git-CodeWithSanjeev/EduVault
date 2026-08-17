@@ -1,7 +1,8 @@
 /**
  * EduVault Server
- * - PDF Proxy Server (no CORS issues, in-memory LRU cache)
+ * - PDF Proxy Server (no CORS issues, in-memory LRU cache + Redis Cache)
  * - User Authentication API powered by MongoDB (eduvault database)
+ * - Redis In-Memory Caching & Distributed Rate Limiting
  */
 
 import express from 'express';
@@ -12,6 +13,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
+import { redisGet, redisSet, redisDel, redisRateLimit, getRedisStatus } from './services/redis.js';
 
 // Read .env manually if process.env.MONGODB_URI is not set
 if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
@@ -35,6 +37,26 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+// Redis API Health Endpoint
+app.get('/api/redis/status', (req, res) => {
+  res.json({
+    success: true,
+    redis: getRedisStatus(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Redis-powered Auth Rate Limiting Middleware
+const authRateLimiter = async (req, res, next) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+  const { allowed, remaining } = await redisRateLimit(`auth:${clientIp}`, 15, 60);
+  res.setHeader('X-RateLimit-Remaining', remaining);
+  if (!allowed) {
+    return res.status(429).json({ error: 'Too many login attempts. Please wait 1 minute before trying again.' });
+  }
+  next();
+};
 
 /* ─── MongoDB Database Setup ────────────────────────────────────────── */
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -229,8 +251,8 @@ app.post('/api/auth/oauth-sync', async (req, res) => {
   }
 });
 
-// 2. Register Route (Direct MongoDB)
-app.post('/api/auth/register', async (req, res) => {
+// 2. Register Route (Direct MongoDB + Redis Rate Limiter)
+app.post('/api/auth/register', authRateLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!email || !password) {
@@ -298,8 +320,8 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// 3. Login Route (Direct MongoDB)
-app.post('/api/auth/login', async (req, res) => {
+// 3. Login Route (Direct MongoDB + Redis Rate Limiter)
+app.post('/api/auth/login', authRateLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -592,6 +614,7 @@ app.get('/health', (req, res) =>
     cachedPDFs: pdfCache.size,
     dbConnected,
     database: 'eduvault',
+    redis: getRedisStatus(),
     port: PORT
   })
 );
