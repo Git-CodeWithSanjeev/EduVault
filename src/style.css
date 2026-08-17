@@ -871,44 +871,56 @@ h1 {
 
 .actions a,
 .actions button {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 11px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 12px;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.15s ease;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .actions a {
-    background: var(--p);
-    color: white;
+    background: var(--p-gradient);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 14px var(--p-glow);
 }
 
 .actions a:hover {
-    background: #5d47c4;
+    background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35);
+    transform: translateY(-2px);
 }
 
 .actions .detail {
-    background: rgba(108, 77, 230, 0.08);
-    color: var(--p);
-    border: 1px solid rgba(108, 77, 230, 0.15);
+    background: #e6f7f3;
+    color: var(--p-dark);
+    border: 1.5px solid rgba(13, 148, 136, 0.3);
 }
 
 .actions .detail:hover {
-    background: rgba(108, 77, 230, 0.16);
-    border-color: var(--p);
+    background: var(--p-gradient);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 6px 18px var(--p-glow);
+    transform: translateY(-2px);
 }
 
 .actions .detail.read-btn {
     background: var(--p-gradient);
     color: #ffffff;
-    border: none;
-    box-shadow: 0 2px 8px rgba(108, 77, 230, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 14px var(--p-glow);
 }
 
 .actions .detail.read-btn:hover {
-    background: linear-gradient(135deg, #5b3dc8 0%, #3b239d 100%);
-    box-shadow: 0 4px 14px rgba(108, 77, 230, 0.38);
+    background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+    box-shadow: 0 8px 22px rgba(13, 148, 136, 0.4);
+    transform: translateY(-2px);
 }
 
 .tree {
