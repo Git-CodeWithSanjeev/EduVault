@@ -327,8 +327,8 @@ export function VideoTheater() {
                     fontSize: '11px',
                     fontWeight: 700,
                     border: playbackSpeed === speed ? '1px solid var(--p)' : '1px solid var(--line)',
-                    background: playbackSpeed === speed ? '#eff6ff' : '#ffffff',
-                    color: playbackSpeed === speed ? 'var(--p)' : 'var(--ink)',
+                    background: playbackSpeed === speed ? '#e6f7f3' : '#ffffff',
+                    color: playbackSpeed === speed ? 'var(--p-dark)' : 'var(--ink)',
                     cursor: 'pointer',
                   }}
                 >
@@ -424,13 +424,13 @@ export function VideoTheater() {
           {/* Video Metadata Information */}
           <div style={{ background: 'var(--card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--line)', margin: '16px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '10px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', background: '#dbeafe', color: 'var(--p)' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', background: '#e6f7f3', color: 'var(--p-dark)' }}>
                 {vid.category || 'Education'}
               </span>
               <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '6px', background: '#ccfbf1', color: '#0f766e' }}>
                 Level: {vid.level || 'Beginner to Advanced'}
               </span>
-              <span style={{ fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '6px', background: '#f1f5f9', color: 'var(--muted)' }}>
+              <span style={{ fontSize: '11px', fontStyle: 'normal', padding: '4px 10px', borderRadius: '6px', background: '#f1f5f9', color: 'var(--muted)', fontWeight: 700 }}>
                 🌐 {vid.language || 'English'}
               </span>
               <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>
@@ -512,10 +512,10 @@ export function VideoTheater() {
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: '12px', padding: '18px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)' }}>Course Progress</span>
-              <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--accent)' }}>{progressPercent}%</span>
+              <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--p-dark)' }}>{progressPercent}%</span>
             </div>
-            <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-              <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.3s ease' }} />
+            <div style={{ height: '8px', background: '#ccebe4', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
+              <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--p-gradient)', transition: 'width 0.3s ease' }} />
             </div>
             <small style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>
               Lesson {activeLessonIdx + 1} of {lessons.length} active
@@ -526,7 +526,7 @@ export function VideoTheater() {
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
             <h3 style={{ fontSize: '15px', fontWeight: 800, margin: '0 0 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>COURSE LESSONS ({lessons.length})</span>
-              <span style={{ fontSize: '11px', color: 'var(--p)', fontWeight: 700 }}>Active #{activeLessonIdx + 1}</span>
+              <span style={{ fontSize: '11px', color: 'var(--p-dark)', fontWeight: 700 }}>Active #{activeLessonIdx + 1}</span>
             </h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '360px', overflowY: 'auto' }}>
@@ -545,9 +545,9 @@ export function VideoTheater() {
                       borderRadius: '8px',
                       fontSize: '12px',
                       cursor: 'pointer',
-                      background: isActive ? '#eff6ff' : '#f8fafc',
-                      border: isActive ? '1px solid var(--p)' : '1px solid var(--line)',
-                      color: isActive ? 'var(--p)' : 'var(--ink)',
+                      background: isActive ? '#e6f7f3' : '#f8fafc',
+                      border: isActive ? '1.5px solid var(--p)' : '1px solid var(--line)',
+                      color: isActive ? 'var(--p-dark)' : 'var(--ink)',
                       fontWeight: isActive ? 700 : 500,
                       display: 'flex',
                       alignItems: 'center',
