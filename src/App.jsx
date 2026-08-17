@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSaved, useRecentlyVisited, useWelcomeBack } from './hooks/useEduVault';
 import { Shell } from './components/Shell';
@@ -21,11 +21,41 @@ import { Profile } from './pages/Profile';
 import { ResetPassword } from './pages/ResetPassword';
 import { AuthCallback } from './pages/AuthCallback';
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
+const scrollPositionsMap = new Map();
+
+
+function ScrollRestorationManager() {
+  const location = useLocation();
+  const navType = useNavigationType();
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    const handleScroll = () => {
+      scrollPositionsMap.set(location.key, window.scrollY);
+      scrollPositionsMap.set(location.pathname + location.search, window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      handleScroll();
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [location]);
+
+  useEffect(() => {
+    const savedYKey = scrollPositionsMap.get(location.key);
+    const savedYPath = scrollPositionsMap.get(location.pathname + location.search);
+    const savedY = savedYKey !== undefined ? savedYKey : savedYPath;
+
+    if (navType === 'POP' && savedY !== undefined) {
+      const timer = setTimeout(() => {
+        window.scrollTo({ top: savedY, behavior: 'instant' });
+      }, 40);
+      return () => clearTimeout(timer);
+    } else if (navType === 'PUSH') {
+      window.scrollTo(0, 0);
+    }
+  }, [location, navType]);
+
   return null;
 }
 
@@ -36,7 +66,8 @@ export default function App() {
 
   return (
     <Shell welcomeMsg={welcomeMsg}>
-      <ScrollToTop />
+      <ScrollRestorationManager />
+
       <Routes>
         {/* Public Browsing Routes */}
         <Route

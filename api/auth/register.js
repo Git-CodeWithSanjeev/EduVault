@@ -32,6 +32,9 @@ export default async function handler(req, res) {
       name: name || email.split('@')[0],
       email: email.toLowerCase(),
       password: hashedPassword,
+      avatar: '🎓',
+      provider: 'email',
+      savedBooks: [],
     });
 
     return res.status(201).json({
@@ -40,7 +43,10 @@ export default async function handler(req, res) {
         id: newUser._id.toString(),
         name: newUser.name,
         email: newUser.email,
-        avatar: '🎓',
+        avatar: newUser.avatar,
+        provider: 'email',
+        isVerified: true,
+        savedBooks: [],
         joinedDate: newUser.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
       },
     });

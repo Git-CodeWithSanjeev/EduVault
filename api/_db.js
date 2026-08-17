@@ -37,9 +37,15 @@ export async function connectToDatabase() {
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, default: '' },
+  avatar: { type: String, default: '🎓' },
+  bio: { type: String, default: '' },
+  grade: { type: String, default: 'Student' },
+  provider: { type: String, default: 'email' },
+  googleId: { type: String, default: '' },
   savedBooks: { type: [String], default: [] },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  lastLogin: { type: Date, default: Date.now },
 });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);

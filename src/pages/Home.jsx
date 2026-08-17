@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ncertBooks } from '../ncertBooks';
@@ -7,36 +7,11 @@ import { Cards } from '../components/Cards';
 import { BookCarousel } from '../components/BookCarousel';
 import { VideoGallery } from '../components/VideoGallery';
 import { educationalGalleryData } from '../data/educationalGalleryData';
+import { useAuth } from '../context/AuthContext';
+import { useDragScroll } from '../hooks/useDragScroll';
 
 export function VideoCarousel({ title, videosList }) {
-  const trackRef = useRef(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-
-  const onMouseDown = useCallback((e) => {
-    isDragging.current = true;
-    startX.current = e.pageX - trackRef.current.offsetLeft;
-    scrollLeft.current = trackRef.current.scrollLeft;
-    trackRef.current.style.cursor = 'grabbing';
-    trackRef.current.style.userSelect = 'none';
-  }, []);
-
-  const onMouseMove = useCallback((e) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const x = e.pageX - trackRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.4;
-    trackRef.current.scrollLeft = scrollLeft.current - walk;
-  }, []);
-
-  const stopDrag = useCallback(() => {
-    isDragging.current = false;
-    if (trackRef.current) {
-      trackRef.current.style.cursor = 'grab';
-      trackRef.current.style.userSelect = '';
-    }
-  }, []);
+  const { trackRef, dragProps } = useDragScroll();
 
   if (!videosList || videosList.length === 0) return null;
 
@@ -53,10 +28,7 @@ export function VideoCarousel({ title, videosList }) {
           className="carousel-track"
           ref={trackRef}
           style={{ cursor: 'grab' }}
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseUp={stopDrag}
-          onMouseLeave={stopDrag}
+          {...dragProps}
         >
           {videosList.map((vid) => (
             <div key={vid.id} className="carousel-item" style={{ minWidth: '280px', maxWidth: '320px' }}>
@@ -98,8 +70,6 @@ export function VideoCarousel({ title, videosList }) {
     </div>
   );
 }
-
-import { useAuth } from '../context/AuthContext';
 
 export function Home({ saved, toggle, recentIds }) {
   const { user, isLoggedIn } = useAuth();
@@ -252,3 +222,5 @@ export function Home({ saved, toggle, recentIds }) {
     </>
   );
 }
+
+export default Home;

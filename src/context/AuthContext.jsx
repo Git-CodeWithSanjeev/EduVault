@@ -1,117 +1,54 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 const API_BASE = import.meta.env.DEV ? 'http://localhost:3001' : '';
+const STORAGE_KEY = 'eduvault_auth_user';
 
-/** Format Supabase User into consistent app user format */
-const formatUser = (supabaseUser) => {
-  if (!supabaseUser) return null;
-  const metadata = supabaseUser.user_metadata || {};
-  const fullName =
-    metadata.full_name ||
-    metadata.name ||
-    supabaseUser.email?.split('@')[0] ||
-    'Learner';
-  const joinedDate = supabaseUser.created_at
-    ? new Date(supabaseUser.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    : 'Recently';
-
-  const isVerified = !!supabaseUser.email_confirmed_at;
-
-  return {
-    id: supabaseUser.id,
-    email: supabaseUser.email?.toLowerCase() || '',
-    name: fullName,
-    avatar: metadata.avatar_url || '🎓',
-    joinedDate,
-    isVerified,
-    raw: supabaseUser,
-  };
-};
-
-/** Map raw auth errors to user-friendly messages */
-const mapAuthError = (err) => {
-  if (!err) return 'An unexpected error occurred.';
-  const msg = typeof err === 'string' ? err : err.message || '';
-
-  if (msg.includes('Invalid login credentials')) {
-    return 'Invalid email or password. Please check your details.';
+/** Helper to decode base64url Google JWT payload on client */
+export function decodeGoogleCredential(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
   }
-  if (msg.includes('Email not confirmed')) {
-    return 'Your email address has not been verified yet. Please enter the verification code.';
-  }
-  if (msg.includes('User already registered') || msg.includes('already exists')) {
-    return 'An account with this email address already exists. Please sign in instead.';
-  }
-  if (msg.includes('Password should be at least')) {
-    return 'Password must be at least 8 characters long.';
-  }
-  if (msg.includes('Token has expired') || msg.includes('expired')) {
-    return 'This verification code has expired. Please request a new code.';
-  }
-  if (msg.includes('Invalid token') || msg.includes('otp')) {
-    return 'Invalid verification code. Please try again.';
-  }
-  if (msg.includes('Error sending confirmation email') || msg.includes('confirmation email')) {
-    return 'Unable to send confirmation email. Supabase email rate limit reached (max 3/hour on free tier). Please wait a few minutes, or set up Custom SMTP in Supabase.';
-  }
-  if (msg.includes('Rate limit') || msg.includes('magic link')) {
-    return 'Email rate limit reached. Please wait a few minutes before trying again.';
-  }
-  return msg;
-};
+}
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [pendingEmail, setPendingEmail] = useState(() => {
-    return sessionStorage.getItem('eduvault-pending-email') || '';
-  });
-
-  useEffect(() => {
-    if (pendingEmail) {
-      sessionStorage.setItem('eduvault-pending-email', pendingEmail);
-    } else {
-      sessionStorage.removeItem('eduvault-pending-email');
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
     }
-  }, [pendingEmail]);
+  });
+  const [loading, setLoading] = useState(false);
 
+  // Sync state changes to localStorage
   useEffect(() => {
-    // 1. Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user && session.user.email_confirmed_at) {
-        setUser(formatUser(session.user));
+    try {
+      if (user) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
       } else {
-        setUser(null);
+        localStorage.removeItem(STORAGE_KEY);
       }
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    } catch (e) {
+      console.error('Storage error:', e);
+    }
+  }, [user]);
 
-    // 2. Listen to real-time auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session?.user && session.user.email_confirmed_at) {
-        setUser(formatUser(session.user));
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, []);
-
-  /** Register user and trigger Email OTP */
+  /** 1. Direct MongoDB Email/Password Registration */
   const register = async (name, email, password) => {
-    const cleanName = name?.trim();
-    const cleanEmail = email?.trim().toLowerCase();
+    const cleanName = (name || '').trim();
+    const cleanEmail = (email || '').trim().toLowerCase();
 
     if (!cleanName || cleanName.length < 2) {
       throw new Error('Full Name must be at least 2 characters long.');
@@ -123,146 +60,30 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 8 characters long.');
     }
 
-    // Create Account in Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
-      email: cleanEmail,
-      password,
-      options: {
-        data: { full_name: cleanName },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      throw new Error(mapAuthError(error));
-    }
-
-    if (data.user && data.user.identities && data.user.identities.length === 0) {
-      throw new Error('An account with this email already exists. Please sign in instead.');
-    }
-
-    // Sync to MongoDB Atlas
-    fetch(`${API_BASE}/api/auth/register`, {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: cleanName, email: cleanEmail, password }),
-    }).catch(() => {});
-
-    // If "Confirm email" is disabled in Supabase, data.session will be returned immediately
-    if (data.session && data.user) {
-      const formatted = formatUser(data.user);
-      setUser(formatted);
-      setSession(data.session);
-
-      try {
-        await supabase.from('profiles').upsert({
-          id: data.user.id,
-          full_name: cleanName,
-          email: cleanEmail,
-          updated_at: new Date().toISOString(),
-        });
-      } catch {}
-
-      return {
-        success: true,
-        autoConfirmed: true,
-        user: formatted,
-      };
-    }
-
-    setPendingEmail(cleanEmail);
-
-    return {
-      success: true,
-      email: cleanEmail,
-      userId: data.user?.id,
-    };
-  };
-
-  /** Verify 6-digit OTP code & Create User Profile */
-  const verifyOtp = async (email, token) => {
-    const cleanEmail = (email || pendingEmail)?.trim().toLowerCase();
-    const cleanToken = token?.trim();
-
-    if (!cleanEmail) {
-      throw new Error('Email address is required.');
-    }
-    if (!cleanToken || cleanToken.length !== 6) {
-      throw new Error('Please enter the full 6-digit verification code.');
-    }
-
-    let result = await supabase.auth.verifyOtp({
-      email: cleanEmail,
-      token: cleanToken,
-      type: 'signup',
     });
 
-    if (result.error) {
-      result = await supabase.auth.verifyOtp({
-        email: cleanEmail,
-        token: cleanToken,
-        type: 'email',
-      });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Registration failed. Please try again.');
     }
 
-    if (result.error) {
-      throw new Error(mapAuthError(result.error));
-    }
-
-    const authUser = result.data?.user;
-    if (!authUser) {
-      throw new Error('Verification failed. Could not retrieve user profile.');
-    }
-
-    const formatted = formatUser(authUser);
-
-    // Create/Update Profile in Supabase 'profiles' table
-    try {
-      await supabase.from('profiles').upsert({
-        id: authUser.id,
-        full_name: formatted.name,
-        email: cleanEmail,
-        updated_at: new Date().toISOString(),
-      });
-    } catch {
-      // Ignore if table RLS or schema is pending
-    }
-
-    setUser(formatted);
-    setSession(result.data.session);
-    setPendingEmail('');
-
-    return {
-      success: true,
-      user: formatted,
+    const authUser = {
+      ...data.user,
+      isVerified: true,
+      isGoogle: false,
     };
+
+    setUser(authUser);
+    return { success: true, user: authUser };
   };
 
-  /** Resend Email OTP */
-  const resendOtp = async (email) => {
-    const targetEmail = (email || pendingEmail)?.trim().toLowerCase();
-    if (!targetEmail) {
-      throw new Error('Email address is required.');
-    }
-
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: targetEmail,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      throw new Error(mapAuthError(error));
-    }
-
-    return { success: true };
-  };
-
-  /** Login with Email & Password */
+  /** 2. Direct MongoDB Email/Password Login */
   const login = async (email, password) => {
-    const cleanEmail = email?.trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
     if (!cleanEmail) {
       throw new Error('Please enter your email address.');
     }
@@ -270,52 +91,147 @@ export function AuthProvider({ children }) {
       throw new Error('Please enter your password.');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: cleanEmail,
-      password,
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: cleanEmail, password }),
     });
 
-    if (error) {
-      throw new Error(mapAuthError(error));
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Invalid email or password.');
     }
 
-    if (data.user && !data.user.email_confirmed_at) {
-      setPendingEmail(cleanEmail);
-      throw new Error('UNVERIFIED_EMAIL');
-    }
-
-    const formatted = formatUser(data.user);
-    setUser(formatted);
-    setSession(data.session);
-
-    return {
-      success: true,
-      user: formatted,
+    const authUser = {
+      ...data.user,
+      isVerified: true,
+      isGoogle: data.user.provider === 'google',
     };
+
+    setUser(authUser);
+    return { success: true, user: authUser };
   };
 
-  /** Real Logout Function */
-  const logout = async () => {
-    await supabase.auth.signOut().catch(() => {});
+  /** 3. Direct Google Authentication (Straight to MongoDB) */
+  const loginWithGoogle = async (googleCredentialOrProfile) => {
+    let payload = {};
+
+    if (typeof googleCredentialOrProfile === 'string') {
+      // It's a Google JWT credential
+      const decoded = decodeGoogleCredential(googleCredentialOrProfile);
+      payload = {
+        credential: googleCredentialOrProfile,
+        email: decoded?.email,
+        name: decoded?.name,
+        avatar: decoded?.picture,
+        googleId: decoded?.sub,
+      };
+    } else if (googleCredentialOrProfile && typeof googleCredentialOrProfile === 'object') {
+      payload = googleCredentialOrProfile;
+    }
+
+    const res = await fetch(`${API_BASE}/api/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Google Authentication failed. Please try again.');
+    }
+
+    const authUser = {
+      ...data.user,
+      isVerified: true,
+      isGoogle: true,
+      provider: 'google',
+    };
+
+    setUser(authUser);
+    return { success: true, user: authUser };
+  };
+
+  /** 4. Update Password (Direct MongoDB) */
+  const updatePassword = async (newPassword) => {
+    if (!user || !user.email) {
+      throw new Error('You must be logged in to update your password.');
+    }
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error('New password must be at least 8 characters long.');
+    }
+
+    const res = await fetch(`${API_BASE}/api/auth/update-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email, newPassword }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Failed to update password.');
+    }
+
+    return { success: true };
+  };
+
+  /** 5. Update Profile Details (Name, Avatar, Bio, Grade) */
+  const updateProfile = async ({ name, avatar, bio, grade }) => {
+    if (!user || !user.email) {
+      throw new Error('You must be logged in to update your profile.');
+    }
+
+    const res = await fetch(`${API_BASE}/api/auth/update-profile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email, name, avatar, bio, grade }),
+    });
+
+    const contentType = res.headers.get('content-type') || '';
+    let data = {};
+    if (contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      console.error('[Update Profile Non-JSON Response]:', text);
+      throw new Error('Server endpoint not found. Please restart server.');
+    }
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Failed to update profile.');
+    }
+
+    const updatedUser = {
+      ...user,
+      ...(data.user || {}),
+      name: name || user.name,
+      avatar: avatar || user.avatar,
+      bio: typeof bio === 'string' ? bio : user.bio,
+      grade: typeof grade === 'string' ? grade : user.grade,
+    };
+
+    setUser(updatedUser);
+    return { success: true, user: updatedUser };
+  };
+
+  /** 6. Logout */
+  const logout = () => {
     setUser(null);
-    setSession(null);
-    setPendingEmail('');
-    sessionStorage.removeItem('eduvault-pending-email');
+    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem('eduvault-redirect-after-auth');
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        session,
         loading,
-        isLoggedIn: !!user && !!user.isVerified,
-        pendingEmail,
-        setPendingEmail,
-        register,
-        verifyOtp,
-        resendOtp,
+        isLoggedIn: !!user,
         login,
+        register,
+        loginWithGoogle,
+        updatePassword,
+        updateProfile,
         logout,
       }}
     >

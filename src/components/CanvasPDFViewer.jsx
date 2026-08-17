@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, memo } from 'react';
 
 // Global prototype patch to ensure all 2D canvas contexts default to willReadFrequently: true
 if (typeof window !== 'undefined') {
@@ -44,6 +44,29 @@ const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/proxy';
 
 const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const WORKER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Global In-Memory PDF Document & Buffer Cache for Instant Loading (0ms) across component mounts
+const pdfDocumentCache = new Map();
+
+const ZOOM_STEPS = [0.5, 0.6, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
+
+function getNextZoomIn(currentScale) {
+  for (let i = 0; i < ZOOM_STEPS.length; i++) {
+    if (ZOOM_STEPS[i] > currentScale + 0.001) {
+      return ZOOM_STEPS[i];
+    }
+  }
+  return 3.0;
+}
+
+function getPrevZoomOut(currentScale) {
+  for (let i = ZOOM_STEPS.length - 1; i >= 0; i--) {
+    if (ZOOM_STEPS[i] < currentScale - 0.001) {
+      return ZOOM_STEPS[i];
+    }
+  }
+  return 0.5;
+}
 
 /** Build backend proxy URL */
 export function proxyUrl(originalUrl) {
@@ -92,14 +115,14 @@ function loadPdfJsScript() {
 function DownloadOverlay({ filename, progress, phase }) {
   if (phase === 'idle') return null;
 
-  const isDone  = phase === 'done';
+  const isDone = phase === 'done';
   const isError = phase === 'error';
 
   return (
     <div className="dl-overlay">
       <div className="dl-overlay-card">
         <div className={`dl-overlay-icon ${isDone ? 'done' : isError ? 'error' : ''}`}>
-          {isDone  ? '✅' : isError ? '❌' : (
+          {isDone ? '✅' : isError ? '❌' : (
             <svg viewBox="0 0 44 44" fill="none" className="dl-circle-svg">
               <circle cx="22" cy="22" r="18" stroke="var(--line)" strokeWidth="4" />
               <circle
@@ -119,9 +142,9 @@ function DownloadOverlay({ filename, progress, phase }) {
         </div>
 
         <div className="dl-overlay-label">
-          {isDone  ? 'Download complete!' :
-           isError ? 'Download failed — try again' :
-                     'Preparing your PDF…'}
+          {isDone ? 'Download complete!' :
+            isError ? 'Download failed — try again' :
+              'Preparing your PDF…'}
         </div>
         <div className="dl-overlay-filename">{filename}</div>
 
@@ -136,9 +159,17 @@ function DownloadOverlay({ filename, progress, phase }) {
 }
 
 export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', className = 'pdf-btn' }) {
-  const [phase, setPhase]       = useState('idle');
+  const [phase, setPhase] = useState('idle');
   const [progress, setProgress] = useState(0);
   const abortRef = useRef(null);
+  const tickerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (tickerRef.current) clearInterval(tickerRef.current);
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, []);
 
   const handleDownload = async (e) => {
     e.preventDefault();
@@ -147,7 +178,8 @@ export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', 
     setPhase('fetching');
     setProgress(0);
 
-    const ticker = setInterval(() => {
+    if (tickerRef.current) clearInterval(tickerRef.current);
+    tickerRef.current = setInterval(() => {
       setProgress((p) => (p < 88 ? p + Math.random() * 5 : p));
     }, 180);
 
@@ -164,13 +196,13 @@ export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', 
       if (!res || !res.ok) throw new Error(`HTTP ${res?.status || 'Error'}`);
 
       const blob = await res.blob();
-      clearInterval(ticker);
+      if (tickerRef.current) clearInterval(tickerRef.current);
       setProgress(100);
 
       const blobUrl = URL.createObjectURL(blob);
-      const a       = document.createElement('a');
-      a.href        = blobUrl;
-      a.download    = filename || url.split('/').pop() || 'document.pdf';
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename || url.split('/').pop() || 'document.pdf';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -179,7 +211,7 @@ export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', 
       setPhase('done');
       setTimeout(() => { setPhase('idle'); setProgress(0); }, 2800);
     } catch (err) {
-      clearInterval(ticker);
+      if (tickerRef.current) clearInterval(tickerRef.current);
       if (err.name !== 'AbortError') {
         setPhase('error');
         setTimeout(() => { setPhase('idle'); setProgress(0); }, 3200);
@@ -188,10 +220,10 @@ export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', 
   };
 
   const btnLabel = {
-    idle:     label,
+    idle: label,
     fetching: '⏳',
-    done:     '✅',
-    error:    '❌',
+    done: '✅',
+    error: '❌',
   }[phase];
 
   const btnClass = {
@@ -322,7 +354,52 @@ const PDFPageCard = memo(function PDFPageCard({
   const aspectRatioRef = useRef(1.414);
   const [isRendered, setIsRendered] = useState(false);
 
-  // Sync drawing canvas overlay size with PDF canvas size
+  const strokesRef = useRef([]);
+  const currentStrokeRef = useRef(null);
+  const lastPointRef = useRef(null);
+
+  const redrawStrokes = useCallback(() => {
+    const drawCanvas = drawCanvasRef.current;
+    if (!drawCanvas || drawCanvas.width === 0 || drawCanvas.height === 0) return;
+    const ctx = drawCanvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+
+    const w = drawCanvas.width;
+    const h = drawCanvas.height;
+
+    strokesRef.current.forEach((stroke) => {
+      if (!stroke.points || stroke.points.length < 1) return;
+      ctx.beginPath();
+      ctx.moveTo(stroke.points[0].nx * w, stroke.points[0].ny * h);
+
+      if (stroke.tool === 'highlighter') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = (stroke.color || '#fde047') + '66';
+        ctx.lineWidth = Math.max(16, Math.round(w * 0.025));
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'bevel';
+      } else if (stroke.tool === 'pen') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = stroke.color || '#fde047';
+        ctx.lineWidth = Math.max(3, Math.round(w * 0.004));
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      } else if (stroke.tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = Math.max(20, Math.round(w * 0.03));
+        ctx.lineCap = 'round';
+      }
+
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].nx * w, stroke.points[i].ny * h);
+      }
+      ctx.stroke();
+    });
+  }, []);
+
+  // Sync drawing canvas overlay size with PDF canvas size & redraw persistent strokes
   useEffect(() => {
     if (!canvasRef.current || !drawCanvasRef.current) return;
     const canvas = canvasRef.current;
@@ -332,8 +409,9 @@ const PDFPageCard = memo(function PDFPageCard({
       drawCanvas.height = canvas.height;
       drawCanvas.style.width = canvas.style.width;
       drawCanvas.style.height = canvas.style.height;
+      redrawStrokes();
     }
-  }, [isRendered, containerWidth, scale]);
+  }, [isRendered, containerWidth, scale, redrawStrokes]);
 
   const getPos = (e) => {
     const drawCanvas = drawCanvasRef.current;
@@ -351,51 +429,127 @@ const PDFPageCard = memo(function PDFPageCard({
 
   const startDrawing = (e) => {
     if (activeTool === 'cursor') return;
+    const drawCanvas = drawCanvasRef.current;
+    if (!drawCanvas || drawCanvas.width === 0 || drawCanvas.height === 0) return;
     isDrawingRef.current = true;
-    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-
     const pos = getPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
+    const w = drawCanvas.width;
+    const h = drawCanvas.height;
 
-    if (activeTool === 'highlighter') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = activeColor + '66'; // semi-transparent highlighter ink
-      ctx.lineWidth = 26;
-      ctx.lineCap = 'square';
-      ctx.lineJoin = 'bevel';
-    } else if (activeTool === 'pen') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = activeColor;
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-    } else if (activeTool === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = 32;
-      ctx.lineCap = 'round';
+    const startPt = { nx: pos.x / w, ny: pos.y / h };
+    lastPointRef.current = startPt;
+
+    currentStrokeRef.current = {
+      tool: activeTool,
+      color: activeColor,
+      points: [startPt],
+    };
+    strokesRef.current.push(currentStrokeRef.current);
+
+    const ctx = drawCanvas.getContext('2d', { willReadFrequently: true });
+    if (ctx) {
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      if (activeTool === 'highlighter') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = (activeColor || '#fde047') + '66';
+        ctx.lineWidth = Math.max(16, Math.round(w * 0.025));
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'bevel';
+      } else if (activeTool === 'pen') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = activeColor || '#fde047';
+        ctx.lineWidth = Math.max(3, Math.round(w * 0.004));
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      } else if (activeTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = Math.max(20, Math.round(w * 0.03));
+        ctx.lineCap = 'round';
+      }
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
     }
   };
 
   const draw = (e) => {
-    if (!isDrawingRef.current || activeTool === 'cursor') return;
-    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
+    if (!isDrawingRef.current || !currentStrokeRef.current || activeTool === 'cursor') return;
+    const drawCanvas = drawCanvasRef.current;
+    if (!drawCanvas || drawCanvas.width === 0 || drawCanvas.height === 0) return;
     const pos = getPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
+    const w = drawCanvas.width;
+    const h = drawCanvas.height;
+
+    const currPt = { nx: pos.x / w, ny: pos.y / h };
+    currentStrokeRef.current.points.push(currPt);
+
+    const ctx = drawCanvas.getContext('2d', { willReadFrequently: true });
+    if (ctx && lastPointRef.current) {
+      const prevX = lastPointRef.current.nx * w;
+      const prevY = lastPointRef.current.ny * h;
+
+      ctx.beginPath();
+      ctx.moveTo(prevX, prevY);
+      if (activeTool === 'highlighter') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = (activeColor || '#fde047') + '66';
+        ctx.lineWidth = Math.max(16, Math.round(w * 0.025));
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'bevel';
+      } else if (activeTool === 'pen') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = activeColor || '#fde047';
+        ctx.lineWidth = Math.max(3, Math.round(w * 0.004));
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      } else if (activeTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = Math.max(20, Math.round(w * 0.03));
+        ctx.lineCap = 'round';
+      }
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+    lastPointRef.current = currPt;
   };
 
   const stopDrawing = () => {
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
-    const ctx = drawCanvasRef.current?.getContext('2d', { willReadFrequently: true });
-    if (ctx) ctx.closePath();
+    currentStrokeRef.current = null;
+    lastPointRef.current = null;
   };
 
+  // Safe canvas memory release on unmount
   useEffect(() => {
-    if (!shouldRender || !pdfDoc || !canvasRef.current) return;
+    return () => {
+      if (renderTaskRef.current) {
+        try { renderTaskRef.current.cancel(); } catch (_) { }
+        renderTaskRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRender) {
+      if (renderTaskRef.current) {
+        try { renderTaskRef.current.cancel(); } catch (_) { }
+        renderTaskRef.current = null;
+      }
+      if (canvasRef.current) {
+        canvasRef.current.width = 0;
+        canvasRef.current.height = 0;
+      }
+      if (drawCanvasRef.current) {
+        drawCanvasRef.current.width = 0;
+        drawCanvasRef.current.height = 0;
+      }
+      lastRenderedKeyRef.current = '';
+      setIsRendered(false);
+      return;
+    }
+
+    if (!pdfDoc || !canvasRef.current) return;
 
     const renderKey = `${pIndex}_${scale}_${containerWidth}`;
     if (lastRenderedKeyRef.current === renderKey && isRendered) return;
@@ -406,7 +560,8 @@ const PDFPageCard = memo(function PDFPageCard({
       if (renderTaskRef.current) {
         try {
           renderTaskRef.current.cancel();
-        } catch (_) {}
+        } catch (_) { }
+        renderTaskRef.current = null;
       }
 
       try {
@@ -421,8 +576,8 @@ const PDFPageCard = memo(function PDFPageCard({
         const availableWidth = containerWidth && containerWidth > 0
           ? containerWidth
           : (typeof window !== 'undefined' && window.innerWidth < 768
-              ? Math.max(window.innerWidth - 24, 300)
-              : 800);
+            ? Math.max(window.innerWidth - 24, 300)
+            : 800);
         const baseFitScale = availableWidth / viewport.width;
         const finalScale = baseFitScale * scale;
         const responsiveViewport = page.getViewport({ scale: finalScale });
@@ -449,7 +604,11 @@ const PDFPageCard = memo(function PDFPageCard({
         renderTaskRef.current = renderTask;
         await renderTask.promise;
 
-        if (isCancelled || !canvasRef.current) return;
+        if (isCancelled || !canvasRef.current) {
+          offscreen.width = 0;
+          offscreen.height = 0;
+          return;
+        }
 
         const canvas = canvasRef.current;
         if (canvas.width !== renderWidth || canvas.height !== renderHeight) {
@@ -462,6 +621,9 @@ const PDFPageCard = memo(function PDFPageCard({
         const context = canvas.getContext('2d', { willReadFrequently: true });
         context.clearRect(0, 0, renderWidth, renderHeight);
         context.drawImage(offscreen, 0, 0);
+
+        offscreen.width = 0;
+        offscreen.height = 0;
 
         lastRenderedKeyRef.current = renderKey;
         setIsRendered(true);
@@ -479,7 +641,8 @@ const PDFPageCard = memo(function PDFPageCard({
       if (renderTaskRef.current) {
         try {
           renderTaskRef.current.cancel();
-        } catch (_) {}
+        } catch (_) { }
+        renderTaskRef.current = null;
       }
     };
   }, [shouldRender, pdfDoc, pIndex, scale, containerWidth]);
@@ -487,8 +650,8 @@ const PDFPageCard = memo(function PDFPageCard({
   const availableW = containerWidth && containerWidth > 0
     ? containerWidth
     : (typeof window !== 'undefined' && window.innerWidth < 768
-        ? Math.max(window.innerWidth - 24, 300)
-        : 800);
+      ? Math.max(window.innerWidth - 24, 300)
+      : 800);
   const targetW = availableW * scale;
   const minCardHeight = Math.floor(targetW * aspectRatioRef.current);
 
@@ -530,25 +693,23 @@ const PDFPageCard = memo(function PDFPageCard({
 
 /* ─── Modern Fixed-Shell PDF Viewer Component ───────────────────────────────── */
 export function CanvasPDFViewer({ url, title, isMobile = false }) {
-  const [status, setStatus]               = useState('loading');
-  const [pdfDoc, setPdfDoc]               = useState(null);
-  const [pageNum, setPageNum]             = useState(1);
-  const [numPages, setNumPages]           = useState(0);
-  const [scale, setScale]                 = useState(1.0);
-  const [pageInput, setPageInput]         = useState('1');
-  const [isFullscreen, setIsFullscreen]   = useState(false);
+  const [status, setStatus] = useState('loading');
+  const [pdfDoc, setPdfDoc] = useState(null);
+  const [pageNum, setPageNum] = useState(1);
+  const [numPages, setNumPages] = useState(0);
+  const [scale, setScale] = useState(1.0);
+  const [pageInput, setPageInput] = useState('1');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [containerWidth, setContainerWidth] = useState(900);
-  const [loadingMsg, setLoadingMsg]       = useState('Loading PDF document...');
-  const [activeTool, setActiveTool]       = useState('cursor');
-  const [activeColor, setActiveColor]     = useState('#fde047');
+  const [loadingMsg, setLoadingMsg] = useState('Loading PDF document...');
+  const [activeTool, setActiveTool] = useState('cursor');
+  const [activeColor, setActiveColor] = useState('#fde047');
 
-  const rootRef            = useRef(null);
+  const rootRef = useRef(null);
   const scrollContainerRef = useRef(null);
-  const pageRefs           = useRef({});
-  const touchStartDistRef  = useRef(null);
-  const touchStartScaleRef = useRef(1.0);
-  const lastTapTimeRef     = useRef(0);
+  const pagesWrapperRef = useRef(null);
+  const pageRefs = useRef({});
 
   const registerPageRef = useCallback((pIndex, el) => {
     if (el) pageRefs.current[pIndex] = el;
@@ -558,18 +719,11 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     setPageInput(String(pageNum));
   }, [pageNum]);
 
-// Global In-Memory PDF Document & Buffer Cache for Instant Loading (0ms)
-const pdfDocumentCache = new Map();
-
   // Load PDF Document
   useEffect(() => {
     let isCancelled = false;
-    setStatus('loading');
-    setLoadingMsg('Fetching PDF document...');
-    setPageNum(1);
-    setPdfDoc(null);
+    let loadingTaskHandle = null;
 
-    // 0ms Cache Hit check
     if (pdfDocumentCache.has(url)) {
       const cached = pdfDocumentCache.get(url);
       setPdfDoc(cached.doc);
@@ -577,6 +731,11 @@ const pdfDocumentCache = new Map();
       setStatus('ready');
       return;
     }
+
+    setStatus('loading');
+    setLoadingMsg('Fetching PDF document...');
+    setPageNum(1);
+    setPdfDoc(null);
 
     const loadDocument = async () => {
       try {
@@ -588,14 +747,17 @@ const pdfDocumentCache = new Map();
           cMapPacked: true,
           standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/',
           verbosity: 0,
-          rangeChunkSize: 65536,     // 64 KB Range chunks for 100ms Page 1 render
-          disableAutoFetch: false,   // Stream remaining pages in background
-          disableStream: false,      // Enable progressive streaming
+          rangeChunkSize: 65536,
+          disableAutoFetch: false,
+          disableStream: false,
         };
 
         const tryStreamDocument = async (fetchUrl) => {
           const loadingTask = pdfjs.getDocument({ ...pdfParams, url: fetchUrl });
-          return await loadingTask.promise;
+          loadingTaskHandle = loadingTask;
+          const doc = await loadingTask.promise;
+          loadingTaskHandle = null;
+          return doc;
         };
 
         const tryLoadUrlWithBuffer = async (fetchUrl) => {
@@ -610,12 +772,33 @@ const pdfDocumentCache = new Map();
           if (!header.startsWith('%PDF-')) {
             throw new Error('Invalid PDF magic header');
           }
-          return await pdfjs.getDocument({ ...pdfParams, data: new Uint8Array(arrayBuffer) }).promise;
+          const loadingTask = pdfjs.getDocument({ ...pdfParams, data: new Uint8Array(arrayBuffer) });
+          loadingTaskHandle = loadingTask;
+          const doc = await loadingTask.promise;
+          loadingTaskHandle = null;
+          return doc;
         };
 
-        // Attempt 1: Fast Range Stream via Primary Proxy (/api/proxy)
+        const pUrl = proxyUrl(url);
+
+        // Attempt 0: Primary Proxy Stream Load (/api/proxy) - prevents CORS errors on external PDF URLs
         try {
-          const doc = await tryStreamDocument(proxyUrl(url));
+          const doc = await tryStreamDocument(pUrl);
+          if (!isCancelled && doc) {
+            pdfDocumentCache.set(url, { doc, numPages: doc.numPages });
+            setPdfDoc(doc);
+            setNumPages(doc.numPages);
+            setStatus('ready');
+            return;
+          }
+        } catch (e0) {
+          if (isCancelled) return;
+          console.warn('Primary proxy stream load failed, trying direct stream...', e0?.message);
+        }
+
+        // Attempt 1: Direct Stream Load (for CORS-enabled CDNs or local assets)
+        try {
+          const doc = await tryStreamDocument(url);
           if (!isCancelled && doc) {
             pdfDocumentCache.set(url, { doc, numPages: doc.numPages });
             setPdfDoc(doc);
@@ -624,7 +807,8 @@ const pdfDocumentCache = new Map();
             return;
           }
         } catch (e1) {
-          console.warn('Stream proxy load failed, trying buffer load...', e1?.message);
+          if (isCancelled) return;
+          console.warn('Direct stream load failed, trying buffer load...', e1?.message);
         }
 
         // Attempt 2: Buffer Proxy Load (/api/proxy)
@@ -638,39 +822,15 @@ const pdfDocumentCache = new Map();
             return;
           }
         } catch (e2) {
+          if (isCancelled) return;
           console.warn('Buffer proxy load failed:', e2?.message);
         }
 
-        // Attempt 3: Local Express server fallback (port 3001)
-        try {
-          const doc = await tryLoadUrlWithBuffer(`http://localhost:3001/pdf/proxy?url=${encodeURIComponent(url)}`);
-          if (!isCancelled && doc) {
-            pdfDocumentCache.set(url, { doc, numPages: doc.numPages });
-            setPdfDoc(doc);
-            setNumPages(doc.numPages);
-            setStatus('ready');
-            return;
-          }
-        } catch (e3) {
-          console.warn('Local server 3001 fallback failed:', e3?.message);
-        }
-
-        // Attempt 4: AllOrigins CORS proxy fallback
-        try {
-          const doc = await tryLoadUrlWithBuffer(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-          if (!isCancelled && doc) {
-            pdfDocumentCache.set(url, { doc, numPages: doc.numPages });
-            setPdfDoc(doc);
-            setNumPages(doc.numPages);
-            setStatus('ready');
-            return;
-          }
-        } catch (e4) {
-          console.warn('AllOrigins fallback failed:', e4?.message);
-        }
-
-        // Attempt 5: Direct getDocument
-        const doc = await pdfjs.getDocument({ ...pdfParams, url: url }).promise;
+        // Attempt 3: Direct getDocument
+        const loadingTask = pdfjs.getDocument({ ...pdfParams, url: url });
+        loadingTaskHandle = loadingTask;
+        const doc = await loadingTask.promise;
+        loadingTaskHandle = null;
         if (!isCancelled && doc) {
           pdfDocumentCache.set(url, { doc, numPages: doc.numPages });
           setPdfDoc(doc);
@@ -687,6 +847,9 @@ const pdfDocumentCache = new Map();
 
     return () => {
       isCancelled = true;
+      if (loadingTaskHandle) {
+        try { loadingTaskHandle.destroy(); } catch (_) { }
+      }
     };
   }, [url]);
 
@@ -695,11 +858,13 @@ const pdfDocumentCache = new Map();
     pageNumRef.current = pageNum;
   }, [pageNum]);
 
-  // Real-Time Container Width Observer with width thresholding
+  // Real-Time Container Width Observer
   useEffect(() => {
     if (!scrollContainerRef.current) return;
 
     let prevW = 0;
+    let rafId = null;
+
     const updateWidth = (measuredWidth) => {
       const w = Math.floor(measuredWidth - (isMobile ? 24 : 48));
       if (w > 300 && Math.abs(w - prevW) >= 8) {
@@ -709,37 +874,71 @@ const pdfDocumentCache = new Map();
     };
 
     const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        if (entry.contentRect.width) {
-          updateWidth(entry.contentRect.width);
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        for (let entry of entries) {
+          if (entry.contentRect.width) {
+            updateWidth(entry.contentRect.width);
+          }
         }
-      }
+      });
     });
 
     resizeObserver.observe(scrollContainerRef.current);
     updateWidth(scrollContainerRef.current.clientWidth);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+    };
   }, [isMobile, status]);
+
+  const isZoomingRef = useRef(false);
+
+  useEffect(() => {
+    isZoomingRef.current = true;
+    const timer = setTimeout(() => {
+      isZoomingRef.current = false;
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [scale]);
 
   // Intersection Observer for Current Visible Page Tracking
   useEffect(() => {
     if (status !== 'ready' || !numPages || !scrollContainerRef.current) return;
 
+    const visibleRatios = new Map();
+
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isZoomingRef.current) return;
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-            const pIndex = Number(entry.target.getAttribute('data-page-num'));
-            if (pIndex && pIndex !== pageNumRef.current) {
-              setPageNum(pIndex);
-            }
+          const pIndex = Number(entry.target.getAttribute('data-page-num'));
+          if (!pIndex) return;
+          if (entry.isIntersecting) {
+            visibleRatios.set(pIndex, entry.intersectionRatio);
+          } else {
+            visibleRatios.delete(pIndex);
           }
         });
+
+        if (visibleRatios.size > 0) {
+          let maxRatio = -1;
+          let bestPage = pageNumRef.current;
+          visibleRatios.forEach((ratio, pIndex) => {
+            if (ratio > maxRatio) {
+              maxRatio = ratio;
+              bestPage = pIndex;
+            }
+          });
+          if (bestPage && bestPage !== pageNumRef.current && maxRatio >= 0.2) {
+            setPageNum(bestPage);
+          }
+        }
       },
       {
         root: scrollContainerRef.current,
-        threshold: [0.3, 0.6],
+        threshold: [0.1, 0.3, 0.6, 0.8],
       }
     );
 
@@ -751,21 +950,71 @@ const pdfDocumentCache = new Map();
   }, [status, numPages]);
 
   // Scroll to Specific Page
-  const scrollToPage = (p) => {
+  const scrollToPage = (p, behavior = 'smooth') => {
     const target = Math.max(1, Math.min(p, numPages));
     setPageNum(target);
 
     const pageEl = pageRefs.current[target];
     if (pageEl) {
-      pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      pageEl.scrollIntoView({ behavior, block: 'start' });
     }
   };
 
+  const pendingScrollRef = useRef(null);
+
+  const commitZoomScale = useCallback((targetScale, anchor = null, baseScroll = null, baseScale = null) => {
+    const clamped = Math.max(0.5, Math.min(targetScale, 3.0));
+    const container = scrollContainerRef.current;
+    const currentS = baseScale || scaleRef.current || 1.0;
+
+    if (!container || Math.abs(currentS - clamped) < 0.001) {
+      setScale(clamped);
+      return;
+    }
+
+    const scaleFactor = clamped / currentS;
+
+    let px = container.clientWidth / 2;
+    let py = container.clientHeight / 2;
+    if (anchor && typeof anchor.x === 'number' && typeof anchor.y === 'number') {
+      px = anchor.x;
+      py = anchor.y;
+    }
+
+    const startScrollLeft = baseScroll ? baseScroll.left : container.scrollLeft;
+    const startScrollTop = baseScroll ? baseScroll.top : container.scrollTop;
+
+    const newScrollLeft = Math.round((startScrollLeft + px) * scaleFactor - px);
+    const newScrollTop = Math.round((startScrollTop + py) * scaleFactor - py);
+
+    pendingScrollRef.current = {
+      left: Math.max(0, newScrollLeft),
+      top: Math.max(0, newScrollTop),
+    };
+
+    setScale(clamped);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (pendingScrollRef.current && scrollContainerRef.current) {
+      const { left, top } = pendingScrollRef.current;
+      scrollContainerRef.current.scrollLeft = left;
+      scrollContainerRef.current.scrollTop = top;
+      pendingScrollRef.current = null;
+    }
+    if (pagesWrapperRef.current) {
+      pagesWrapperRef.current.style.transform = 'none';
+      pagesWrapperRef.current.style.transformOrigin = 'center center';
+      pagesWrapperRef.current.style.transition = 'none';
+      pagesWrapperRef.current.style.willChange = 'auto';
+    }
+  }, [scale]);
+
   const prevPage = () => scrollToPage(pageNum - 1);
   const nextPage = () => scrollToPage(pageNum + 1);
-  const zoomIn   = () => setScale((s) => Math.min(s + 0.25, 2.5));
-  const zoomOut  = () => setScale((s) => Math.max(s - 0.25, 0.6));
-  const resetZoom = () => setScale(1.0);
+  const zoomIn = () => commitZoomScale(getNextZoomIn(scale));
+  const zoomOut = () => commitZoomScale(getPrevZoomOut(scale));
+  const resetZoom = () => commitZoomScale(1.0);
 
   const handlePageInputChange = (e) => setPageInput(e.target.value);
 
@@ -779,9 +1028,9 @@ const pdfDocumentCache = new Map();
   const toggleFullscreen = () => {
     if (!rootRef.current) return;
     if (!document.fullscreenElement) {
-      rootRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+      rootRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => { });
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => { });
     }
   };
 
@@ -791,15 +1040,35 @@ const pdfDocumentCache = new Map();
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  // Silky Smooth 60fps Midpoint-Anchored Pinch-in / Pinch-out Touch Zoom System
+  const scaleRef = useRef(scale);
   useEffect(() => {
-    const stageEl = rootRef.current;
+    scaleRef.current = scale;
+  }, [scale]);
+
+  // Pointer- & Midpoint-Anchored GPU-Accelerated Zoom Engine
+  useEffect(() => {
+    const stageEl = rootRef.current || scrollContainerRef.current;
     if (!stageEl) return;
 
     let initialDist = 0;
     let initialScale = 1.0;
+    let initialScroll = null;
     let currentFactor = 1.0;
     let isPinching = false;
+    let isWheeling = false;
+    let animationFrameId = null;
+    let debounceTimer = null;
+    let gestureTargetScale = null;
+    let gestureAnchor = null;
+
+    const clearTransformStyles = () => {
+      if (pagesWrapperRef.current) {
+        pagesWrapperRef.current.style.transform = 'none';
+        pagesWrapperRef.current.style.transformOrigin = 'center center';
+        pagesWrapperRef.current.style.transition = 'none';
+        pagesWrapperRef.current.style.willChange = 'auto';
+      }
+    };
 
     const onTouchStart = (e) => {
       if (e.touches.length === 2) {
@@ -809,16 +1078,19 @@ const pdfDocumentCache = new Map();
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
-        initialScale = scaleRef.current;
+        initialScale = scaleRef.current || 1.0;
         currentFactor = 1.0;
 
-        if (scrollContainerRef.current) {
-          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        if (scrollContainerRef.current && pagesWrapperRef.current) {
           const rect = scrollContainerRef.current.getBoundingClientRect();
-          scrollContainerRef.current.style.transformOrigin = `${midX - rect.left}px ${midY - rect.top}px`;
-          scrollContainerRef.current.style.transition = 'none';
-          scrollContainerRef.current.style.willChange = 'transform';
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+          gestureAnchor = { x: midX, y: midY };
+          initialScroll = { left: scrollContainerRef.current.scrollLeft, top: scrollContainerRef.current.scrollTop };
+
+          pagesWrapperRef.current.style.transformOrigin = `${midX}px ${midY}px`;
+          pagesWrapperRef.current.style.transition = 'none';
+          pagesWrapperRef.current.style.willChange = 'transform';
         }
       }
     };
@@ -831,10 +1103,11 @@ const pdfDocumentCache = new Map();
           e.touches[0].clientY - e.touches[1].clientY
         );
         currentFactor = dist / initialDist;
-        const targetScale = Math.min(Math.max(initialScale * currentFactor, 0.5), 3.5);
+        const targetScale = Math.min(Math.max(initialScale * currentFactor, 0.5), 3.0);
+        gestureTargetScale = targetScale;
 
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.style.transform = `scale(${targetScale / initialScale})`;
+        if (pagesWrapperRef.current) {
+          pagesWrapperRef.current.style.transform = `scale(${targetScale / initialScale})`;
         }
       }
     };
@@ -842,34 +1115,96 @@ const pdfDocumentCache = new Map();
     const onTouchEnd = (e) => {
       if (isPinching && e.touches.length < 2) {
         isPinching = false;
-        const finalScale = Math.min(Math.max(initialScale * currentFactor, 0.6), 3.0);
+        const finalScale = gestureTargetScale || Math.min(Math.max(initialScale * currentFactor, 0.5), 3.0);
+        const anchor = gestureAnchor;
 
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.style.willChange = 'auto';
-          scrollContainerRef.current.style.transition = 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)';
-          scrollContainerRef.current.style.transform = 'scale(1)';
-
-          setTimeout(() => {
-            if (scrollContainerRef.current) {
-              scrollContainerRef.current.style.transition = 'none';
-              scrollContainerRef.current.style.transform = 'none';
-            }
-          }, 150);
-        }
-
-        if (initialDist > 0 && Math.abs(currentFactor - 1.0) > 0.03) {
-          setScale(finalScale);
+        if (initialDist > 0 && Math.abs(currentFactor - 1.0) > 0.01) {
+          commitZoomScale(finalScale, anchor, initialScroll, initialScale);
+        } else {
+          clearTransformStyles();
         }
         initialDist = 0;
         currentFactor = 1.0;
+        gestureTargetScale = null;
+        gestureAnchor = null;
+        initialScroll = null;
       }
     };
 
+    // Pointer-anchored wheel zoom (Ctrl / Cmd + Wheel)
     const onWheel = (e) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.cancelable) e.preventDefault();
-        const delta = e.deltaY < 0 ? 0.15 : -0.15;
-        setScale((prev) => Math.min(Math.max(prev + delta, 0.6), 3.0));
+
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        if (!isWheeling) {
+          initialScroll = { left: container.scrollLeft, top: container.scrollTop };
+          initialScale = scaleRef.current || 1.0;
+          isWheeling = true;
+        }
+
+        const rect = container.getBoundingClientRect();
+        const anchorX = e.clientX - rect.left;
+        const anchorY = e.clientY - rect.top;
+        gestureAnchor = { x: anchorX, y: anchorY };
+
+        const delta = e.deltaY;
+        const factor = Math.pow(0.996, delta);
+        const currentS = gestureTargetScale || scaleRef.current || 1.0;
+        const targetScale = Math.min(Math.max(currentS * factor, 0.5), 3.0);
+        gestureTargetScale = targetScale;
+
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(() => {
+          if (pagesWrapperRef.current) {
+            const visualRatio = targetScale / (initialScale || 1.0);
+            pagesWrapperRef.current.style.transformOrigin = `${anchorX}px ${anchorY}px`;
+            pagesWrapperRef.current.style.willChange = 'transform';
+            pagesWrapperRef.current.style.transition = 'none';
+            pagesWrapperRef.current.style.transform = `scale(${visualRatio})`;
+          }
+        });
+
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          isWheeling = false;
+          const finalScale = gestureTargetScale;
+          const anchor = gestureAnchor;
+          if (finalScale) {
+            commitZoomScale(finalScale, anchor, initialScroll, initialScale);
+          } else {
+            clearTransformStyles();
+          }
+          gestureTargetScale = null;
+          gestureAnchor = null;
+          initialScroll = null;
+        }, 160);
+      }
+    };
+
+    const onGestureStart = (e) => {
+      if (e.cancelable) e.preventDefault();
+      initialScale = scaleRef.current || 1.0;
+    };
+
+    const onGestureChange = (e) => {
+      if (e.cancelable) e.preventDefault();
+      const targetScale = Math.min(Math.max(initialScale * e.scale, 0.5), 3.0);
+      gestureTargetScale = targetScale;
+      if (pagesWrapperRef.current) {
+        pagesWrapperRef.current.style.transform = `scale(${targetScale / initialScale})`;
+      }
+    };
+
+    const onGestureEnd = (e) => {
+      if (e.cancelable) e.preventDefault();
+      const finalScale = gestureTargetScale;
+      if (finalScale) {
+        commitZoomScale(finalScale);
+      } else {
+        clearTransformStyles();
       }
     };
 
@@ -878,15 +1213,24 @@ const pdfDocumentCache = new Map();
     stageEl.addEventListener('touchend', onTouchEnd, { passive: false });
     stageEl.addEventListener('touchcancel', onTouchEnd, { passive: false });
     stageEl.addEventListener('wheel', onWheel, { passive: false });
+    stageEl.addEventListener('gesturestart', onGestureStart, { passive: false });
+    stageEl.addEventListener('gesturechange', onGestureChange, { passive: false });
+    stageEl.addEventListener('gestureend', onGestureEnd, { passive: false });
 
     return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      clearTransformStyles();
       stageEl.removeEventListener('touchstart', onTouchStart);
       stageEl.removeEventListener('touchmove', onTouchMove);
       stageEl.removeEventListener('touchend', onTouchEnd);
       stageEl.removeEventListener('touchcancel', onTouchEnd);
       stageEl.removeEventListener('wheel', onWheel);
+      stageEl.removeEventListener('gesturestart', onGestureStart);
+      stageEl.removeEventListener('gesturechange', onGestureChange);
+      stageEl.removeEventListener('gestureend', onGestureEnd);
     };
-  }, []);
+  }, [commitZoomScale]);
 
   // Keyboard Shortcuts System
   useEffect(() => {
@@ -966,14 +1310,6 @@ const pdfDocumentCache = new Map();
                 <button className="pdf-rail-btn" onClick={nextPage} disabled={pageNum >= numPages} title="Next Page (→)">▼</button>
               </div>
 
-              {/* Zoom Box */}
-              <div className="pdf-rail-box">
-                <span className="pdf-rail-box-label">ZOOM</span>
-                <button className="pdf-rail-btn" onClick={zoomIn} title="Zoom In (+)">+</button>
-                <button className="pdf-rail-zoom-badge" onClick={resetZoom} title="Reset Zoom (0)">{Math.round(scale * 100)}%</button>
-                <button className="pdf-rail-btn" onClick={zoomOut} title="Zoom Out (-)">-</button>
-              </div>
-
               {/* ANNOTATION & HIGHLIGHTER TOOLS BOX */}
               <div className="pdf-rail-box">
                 <span className="pdf-rail-box-label">TOOLS</span>
@@ -1012,9 +1348,9 @@ const pdfDocumentCache = new Map();
                   <div className="pdf-rail-colors-row">
                     {[
                       { id: 'yellow', hex: '#fde047' },
-                      { id: 'green',  hex: '#4ade80' },
-                      { id: 'pink',   hex: '#f472b6' },
-                      { id: 'blue',   hex: '#38bdf8' },
+                      { id: 'green', hex: '#4ade80' },
+                      { id: 'pink', hex: '#f472b6' },
+                      { id: 'blue', hex: '#38bdf8' },
                     ].map((c) => (
                       <button
                         key={c.id}
@@ -1028,10 +1364,34 @@ const pdfDocumentCache = new Map();
                 )}
               </div>
 
-              {/* View Box */}
+              {/* View & Zoom Box */}
               <div className="pdf-rail-box">
-                <span className="pdf-rail-box-label">VIEW</span>
+                <span className="pdf-rail-box-label">ZOOM &amp; VIEW</span>
+                <div className="pdf-rail-tools-row" style={{ marginBottom: '6px' }}>
+                  <button
+                    className="pdf-rail-btn"
+                    onClick={zoomOut}
+                    disabled={scale <= 0.5}
+                    title="Zoom Out (-)"
+                  >
+                    −
+                  </button>
+                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--fg)', minWidth: '36px', textAlign: 'center', display: 'inline-block' }}>
+                    {Math.round(scale * 100)}%
+                  </span>
+                  <button
+                    className="pdf-rail-btn"
+                    onClick={zoomIn}
+                    disabled={scale >= 3.0}
+                    title="Zoom In (+)"
+                  >
+                    +
+                  </button>
+                </div>
                 <div className="pdf-rail-tools-row">
+                  <button className="pdf-rail-btn" onClick={resetZoom} title="Reset Zoom (0)">
+                    100%
+                  </button>
                   <button className="pdf-rail-btn" onClick={toggleFullscreen} title="Toggle Fullscreen (F)">
                     {isFullscreen ? '↙' : '⤢'}
                   </button>
@@ -1044,8 +1404,6 @@ const pdfDocumentCache = new Map();
           )}
         </div>
       )}
-
-
 
       {/* PDF STAGE VIEWPORT — SCROLLABLE FULL-WIDTH CONTAINER */}
       <div className="pdf-viewer-stage">
@@ -1070,25 +1428,31 @@ const pdfDocumentCache = new Map();
             className="pdf-vertical-scroll-container"
             ref={scrollContainerRef}
           >
-            {Array.from({ length: numPages }, (_, i) => i + 1).map((pIndex) => {
-              const bufferWindow = 15;
-              const shouldRender = Math.abs(pIndex - pageNum) <= bufferWindow;
-              return (
-                <PDFPageCard
-                  key={pIndex}
-                  pIndex={pIndex}
-                  numPages={numPages}
-                  isActive={pageNum === pIndex}
-                  shouldRender={shouldRender}
-                  pdfDoc={pdfDoc}
-                  scale={scale}
-                  containerWidth={containerWidth}
-                  registerPageRef={registerPageRef}
-                  activeTool={activeTool}
-                  activeColor={activeColor}
-                />
-              );
-            })}
+            <div
+              className="pdf-pages-inner-wrapper"
+              ref={pagesWrapperRef}
+              style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+            >
+              {Array.from({ length: numPages }, (_, i) => i + 1).map((pIndex) => {
+                const bufferWindow = isMobile ? 3 : 5;
+                const shouldRender = Math.abs(pIndex - pageNum) <= bufferWindow;
+                return (
+                  <PDFPageCard
+                    key={pIndex}
+                    pIndex={pIndex}
+                    numPages={numPages}
+                    isActive={pageNum === pIndex}
+                    shouldRender={shouldRender}
+                    pdfDoc={pdfDoc}
+                    scale={scale}
+                    containerWidth={containerWidth}
+                    registerPageRef={registerPageRef}
+                    activeTool={activeTool}
+                    activeColor={activeColor}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
 

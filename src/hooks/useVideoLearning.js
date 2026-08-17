@@ -1,75 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useLocalStorage } from './useLocalStorage';
 
 /**
  * Custom hook for video learning progress, bookmarks, likes, saves, and history.
  * Persists data to localStorage with instant UI synchronization.
  */
 export function useVideoLearning() {
-  // Completed lessons by video ID: { [videoId]: [lessonIndex1, lessonIndex2] }
-  const [completedMap, setCompletedMap] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('eduvault-video-completed') || '{}');
-    } catch {
-      return {};
-    }
-  });
-
-  // Liked videos array
-  const [likedVideos, setLikedVideos] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('eduvault-video-likes') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  // Bookmarked videos array
-  const [bookmarkedVideos, setBookmarkedVideos] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('eduvault-video-bookmarks') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  // Saved videos array
-  const [savedVideos, setSavedVideos] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('eduvault-video-saved') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  // Learning list array
-  const [learningList, setLearningList] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('eduvault-video-learning-list') || '[]');
-    } catch {
-      return [];
-    }
-  });
-
-  // Sync to localStorage
-  useEffect(() => {
-    localStorage.setItem('eduvault-video-completed', JSON.stringify(completedMap));
-  }, [completedMap]);
-
-  useEffect(() => {
-    localStorage.setItem('eduvault-video-likes', JSON.stringify(likedVideos));
-  }, [likedVideos]);
-
-  useEffect(() => {
-    localStorage.setItem('eduvault-video-bookmarks', JSON.stringify(bookmarkedVideos));
-  }, [bookmarkedVideos]);
-
-  useEffect(() => {
-    localStorage.setItem('eduvault-video-saved', JSON.stringify(savedVideos));
-  }, [savedVideos]);
-
-  useEffect(() => {
-    localStorage.setItem('eduvault-video-learning-list', JSON.stringify(learningList));
-  }, [learningList]);
+  const [completedMap, setCompletedMap] = useLocalStorage('eduvault-video-completed', {});
+  const [likedVideos, setLikedVideos] = useLocalStorage('eduvault-video-likes', []);
+  const [bookmarkedVideos, setBookmarkedVideos] = useLocalStorage('eduvault-video-bookmarks', []);
+  const [savedVideos, setSavedVideos] = useLocalStorage('eduvault-video-saved', []);
+  const [learningList, setLearningList] = useLocalStorage('eduvault-video-learning-list', []);
 
   // Actions
   const isLessonCompleted = (videoId, lessonIdx) => {

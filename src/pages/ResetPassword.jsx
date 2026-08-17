@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PasswordInput, AuthAlert } from '../components/FormElements';
 
 export function ResetPassword() {
   const { updatePassword } = useAuth();
@@ -8,7 +9,6 @@ export function ResetPassword() {
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,37 +48,27 @@ export function ResetPassword() {
           <p>Please enter your new password below to regain access to your account.</p>
         </div>
 
-        {error && <div className="auth-error" role="alert">{error}</div>}
-        {success && <div className="auth-success" role="status">{success}</div>}
+        <AuthAlert type="error" message={error} />
+        <AuthAlert type="success" message={success} />
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="auth-field">
             <label htmlFor="reset-new-password">New Password</label>
-            <div className="password-input-wrapper">
-              <input
-                id="reset-new-password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? '👁️' : '🙈'}
-              </button>
-            </div>
+            <PasswordInput
+              id="reset-new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              required
+              toggleVariant="emoji"
+            />
           </div>
 
           <div className="auth-field">
             <label htmlFor="reset-confirm-password">Confirm New Password</label>
             <input
               id="reset-confirm-password"
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

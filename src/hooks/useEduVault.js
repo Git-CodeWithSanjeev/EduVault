@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useLocalStorage } from './useLocalStorage';
 
 export function useSaved() {
-  const [s, setS] = useState(() =>
-    JSON.parse(localStorage.getItem('eduvault-saved') || '[]'),
-  );
-  useEffect(
-    () => localStorage.setItem('eduvault-saved', JSON.stringify(s)),
-    [s],
-  );
-  return [s, (id) => setS((x) => (x.includes(id) ? x.filter((y) => y !== id) : [...x, id]))];
+  const [s, setS] = useLocalStorage('eduvault-saved', []);
+
+  const toggleSaved = (id) => {
+    setS((x) => (x.includes(id) ? x.filter((y) => y !== id) : [...x, id]));
+  };
+
+  return [s, toggleSaved];
 }
 
 export function useWelcomeBack() {
@@ -35,16 +35,10 @@ export function useWelcomeBack() {
 }
 
 export function useRecentlyVisited() {
-  const [recent, setRecent] = useState(() =>
-    JSON.parse(localStorage.getItem('eduvault-recent') || '[]'),
-  );
+  const [recent, setRecent] = useLocalStorage('eduvault-recent', []);
 
   const addRecent = (id) => {
-    setRecent((prev) => {
-      const next = [id, ...prev.filter((x) => x !== id)].slice(0, 6);
-      localStorage.setItem('eduvault-recent', JSON.stringify(next));
-      return next;
-    });
+    setRecent((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, 6));
   };
 
   return [recent, addRecent];

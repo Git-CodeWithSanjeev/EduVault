@@ -1,38 +1,57 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PasswordInput, AuthAlert, GoogleAuthButton, AuthDivider } from '../components/FormElements';
+import { isValidEmail, isValidName, getPasswordRequirements } from '../utils/validation';
+import { triggerDirectGoogleLogin } from '../utils/googleAuth';
 
 export function Register() {
-  const { register, isLoggedIn } = useAuth();
+  const { register, loginWithGoogle, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   if (isLoggedIn) {
     navigate('/', { replace: true });
   }
 
   // Password requirements checks
-  const passLength = password.length >= 8;
-  const passHasNumber = /\d/.test(password);
+  const { passLength, passHasNumber } = getPasswordRequirements(password);
   const passMatch = password && password === confirmPassword;
+
+  const handleGoogleSignup = async () => {
+    setError('');
+    setGoogleLoading(true);
+
+    try {
+      const googleProfile = await triggerDirectGoogleLogin();
+      await loginWithGoogle(googleProfile);
+      navigate('/', { replace: true });
+    } catch (err) {
+      if (!err.message?.includes('popup_closed') && !err.message?.includes('user_closed')) {
+        setError(err.message || 'Google sign-up failed. Please try again.');
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!name.trim() || name.trim().length < 2) {
+    if (!isValidName(name)) {
       setError('Full Name must be at least 2 characters long');
       return;
     }
-    if (!email || !email.includes('@') || !email.includes('.')) {
+    if (!isValidEmail(email)) {
       setError('Please enter a valid email address');
       return;
     }
@@ -69,7 +88,17 @@ export function Register() {
           <p>Join EduVault to access legal education, textbooks, and open resources.</p>
         </div>
 
-        {error && <div className="auth-error" role="alert">{error}</div>}
+        <AuthAlert type="error" message={error} />
+
+        {/* 1-Click Google OAuth Sign Up */}
+        <GoogleAuthButton
+          onClick={handleGoogleSignup}
+          loading={googleLoading}
+          disabled={loading || googleLoading}
+          text="Sign up with Google"
+        />
+
+        <AuthDivider text="or register with email" />
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {/* STEP 1: Full Name */}
@@ -81,7 +110,7 @@ export function Register() {
               placeholder="e.g. Alex Johnson"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              disabled={loading}
+              disabled={loading || googleLoading}
               required
               autoFocus
             />
@@ -96,7 +125,7 @@ export function Register() {
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
+              disabled={loading || googleLoading}
               required
               autoComplete="email"
             />
@@ -105,26 +134,14 @@ export function Register() {
           {/* Password */}
           <div className="auth-field">
             <label htmlFor="reg-password">Password</label>
-            <div className="password-input-wrapper">
-              <input
-                id="reg-password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
+            <PasswordInput
+              id="reg-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading || googleLoading}
+              required
+              autoComplete="new-password"
+            />
 
             {/* Password Validation Requirements */}
             <div className="password-hints">
@@ -140,18 +157,14 @@ export function Register() {
           {/* Confirm Password */}
           <div className="auth-field">
             <label htmlFor="reg-confirm-password">Confirm Password</label>
-            <div className="password-input-wrapper">
-              <input
-                id="reg-confirm-password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={loading}
-                required
-                autoComplete="new-password"
-              />
-            </div>
+            <PasswordInput
+              id="reg-confirm-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading || googleLoading}
+              required
+              autoComplete="new-password"
+            />
             {confirmPassword && (
               <small className={`confirm-hint ${passMatch ? 'valid' : 'invalid'}`}>
                 {passMatch ? '✓ Passwords match' : '✕ Passwords do not match'}
@@ -160,7 +173,7 @@ export function Register() {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="auth-submit-btn" disabled={loading}>
+          <button type="submit" className="auth-submit-btn" disabled={loading || googleLoading}>
             {loading ? 'Creating Account…' : 'Create Account / Next →'}
           </button>
         </form>

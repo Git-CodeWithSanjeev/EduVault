@@ -388,7 +388,10 @@ nav a.active {
   text-transform: uppercase;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: -0.025em;
 }
@@ -490,8 +493,8 @@ h1 {
 
 .resource-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
 }
 
 .resource {
@@ -501,7 +504,7 @@ h1 {
   backdrop-filter: blur(8px);
   overflow: hidden;
   display: flex;
-  min-height: 220px;
+  height: 235px;
   box-shadow: var(--card-shadow);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
@@ -515,9 +518,11 @@ h1 {
 /* ── Realistic Book Cover Design System (Premium Mesh Gradients & 3D Hardcover) ── */
 .cover {
   position: relative;
-  width: 40%;
-  min-width: 140px;
-  padding: 18px 16px;
+  width: 135px;
+  min-width: 135px;
+  max-width: 135px;
+  flex-shrink: 0;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -531,6 +536,7 @@ h1 {
   border-right: 2px solid rgba(0, 0, 0, 0.3);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 
 .resource:hover .cover {
   box-shadow:
@@ -609,6 +615,32 @@ h1 {
   justify-content: space-between;
 }
 
+.cover-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.cover-tag-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 4;
+}
+
 .cover-tag {
   font-size: 9px;
   font-weight: 800;
@@ -625,19 +657,22 @@ h1 {
   color: #ffffff;
 }
 
+
 .cover-title-box {
   margin: 12px 0;
 }
 
 .cover-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 700;
   line-height: 1.25;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
   color: #ffffff;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
 }
+
 
 .cover-bottom {
   display: flex;
@@ -773,26 +808,43 @@ h1 {
 }
 
 .resource h3 {
-  font-size: 14px;
-  margin: 10px 0 5px;
+  font-size: 14.5px;
+  margin: 8px 0 4px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.25;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.resource p,
-.resource-info>small {
-  font-size: 11px;
-  line-height: 1.5;
+.resource p {
+  font-size: 11.5px;
+  line-height: 1.45;
   color: var(--muted);
-  margin: 0;
+  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.resource-info>small {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--sub);
+  margin-top: 2px;
+  display: block;
 }
 
 .actions {
   display: flex;
   gap: 8px;
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 8px;
 }
+
 
 .actions a,
 .actions button {
@@ -1564,7 +1616,7 @@ footer a {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: rgba(114, 93, 224, 0.9);
+  background: #068A87;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1578,7 +1630,7 @@ footer a {
 
 .video-thumbnail-wrapper:hover .video-play-btn {
   transform: scale(1.15);
-  background: #725de0;
+  background: #068A87;
 }
 
 .video-duration-badge {
@@ -1944,7 +1996,7 @@ footer a {
 }
 
 .active-chap-tag {
-  color: #a496ff;
+  color: #068A87;
   font-weight: 700;
 }
 
@@ -3152,7 +3204,8 @@ footer a {
   }
 
   header nav {
-    display: none !important; /* Hide desktop horizontal nav inline link bar on mobile */
+    display: none !important;
+    /* Hide desktop horizontal nav inline link bar on mobile */
   }
 
   .head-actions {
@@ -3388,7 +3441,8 @@ footer a {
   }
 
   .outline {
-    display: none; /* Hide Contribute button from main top bar on extra small screens */
+    display: none;
+    /* Hide Contribute button from main top bar on extra small screens */
   }
 
   /* Book Card Vertical Layout on Small Phones */
@@ -5104,6 +5158,140 @@ nav a,
   }
 }
 
+/* ─── Google OAuth & Social Sign-In Styles ────────────────────────── */
+.google-auth-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: relative;
+  user-select: none;
+}
+
+.google-auth-btn:hover:not(:disabled) {
+  background: var(--bg2);
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.google-auth-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.google-auth-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+.google-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(66, 133, 244, 0.2);
+  border-top-color: #4285f4;
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ─── Auth Divider ─────────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 18px 0;
+  color: var(--muted);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--line);
+}
+
+.auth-divider span {
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+/* ─── Avatar Image Styles ─────────────────────────────────────────── */
+.user-avatar-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(13, 148, 136, 0.35);
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.oauth-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.oauth-provider-badge.google {
+  background: rgba(66, 133, 244, 0.1);
+  color: #1a73e8;
+  border: 1px solid rgba(66, 133, 244, 0.3);
+}
+
+.oauth-security-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.oauth-notice-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
 /* ─── 6-Digit OTP Box Grid Component ─── */
 .otp-6box-container {
   display: flex;
@@ -5831,9 +6019,18 @@ nav a,
   display: block;
   border-radius: 6px;
   max-width: none !important;
-  height: auto !important;
-  object-fit: contain;
 }
+
+.pdf-draw-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  touch-action: none;
+}
+
 
 .pdf-page-placeholder {
   position: absolute;
@@ -6087,18 +6284,19 @@ kbd {
 }
 
 .reader-sidebar {
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
   flex-shrink: 0;
   height: 100%;
   background: var(--card);
   border-left: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  padding: 12px 10px;
+  padding: 12px 12px 14px;
   z-index: 10;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .reader-sidebar-title {
@@ -6132,6 +6330,7 @@ kbd {
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
+  margin-bottom: 10px;
   padding-right: 4px;
 }
 
@@ -6168,7 +6367,7 @@ kbd {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 140px;
 }
 
 .chapter-badge {
@@ -6187,8 +6386,12 @@ kbd {
 
 .sidebar-footer-archive {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 12px;
+  padding-bottom: 8px;
   border-top: 1px solid var(--line);
+  flex-shrink: 0;
+  background: var(--card);
+  box-sizing: border-box;
 }
 
 .archive-title {
@@ -6201,7 +6404,7 @@ kbd {
 }
 
 .archive-download-btn {
-  font-size: 12px;
+  font-size: 11.5px;
   color: #ffffff;
   text-decoration: none;
   font-weight: 700;
@@ -6209,18 +6412,51 @@ kbd {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 12px;
+  padding: 9px 10px;
   background: var(--p-gradient);
   border-radius: 8px;
   border: none;
   box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
   transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
+
 
 .archive-download-btn:hover {
   transform: translateY(-1px);
   box-shadow: var(--hover-shadow);
 }
+
+.web-reader-fallback-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 24px;
+  text-align: center;
+  background: var(--card);
+  border-radius: 12px;
+  margin: 12px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.web-reader-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  background: var(--bg2);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+}
+
 
 /* ==========================================================================
    MOBILE-FIRST RESPONSIVE DESIGN SYSTEM (< 768px)
@@ -6228,8 +6464,10 @@ kbd {
    ========================================================================== */
 
 @media (max-width: 768px) {
+
   /* ── 1. GLOBAL LAYOUT & SAFETY RESET ── */
-  html, body {
+  html,
+  body {
     overflow-x: hidden !important;
     width: 100% !important;
     max-width: 100vw !important;
@@ -6241,34 +6479,45 @@ kbd {
   }
 
   main {
-    padding-bottom: 76px !important; /* Prevents mobile bottom nav overlap */
+    padding-bottom: 76px !important;
+    /* Prevents mobile bottom nav overlap */
     overflow-x: hidden !important;
   }
 
   /* ── 2. MOBILE RESPONSIVE TYPOGRAPHY ── */
-  h1, .hero-title, .page-title {
+  h1,
+  .hero-title,
+  .page-title {
     font-size: 24px !important;
     line-height: 1.25 !important;
     letter-spacing: -0.3px !important;
   }
 
-  h2, .section-title {
+  h2,
+  .section-title {
     font-size: 19px !important;
     line-height: 1.3 !important;
   }
 
-  h3, .card-title {
+  h3,
+  .card-title {
     font-size: 16px !important;
     line-height: 1.35 !important;
   }
 
-  p, .body-text {
+  p,
+  .body-text {
     font-size: 14px !important;
     line-height: 1.5 !important;
   }
 
   /* ── 3. TOUCH TARGET ENFORCEMENT (MIN 44px) ── */
-  button, .btn, .auth-nav-btn, .bottom-nav-item, input, select {
+  button,
+  .btn,
+  .auth-nav-btn,
+  .bottom-nav-item,
+  input,
+  select {
     min-height: 44px;
     touch-action: manipulation;
   }
@@ -6290,7 +6539,8 @@ kbd {
   }
 
   header nav {
-    display: none !important; /* Hide desktop nav links */
+    display: none !important;
+    /* Hide desktop nav links */
   }
 
   header .logo {
@@ -6302,9 +6552,10 @@ kbd {
     gap: 6px !important;
   }
 
-  header .outline, 
+  header .outline,
   header .user-profile-btn strong {
-    display: none !important; /* Compact actions on mobile */
+    display: none !important;
+    /* Compact actions on mobile */
   }
 
   .mobile-nav-toggle {
@@ -6476,8 +6727,13 @@ kbd {
   }
 
   @keyframes slideUpSheet {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(100%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
   }
 
   .sheet-handle {
@@ -6568,7 +6824,8 @@ kbd {
   }
 
   /* ── 8. HOMEPAGE MOBILE REDESIGN ── */
-  .hero, .hero-section {
+  .hero,
+  .hero-section {
     padding: 24px 16px !important;
     text-align: center !important;
     flex-direction: column !important;
@@ -6586,7 +6843,7 @@ kbd {
     gap: 12px !important;
   }
 
-  .hero-cta-group a, 
+  .hero-cta-group a,
   .hero-cta-group button,
   .hero-cta-group .hero-link {
     display: flex !important;
@@ -6603,29 +6860,31 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  .hero .safe, .hero p.safe {
+  .hero .safe,
+  .hero p.safe {
     text-align: center !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
 
-  .stats-banner, .home-stats-grid {
+  .stats-banner,
+  .home-stats-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
     padding: 16px 14px !important;
   }
 
   /* ── 9. CARDS & GRIDS FOR MOBILE ── */
-  .book-grid, 
-  .library-grid, 
-  .cards-grid, 
+  .book-grid,
+  .library-grid,
+  .cards-grid,
   .categories-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     padding: 0 4px !important;
   }
 
-  .video-grid, 
+  .video-grid,
   .course-grid,
   .featured-videos-grid {
     grid-template-columns: 1fr !important;
@@ -6633,24 +6892,28 @@ kbd {
   }
 
   /* Book Card Touch Adjustments */
-  .book-card, .card {
+  .book-card,
+  .card {
     border-radius: 12px !important;
     padding: 10px !important;
   }
 
-  .book-cover, .book-card-cover {
+  .book-cover,
+  .book-card-cover {
     aspect-ratio: 3/4 !important;
     height: auto !important;
     border-radius: 8px !important;
   }
 
-  .book-card h3, .card h3 {
+  .book-card h3,
+  .card h3 {
     font-size: 14px !important;
     margin: 8px 0 4px !important;
     line-height: 1.3 !important;
   }
 
-  .book-card .author, .card .meta {
+  .book-card .author,
+  .card .meta {
     font-size: 12px !important;
   }
 
@@ -6660,7 +6923,7 @@ kbd {
     margin-top: 10px !important;
   }
 
-  .book-card-actions a, 
+  .book-card-actions a,
   .book-card-actions button {
     width: 100% !important;
     min-height: 42px !important;
@@ -6739,7 +7002,7 @@ kbd {
     box-sizing: border-box !important;
   }
 
-  .learning-main, 
+  .learning-main,
   .learning-sidebar {
     width: 100% !important;
     max-width: 100% !important;
@@ -6890,7 +7153,8 @@ kbd {
   }
 
   /* ── 13. SEARCH BAR MOBILE ── */
-  .search-box, .hero-search-input {
+  .search-box,
+  .hero-search-input {
     width: 100% !important;
     font-size: 15px !important;
     min-height: 46px !important;
@@ -6899,7 +7163,8 @@ kbd {
 
   /* ── 14. FOOTER MOBILE ── */
   footer {
-    padding: 24px 16px 84px !important; /* Space above bottom nav */
+    padding: 24px 16px 84px !important;
+    /* Space above bottom nav */
     flex-direction: column !important;
     text-align: center !important;
     gap: 12px !important;
@@ -6925,8 +7190,15 @@ kbd {
 }
 
 @keyframes searchFadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .global-search-modal-card {
@@ -7028,7 +7300,7 @@ kbd {
   text-decoration: none;
   color: var(--ink);
   transition: background 0.15s ease;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .global-search-result-item:hover {

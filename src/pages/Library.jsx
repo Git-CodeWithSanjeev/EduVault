@@ -1,50 +1,55 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { items, cats, classLevels } from '../data/openItems';
+import React, { useState, useEffect, useMemo } from 'react';
+import { items, cats } from '../data/openItems';
 import { Cards } from '../components/Cards';
+import { NCERT_CLASSES, subjectIcon, groupByClass } from '../utils/subjectHelpers';
 
-/* ── helpers ────────────────────────────────────────────────────── */
-const NCERT_CLASSES = [
-  'Class 1','Class 2','Class 3','Class 4','Class 5','Class 6',
-  'Class 7','Class 8','Class 9','Class 10','Class 11','Class 12',
-];
-
-const SUBJECT_ICONS = {
-  Physics: '⚛️', Chemistry: '🧪', Mathematics: '📐', Biology: '🧬',
-  English: '📖', Hindi: '📜', History: '🏛️', Geography: '🌍',
-  Economics: '📊', 'Political Science': '🗳️', Sociology: '👥',
-  Psychology: '🧠', 'Computer Science': '💻', 'Informatics Practices': '🖥️',
-  Accountancy: '🧾', 'Business Studies': '💼', Sanskrit: '🕉️',
-  'Physical Education': '🏃', 'Fine Arts': '🎨', Music: '🎵',
-  Science: '🔬', 'Social Science': '🌐', 'Environmental Science': '🌿',
-  'Home Science': '🏠', 'Urdu': '✒️',
-};
-
-function subjectIcon(subject) {
-  return SUBJECT_ICONS[subject] || '📚';
-}
-
-/* Group NCERT books by level → subject */
-function groupByClass(bookList) {
-  const map = {};
-  for (const b of bookList) {
-    const cls = b.level || 'Other';
-    if (!map[cls]) map[cls] = {};
-    const subj = b.subject || 'General';
-    if (!map[cls][subj]) map[cls][subj] = [];
-    map[cls][subj].push(b);
-  }
-  return map;
-}
+export { NCERT_CLASSES, subjectIcon, groupByClass };
 
 /* ── Component ──────────────────────────────────────────────────── */
 export function Library({ saved, toggle }) {
-  const [tab, setTab]       = useState('class');   // 'class' | 'category' | 'search'
-  const [q, setQ]           = useState('');
-  const [activeClass, setActiveClass] = useState(NCERT_CLASSES[11]); // default Class 12
-  const [activeCat, setActiveCat]     = useState(cats[0]);
-  const [activeSub, setActiveSub]     = useState('All');
+  const [tab, setTab] = useState(() => sessionStorage.getItem('eduvault_lib_tab') || 'class');
+  const [q, setQ] = useState(() => sessionStorage.getItem('eduvault_lib_q') || '');
+  const [activeClass, setActiveClass] = useState(() => sessionStorage.getItem('eduvault_lib_class') || NCERT_CLASSES[11]);
+  const [activeCat, setActiveCat] = useState(() => sessionStorage.getItem('eduvault_lib_cat') || cats[0]);
+  const [activeSub, setActiveSub] = useState(() => sessionStorage.getItem('eduvault_lib_sub') || 'All');
+  const [openstaxSub, setOpenstaxSub] = useState(() => sessionStorage.getItem('eduvault_lib_openstax_sub') || 'All');
   const [visibleCount, setVisibleCount] = useState(16);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_tab', tab);
+  }, [tab]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_q', q);
+  }, [q]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_class', activeClass);
+  }, [activeClass]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_cat', activeCat);
+  }, [activeCat]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_sub', activeSub);
+  }, [activeSub]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_openstax_sub', openstaxSub);
+  }, [openstaxSub]);
+
+
+  /* ─── OPENSTAX tab data ─── */
+  const openstaxBooksList = useMemo(() => items.filter(x => x.source === 'OpenStax'), []);
+  const openstaxSubjects = useMemo(() => {
+    const set = new Set(openstaxBooksList.map(b => b.subject).filter(Boolean));
+    return ['All', ...Array.from(set).sort()];
+  }, [openstaxBooksList]);
+  const filteredOpenstaxBooks = useMemo(() => {
+    if (openstaxSub === 'All') return openstaxBooksList;
+    return openstaxBooksList.filter(b => b.subject === openstaxSub);
+  }, [openstaxBooksList, openstaxSub]);
 
   /* ─── SEARCH tab filter ─── */
   const searchResults = useMemo(() => {
@@ -79,10 +84,11 @@ export function Library({ saved, toggle }) {
       if (slug === 'computer-science-it') return ['Computer Science','Informatics Practices'].includes(x.subject);
       if (slug === 'arts-humanities') return ['History','Geography','Political Science','Economics','Sociology','Psychology'].includes(x.subject);
       if (slug === 'board-books') return x.source === 'NCERT';
-      if (slug === 'undergraduate-ug') return x.level === 'Undergraduate';
+      if (slug === 'undergraduate-ug') return x.level === 'Undergraduate' || x.source === 'OpenStax';
       return false;
     }).slice(0, visibleCount);
   }, [activeCat, visibleCount]);
+
 
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
@@ -120,13 +126,17 @@ export function Library({ saved, toggle }) {
       {!q && (
         <div className="lib-tabs">
           <button className={`lib-tab ${tab === 'class' ? 'active' : ''}`} onClick={() => setTab('class')}>
-            By Class
+            By Class (NCERT)
+          </button>
+          <button className={`lib-tab ${tab === 'openstax' ? 'active' : ''}`} onClick={() => setTab('openstax')}>
+            OpenStax College
           </button>
           <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
             By Category
           </button>
         </div>
       )}
+
 
       {/* Mobile Filter Sheet Button */}
       {!q && (
@@ -274,8 +284,43 @@ export function Library({ saved, toggle }) {
       )}
 
       {/* ════════════════════════════════════════════
+           OPENSTAX TAB
+      ════════════════════════════════════════════ */}
+      {tab === 'openstax' && (
+        <div className="lib-content">
+          <div className="lib-subject-pills" style={{ marginBottom: '20px' }}>
+            {openstaxSubjects.map((s) => (
+              <button
+                key={s}
+                className={`lib-pill ${openstaxSub === s ? 'active' : ''}`}
+                onClick={() => setOpenstaxSub(s)}
+              >
+                {s !== 'All' && <span>{subjectIcon(s)}</span>}
+                {s}
+              </button>
+            ))}
+          </div>
+
+          <div className="lib-section-header">
+            <span>
+              📖 <strong>OpenStax College &amp; AP Textbooks</strong>
+              {openstaxSub !== 'All' && ` · ${openstaxSub}`}
+            </span>
+            <span className="lib-count-badge">{filteredOpenstaxBooks.length} books</span>
+          </div>
+
+          {filteredOpenstaxBooks.length === 0 ? (
+            <div className="lib-empty">No OpenStax books found for subject "{openstaxSub}".</div>
+          ) : (
+            <Cards list={filteredOpenstaxBooks} saved={saved} toggle={toggle} />
+          )}
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════
            BY CATEGORY TAB
       ════════════════════════════════════════════ */}
+
       {tab === 'category' && (
         <div className="lib-split">
           {/* Category Rail */}
@@ -322,3 +367,5 @@ export function Library({ saved, toggle }) {
     </section>
   );
 }
+
+export default Library;

@@ -66,16 +66,40 @@ export function Shell({ children, welcomeMsg }) {
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="User Profile Menu"
               >
-                <span>{user.avatar || '🎓'}</span>
-                <strong>{user.name}</strong>
+                {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="user-avatar-img"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span className="user-avatar-icon">{user.avatar || '🎓'}</span>
+                )}
+                <strong className="user-name-label">{user.name}</strong>
                 <span style={{ fontSize: '10px', opacity: 0.6 }}>▼</span>
               </button>
 
               {menuOpen && (
                 <div className="user-dropdown" onClick={() => setMenuOpen(false)}>
                   <div className="user-dropdown-header">
-                    <p>{user.name}</p>
-                    <small>{user.email}</small>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="user-avatar-img"
+                          style={{ width: '32px', height: '32px' }}
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span style={{ fontSize: '22px' }}>{user.avatar || '🎓'}</span>
+                      )}
+                      <div>
+                        <p>{user.name}</p>
+                        <small>{user.email}</small>
+                      </div>
+                    </div>
                   </div>
                   <Link to="/profile" className="user-dropdown-item">
                     Account &amp; Profile
@@ -200,11 +224,21 @@ export function Shell({ children, welcomeMsg }) {
 
               {isLoggedIn ? (
                 <>
-                  <NavLink to="/profile" onClick={closeDrawer}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                      <circle cx="12" cy="7" r="4" />
-                    </svg>
+                  <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="user-avatar-img"
+                        style={{ width: '22px', height: '22px' }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    )}
                     <span>Account &amp; Profile ({user.name})</span>
                   </NavLink>
                   <button

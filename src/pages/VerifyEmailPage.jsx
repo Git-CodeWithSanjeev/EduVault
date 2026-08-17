@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { OtpInput } from '../components/OtpInput';
+import { AuthAlert } from '../components/FormElements';
 
 export function VerifyEmailPage() {
   const { verifyOtp, resendOtp, pendingEmail, setPendingEmail, isLoggedIn } = useAuth();
@@ -82,8 +83,8 @@ export function VerifyEmailPage() {
           </p>
         </div>
 
-        {error && <div className="auth-error" role="alert">{error}</div>}
-        {success && <div className="auth-success" role="status">{success}</div>}
+        <AuthAlert type="error" message={error} />
+        <AuthAlert type="success" message={success} />
 
         <form onSubmit={handleVerify} className="auth-form" noValidate>
           <div className="auth-field" style={{ alignItems: 'center' }}>

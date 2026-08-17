@@ -6,6 +6,7 @@ import { items } from '../data/openItems';
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeApi';
 import { useVideoLearning } from '../hooks/useVideoLearning';
 import { VideoCard } from '../components/VideoCard';
+import { ToastNotification } from '../components/FormElements';
 
 export function VideoTheater() {
   const { id } = useParams();
@@ -207,7 +208,7 @@ export function VideoTheater() {
   return (
     <section className="page video-theater-page">
       {/* Toast Notification Popup */}
-      {toastMessage && <div className="toast-notification">{toastMessage}</div>}
+      <ToastNotification message={toastMessage} />
 
       {/* Back Navigation Bar */}
       <div className="theater-top-bar">

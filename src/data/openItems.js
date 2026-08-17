@@ -1,4 +1,6 @@
 import { NCERT_INDEX, ncertBooks } from '../ncertBooks';
+import { openstaxBooks } from '../openstaxBooks';
+
 
 export const otherItems = [
   {
@@ -383,11 +385,17 @@ export const otherItems = [
 export function hasAccessiblePdf(item) {
   if (!item) return false;
   if (item.source === 'NCERT' && item.url && item.url.includes('dd.zip')) return true;
+  if (item.source === 'OpenStax' && (item.pdfUrl || item.url)) return true;
   if (item.pdfUrl || (item.url && item.url.toLowerCase().includes('.pdf'))) return true;
   return false;
 }
 
-export const items = ncertBooks.filter(hasAccessiblePdf);
+export const items = [
+  ...ncertBooks.filter(hasAccessiblePdf),
+  ...openstaxBooks,
+  ...otherItems,
+];
+
 
 
 export const cats = [

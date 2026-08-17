@@ -1,11 +1,21 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ExternalLink } from '../components/Cards';
 
 export function Detail({ saved, toggle }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const b = items.find((x) => x.id === id);
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/library');
+    }
+  };
 
   if (!b) {
     return (
@@ -17,9 +27,10 @@ export function Detail({ saved, toggle }) {
 
   return (
     <section className="page detail-page">
-      <Link to="/library" className="back">
-        ← Back to library
-      </Link>
+      <a href="/library" onClick={handleBack} className="back">
+        ← Back to previous page
+      </a>
+
       <p className="eyebrow">
         {b.source} · {b.license}
       </p>
