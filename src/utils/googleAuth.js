@@ -54,7 +54,11 @@ export async function triggerDirectGoogleLogin() {
         callback: async (tokenResponse) => {
           if (tokenResponse.error) {
             console.error('[Google OAuth Error]:', tokenResponse);
-            if (tokenResponse.error === 'invalid_client' || tokenResponse.error_description?.includes('origin')) {
+            if (
+              tokenResponse.error === 'invalid_client' ||
+              tokenResponse.error === 'origin_mismatch' ||
+              tokenResponse.error_description?.includes('origin')
+            ) {
               return reject(new Error('GOOGLE_ORIGIN_BLOCKED'));
             }
             return reject(new Error(tokenResponse.error_description || tokenResponse.error));
