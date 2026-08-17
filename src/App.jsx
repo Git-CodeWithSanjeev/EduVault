@@ -1,25 +1,25 @@
 import { Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSaved, useRecentlyVisited, useWelcomeBack } from './hooks/useEduVault';
-import { Shell } from './components/Shell';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { PDFReader } from './components/PDFReader';
-import { Home } from './pages/Home';
-import { Library } from './pages/Library';
-import { Categories } from './pages/Categories';
-import { CategoryView } from './pages/CategoryView';
-import { Detail } from './pages/Detail';
-import { VideoHub } from './pages/VideoHub';
-import { VideoTheater } from './pages/VideoTheater';
-import { Outbound } from './pages/Outbound';
-import { Form } from './pages/Form';
-import { SavedPage } from './pages/SavedPage';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
-import { VerifyEmailPage } from './pages/VerifyEmailPage';
-import { Profile } from './pages/Profile';
-import { ResetPassword } from './pages/ResetPassword';
-import { AuthCallback } from './pages/AuthCallback';
+import { Shell, ProtectedRoute, PDFReader } from './components';
+import {
+  Home,
+  Library,
+  Categories,
+  CategoryView,
+  Detail,
+  VideoHub,
+  VideoTheater,
+  Outbound,
+  Form,
+  SavedPage,
+  Login,
+  Register,
+  VerifyEmailPage,
+  Profile,
+  ResetPassword,
+  AuthCallback,
+} from './pages';
 
 const scrollPositionsMap = new Map();
 
