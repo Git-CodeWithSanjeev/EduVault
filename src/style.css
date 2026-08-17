@@ -8,14 +8,17 @@
     --ink: #0f172a;
     --ink2: #1e293b;
     --muted: #475569;
-    --line: #ccebe4;
+    --line: rgba(13, 148, 136, 0.18);
+    --line-hover: rgba(13, 148, 136, 0.42);
+    --line-glow: rgba(20, 184, 166, 0.25);
+    --border-gradient: linear-gradient(135deg, rgba(13, 148, 136, 0.3) 0%, rgba(20, 184, 166, 0.1) 100%);
     --p: #0d9488;
     --p-light: #14b8a6;
     --p-dark: #0f766e;
     --p-gradient: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
     --p-glow: rgba(13, 148, 136, 0.2);
-    --card-shadow: 0 2px 14px rgba(13, 148, 136, 0.07);
-    --hover-shadow: 0 10px 30px rgba(13, 148, 136, 0.16);
+    --card-shadow: 0 4px 20px rgba(13, 148, 136, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --hover-shadow: 0 14px 36px rgba(13, 148, 136, 0.16), 0 0 0 1px rgba(13, 148, 136, 0.2);
     --nav-bg: rgba(240, 253, 249, 0.94);
     --accent: #0ea5e9;
     --accent-light: #e0f2fe;
@@ -61,12 +64,14 @@ header {
     display: flex;
     align-items: center;
     gap: 40px;
-    border-bottom: 1px solid rgba(13, 148, 136, 0.1);
-    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    background: rgba(240, 253, 249, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     position: sticky;
     top: 0;
     z-index: 200;
-    box-shadow: none;
+    box-shadow: 0 4px 20px rgba(13, 148, 136, 0.04);
 }
 
 .logo {
