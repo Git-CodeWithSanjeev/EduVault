@@ -263,14 +263,14 @@ export function VideoTheater() {
                         width: '64px',
                         height: '64px',
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        background: 'var(--p-gradient)',
                         color: '#ffffff',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '24px',
                         margin: '0 auto 12px',
-                        boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)',
+                        boxShadow: '0 8px 24px var(--p-glow)',
                       }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                           <polygon points="5 3 19 12 5 21 5 3" />

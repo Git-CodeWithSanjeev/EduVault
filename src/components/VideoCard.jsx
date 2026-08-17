@@ -165,12 +165,12 @@ export function VideoCard({ video }) {
         {/* Progress Bar (if course has progress) */}
         {progressPercent > 0 && (
           <div style={{ margin: '10px 0 6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--accent)', fontWeight: 700, marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--p-dark)', fontWeight: 700, marginBottom: '4px' }}>
               <span>Progress</span>
               <span>{progressPercent}%</span>
             </div>
-            <div style={{ height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.3s ease' }} />
+            <div style={{ height: '6px', background: '#ccebe4', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--p-gradient)', transition: 'width 0.3s ease' }} />
             </div>
           </div>
         )}
@@ -183,7 +183,7 @@ export function VideoCard({ video }) {
               onClick={() => toggleBookmark(targetId)}
               title={bookmarked ? 'Remove Bookmark' : 'Bookmark Video'}
               style={{
-                background: bookmarked ? '#eff6ff' : '#f8fafc',
+                background: bookmarked ? '#e6f7f3' : '#f8fafc',
                 border: '1px solid var(--line)',
                 borderRadius: '6px',
                 padding: '6px 10px',
