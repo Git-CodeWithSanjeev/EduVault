@@ -23,20 +23,26 @@ import {
 
 const scrollPositionsMap = new Map();
 
-
 function ScrollRestorationManager() {
   const location = useLocation();
   const navType = useNavigationType();
 
   useEffect(() => {
+    let scrollTimeout;
     const handleScroll = () => {
-      scrollPositionsMap.set(location.key, window.scrollY);
-      scrollPositionsMap.set(location.pathname + location.search, window.scrollY);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        scrollPositionsMap.set(location.key, window.scrollY);
+        scrollPositionsMap.set(location.pathname + location.search, window.scrollY);
+        try {
+          sessionStorage.setItem('eduvault_pos_' + location.pathname, String(window.scrollY));
+        } catch (e) {}
+      }, 50);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      handleScroll();
+      clearTimeout(scrollTimeout);
       window.removeEventListener('scroll', handleScroll);
     };
   }, [location]);
@@ -44,13 +50,15 @@ function ScrollRestorationManager() {
   useEffect(() => {
     const savedYKey = scrollPositionsMap.get(location.key);
     const savedYPath = scrollPositionsMap.get(location.pathname + location.search);
-    const savedY = savedYKey !== undefined ? savedYKey : savedYPath;
+    const sessionY = Number(sessionStorage.getItem('eduvault_pos_' + location.pathname) || '0');
+    const targetY = savedYKey !== undefined ? savedYKey : (savedYPath !== undefined ? savedYPath : (navType === 'POP' ? sessionY : 0));
 
-    if (navType === 'POP' && savedY !== undefined) {
-      const timer = setTimeout(() => {
-        window.scrollTo({ top: savedY, behavior: 'instant' });
-      }, 40);
-      return () => clearTimeout(timer);
+    if (navType === 'POP' && targetY > 0) {
+      [20, 80, 180, 350].forEach((delay) => {
+        setTimeout(() => {
+          window.scrollTo({ top: targetY, behavior: 'instant' });
+        }, delay);
+      });
     } else if (navType === 'PUSH') {
       window.scrollTo(0, 0);
     }

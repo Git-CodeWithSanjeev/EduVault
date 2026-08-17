@@ -1,9 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDragScroll } from '../hooks/useDragScroll';
+import { useAuth } from '../context/AuthContext';
 import { BookCard } from './BookCard';
 
 export function BookCarousel({ title, itemsList, saved, toggle }) {
   const { trackRef, scroll, dragProps } = useDragScroll();
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSave = (id) => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    toggle(id);
+  };
 
   if (!itemsList || itemsList.length === 0) return null;
 
@@ -38,7 +50,7 @@ export function BookCarousel({ title, itemsList, saved, toggle }) {
               <BookCard
                 item={b}
                 isSaved={saved.includes(b.id)}
-                onSaveToggle={toggle}
+                onSaveToggle={handleSave}
                 style={{ height: '100%' }}
               />
             </div>

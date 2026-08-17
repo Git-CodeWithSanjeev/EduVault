@@ -91,6 +91,28 @@ export function Library({ saved, toggle }) {
 
 
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [libFilterOpen, setLibFilterOpen] = useState(false);
+
+  // Active filter subject depending on current tab
+  const currentActiveSub = tab === 'openstax' ? openstaxSub : (tab === 'class' ? activeSub : 'All');
+  const currentSubjectList = tab === 'openstax' ? openstaxSubjects : (tab === 'class' ? classSubjects : []);
+
+  const handleSelectSubject = (sub) => {
+    if (tab === 'openstax') {
+      setOpenstaxSub(sub);
+    } else if (tab === 'class') {
+      setActiveSub(sub);
+    }
+    setLibFilterOpen(false);
+  };
+
+  const handleClearSubject = () => {
+    if (tab === 'openstax') {
+      setOpenstaxSub('All');
+    } else if (tab === 'class') {
+      setActiveSub('All');
+    }
+  };
 
   return (
     <section className="lib-page">
@@ -102,22 +124,196 @@ export function Library({ saved, toggle }) {
           {items.length}+ verified free textbooks · NCERT · OpenStax · Open License
         </p>
 
-        {/* Global Search */}
-        <div className="lib-search-bar">
-          <span className="lib-search-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          <input
-            value={q}
-            onChange={(e) => { setQ(e.target.value); if (e.target.value) setTab('search'); else setTab('class'); }}
-            placeholder="Search books, subjects, classes, authors…"
-            className="lib-search-input"
-          />
-          {q && (
-            <button className="lib-search-clear" onClick={() => { setQ(''); setTab('class'); }}>✕</button>
+        {/* Global Search & Integrated Filter Bar */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '720px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+            {/* Search Input Box */}
+            <div style={{ position: 'relative', flex: 1 }}>
+              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input
+                value={q}
+                onChange={(e) => { setQ(e.target.value); if (e.target.value) setTab('search'); else setTab('class'); }}
+                placeholder="Search books, subjects, classes, authors…"
+                style={{
+                  width: '100%',
+                  height: '46px',
+                  padding: '0 42px 0 46px',
+                  background: 'var(--card)',
+                  border: '1.5px solid rgba(13, 148, 136, 0.22)',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  color: 'var(--ink)',
+                  outline: 'none',
+                  boxShadow: '0 4px 16px rgba(13, 148, 136, 0.06)',
+                  boxSizing: 'border-box',
+                }}
+              />
+              {q && (
+                <button
+                  onClick={() => { setQ(''); setTab('class'); }}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 0,
+                    color: 'var(--muted)',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                  }}
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Filter Button on the RIGHT of Search Box */}
+            {!q && currentSubjectList.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setLibFilterOpen(!libFilterOpen)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  height: '46px',
+                  padding: '0 18px',
+                  background: currentActiveSub !== 'All' ? 'var(--p-gradient)' : '#e6f7f3',
+                  color: currentActiveSub !== 'All' ? '#ffffff' : 'var(--p-dark)',
+                  border: currentActiveSub !== 'All' ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.25)',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: currentActiveSub !== 'All' ? '0 4px 14px var(--p-glow)' : '0 2px 8px rgba(13, 148, 136, 0.05)',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  whiteSpace: 'nowrap',
+                  boxSizing: 'border-box',
+                }}
+                aria-expanded={libFilterOpen}
+                aria-label="Filter subjects dropdown"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                <span>{currentActiveSub === 'All' ? 'Filter Subjects' : currentActiveSub}</span>
+                <span style={{ fontSize: '10px', opacity: 0.8 }}>{libFilterOpen ? '▲' : '▼'}</span>
+              </button>
+            )}
+
+            {/* Clear Filter button if a subject is active */}
+            {!q && currentActiveSub !== 'All' && (
+              <button
+                type="button"
+                onClick={handleClearSubject}
+                style={{
+                  height: '46px',
+                  padding: '0 14px',
+                  background: '#ffffff',
+                  border: '1.5px solid rgba(13, 148, 136, 0.22)',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: 'var(--muted)',
+                  cursor: 'pointer',
+                  boxSizing: 'border-box',
+                }}
+                title="Reset active subject"
+              >
+                ✕ Clear
+              </button>
+            )}
+          </div>
+
+          {/* Floating Dropdown Filter Options Popover */}
+          {!q && libFilterOpen && currentSubjectList.length > 1 && (
+            <>
+              <div
+                onClick={() => setLibFilterOpen(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 190 }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  left: 0,
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  boxShadow: '0 16px 40px rgba(13, 148, 136, 0.14), 0 2px 8px rgba(0,0,0,0.04)',
+                  border: '1px solid rgba(13, 148, 136, 0.18)',
+                  zIndex: 200,
+                  textAlign: 'left',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(13, 148, 136, 0.1)' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--ink)', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                    Select Subject ({currentSubjectList.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleClearSubject}
+                    style={{
+                      background: 'none',
+                      border: 0,
+                      color: 'var(--p)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Reset to All
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    maxHeight: '260px',
+                    overflowY: 'auto',
+                    padding: '2px',
+                  }}
+                >
+                  {currentSubjectList.map((s) => {
+                    const isActive = currentActiveSub === s;
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleSelectSubject(s)}
+                        style={{
+                          padding: '8px 14px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: isActive ? 700 : 600,
+                          cursor: 'pointer',
+                          background: isActive ? 'var(--p-gradient)' : '#f8fafc',
+                          color: isActive ? '#ffffff' : 'var(--ink)',
+                          border: isActive ? '1px solid transparent' : '1px solid rgba(13, 148, 136, 0.15)',
+                          boxShadow: isActive ? '0 4px 12px var(--p-glow)' : 'none',
+                          transition: 'all 0.15s ease',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        {isActive ? '✓ ' : (s !== 'All' ? subjectIcon(s) + ' ' : '')}{s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -137,10 +333,9 @@ export function Library({ saved, toggle }) {
         </div>
       )}
 
-
-      {/* Mobile Filter Sheet Button */}
+      {/* Mobile-Only Filter Sheet Trigger */}
       {!q && (
-        <div style={{ padding: '0 16px', marginBottom: '12px' }}>
+        <div className="mobile-only-filter-container" style={{ padding: '0 16px', margin: '8px 0', display: 'none' }}>
           <button
             className="mobile-filter-trigger-btn"
             onClick={() => setFilterSheetOpen(true)}
@@ -252,19 +447,34 @@ export function Library({ saved, toggle }) {
 
           {/* Books Panel */}
           <div className="lib-books-panel">
-            {/* Subject Filter Pills */}
-            <div className="lib-subject-pills">
-              {classSubjects.map((s) => (
-                <button
-                  key={s}
-                  className={`lib-pill ${activeSub === s ? 'active' : ''}`}
-                  onClick={() => setActiveSub(s)}
-                >
-                  {s !== 'All' && <span>{subjectIcon(s)}</span>}
-                  {s}
-                </button>
-              ))}
-            </div>
+            {/* Active Subject Filter Badge */}
+            {activeSub !== 'All' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>Active Subject Filter:</span>
+                <span style={{
+                  padding: '6px 14px',
+                  background: 'var(--p-gradient)',
+                  color: '#ffffff',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 8px var(--p-glow)',
+                }}>
+                  {subjectIcon(activeSub)} {activeSub}
+                  <button
+                    type="button"
+                    onClick={() => setActiveSub('All')}
+                    style={{ background: 'none', border: 0, color: '#ffffff', cursor: 'pointer', padding: 0, fontSize: '13px', marginLeft: '4px' }}
+                    title="Remove filter"
+                  >
+                    ✕
+                  </button>
+                </span>
+              </div>
+            )}
 
             <div className="lib-section-header">
               <span>
@@ -288,18 +498,33 @@ export function Library({ saved, toggle }) {
       ════════════════════════════════════════════ */}
       {tab === 'openstax' && (
         <div className="lib-content">
-          <div className="lib-subject-pills" style={{ marginBottom: '20px' }}>
-            {openstaxSubjects.map((s) => (
-              <button
-                key={s}
-                className={`lib-pill ${openstaxSub === s ? 'active' : ''}`}
-                onClick={() => setOpenstaxSub(s)}
-              >
-                {s !== 'All' && <span>{subjectIcon(s)}</span>}
-                {s}
-              </button>
-            ))}
-          </div>
+          {openstaxSub !== 'All' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>Active Subject Filter:</span>
+              <span style={{
+                padding: '6px 14px',
+                background: 'var(--p-gradient)',
+                color: '#ffffff',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px var(--p-glow)',
+              }}>
+                {subjectIcon(openstaxSub)} {openstaxSub}
+                <button
+                  type="button"
+                  onClick={() => setOpenstaxSub('All')}
+                  style={{ background: 'none', border: 0, color: '#ffffff', cursor: 'pointer', padding: 0, fontSize: '13px', marginLeft: '4px' }}
+                  title="Remove filter"
+                >
+                  ✕
+                </button>
+              </span>
+            </div>
+          )}
 
           <div className="lib-section-header">
             <span>

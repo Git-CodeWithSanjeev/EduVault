@@ -15,13 +15,21 @@ export function VideoGallery({
   showFilters = true,
   columns = 3,
 }) {
-  const [selectedFocus, setSelectedFocus] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFocus, setSelectedFocus] = useState(() => sessionStorage.getItem('eduvault_vg_focus') || 'All');
+  const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('eduvault_vg_q') || '');
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [activeApiKey, setActiveApiKey] = useState('');
   const [testResult, setTestResult] = useState(null);
   const [isTestingKey, setIsTestingKey] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_vg_focus', selectedFocus);
+  }, [selectedFocus]);
+
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_vg_q', searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     const key = getStoredYouTubeApiKey();
@@ -92,6 +100,8 @@ export function VideoGallery({
       return matchesFocus && matchesSearch;
     });
   }, [normalizedVideos, selectedFocus, searchQuery]);
+
+  const [filterOpen, setFilterOpen] = useState(false);
 
   return (
     <section className="video-gallery-section">
@@ -217,31 +227,196 @@ export function VideoGallery({
         </div>
       )}
 
-      {/* Filter Controls */}
+      {/* Modern Integrated Search and Filter Controls */}
       {showFilters && focusAreas.length > 2 && (
-        <div className="video-gallery-controls">
-          <div className="video-gallery-search">
-            <input
-              type="text"
-              placeholder="Search playlists, topics, channels..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="video-search-input"
-            />
+        <div className="video-gallery-controls" style={{ position: 'relative', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            {/* Search Input Box */}
+            <div style={{ position: 'relative', flex: 1, minWidth: '240px' }}>
+              <input
+                type="text"
+                placeholder="Search playlists, topics, channels..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 42px 12px 16px',
+                  background: 'var(--card)',
+                  border: '1.5px solid var(--line)',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  color: 'var(--ink)',
+                  outline: 'none',
+                  boxShadow: 'var(--card-shadow)',
+                  boxSizing: 'border-box',
+                }}
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 0,
+                    color: 'var(--muted)',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                  }}
+                  aria-label="Clear search input"
+                >
+                  ✕
+                </button>
+              ) : null}
+            </div>
+
+            {/* Filter Trigger Button directly on the RIGHT of Search Box */}
+            <button
+              type="button"
+              onClick={() => setFilterOpen(!filterOpen)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px 18px',
+                background: selectedFocus !== 'All' ? 'var(--p-gradient)' : '#e6f7f3',
+                color: selectedFocus !== 'All' ? '#ffffff' : 'var(--p-dark)',
+                border: selectedFocus !== 'All' ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.3)',
+                borderRadius: '12px',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: selectedFocus !== 'All' ? '0 4px 14px var(--p-glow)' : '0 2px 8px rgba(13, 148, 136, 0.05)',
+                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                whiteSpace: 'nowrap',
+                minHeight: '44px',
+              }}
+              aria-expanded={filterOpen}
+              aria-label="Toggle Topic Filters"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+              <span>{selectedFocus === 'All' ? 'Filter Topics' : selectedFocus}</span>
+              <span style={{ fontSize: '10px', opacity: 0.8 }}>{filterOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {/* Quick Reset Button if a filter is active */}
+            {selectedFocus !== 'All' && (
+              <button
+                type="button"
+                onClick={() => setSelectedFocus('All')}
+                style={{
+                  background: 'none',
+                  border: '1.5px solid var(--line)',
+                  borderRadius: '12px',
+                  padding: '10px 14px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: 'var(--muted)',
+                  cursor: 'pointer',
+                  minHeight: '44px',
+                }}
+                title="Reset active topic filter"
+              >
+                ✕ Clear
+              </button>
+            )}
           </div>
 
-          <div className="video-gallery-tabs">
-            {focusAreas.map((area) => (
-              <button
-                key={area}
-                type="button"
-                className={`video-tab-btn ${selectedFocus === area ? 'active' : ''}`}
-                onClick={() => setSelectedFocus(area)}
+          {/* Floating Dropdown Filter Options Panel */}
+          {filterOpen && (
+            <>
+              <div
+                onClick={() => setFilterOpen(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  left: 0,
+                  maxWidth: '100%',
+                  background: 'rgba(255, 255, 255, 0.98)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1.5px solid rgba(13, 148, 136, 0.25)',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  boxShadow: '0 16px 40px rgba(13, 148, 136, 0.16)',
+                  zIndex: 100,
+                }}
               >
-                {area}
-              </button>
-            ))}
-          </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--line)' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--ink)', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                    Select Topic or Category ({focusAreas.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedFocus('All');
+                      setFilterOpen(false);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 0,
+                      color: 'var(--p)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Reset to All
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    maxHeight: '280px',
+                    overflowY: 'auto',
+                    padding: '2px',
+                  }}
+                >
+                  {focusAreas.map((area) => {
+                    const isActive = selectedFocus === area;
+                    return (
+                      <button
+                        key={area}
+                        type="button"
+                        onClick={() => {
+                          setSelectedFocus(area);
+                          setFilterOpen(false);
+                        }}
+                        style={{
+                          padding: '8px 14px',
+                          borderRadius: '20px',
+                          fontSize: '12px',
+                          fontWeight: isActive ? 700 : 600,
+                          cursor: 'pointer',
+                          background: isActive ? 'var(--p-gradient)' : '#f8fafc',
+                          color: isActive ? '#ffffff' : 'var(--ink)',
+                          border: isActive ? '1px solid transparent' : '1px solid var(--line)',
+                          boxShadow: isActive ? '0 4px 12px var(--p-glow)' : 'none',
+                          transition: 'all 0.15s ease',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        {isActive ? '✓ ' : ''}{area}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

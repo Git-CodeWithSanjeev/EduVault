@@ -20,3 +20,8 @@ npm-debug.log*
 .idea
 .DS_Store
 Thumbs.db
+
+# Documentation / Guides
+EDULVAULT_FULL_GUIDE.md
+*GUIDE*.md
+EDULVAULT*.md

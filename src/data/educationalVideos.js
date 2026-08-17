@@ -560,9 +560,8 @@ export const educationalVideos = [
     "channel": "Bharat Panchal - Chemistry Guruji",
     "category": "Class 11 & 12 Chemistry",
     "level": "Board Prep",
-    "playlistId": "PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
     "videoId": "j8nAHeVKL08",
-    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
+    "embedUrl": "https://www.youtube.com/embed/j8nAHeVKL08",
     "thumbnail": "https://i.ytimg.com/vi/j8nAHeVKL08/hqdefault.jpg",
     "description": "Step-by-step organic mechanisms, physical chemistry formulas, and in-depth NCERT problem solving.",
     "videoCount": 42
@@ -573,9 +572,8 @@ export const educationalVideos = [
     "channel": "Neha Agrawal Mathematically Inclined",
     "category": "Class 11 & 12 Mathematics",
     "level": "Board & JEE Prep",
-    "playlistId": "PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
     "videoId": "PkZNo7MFNFg",
-    "embedUrl": "https://www.youtube.com/embed/videoseries?list=PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+    "embedUrl": "https://www.youtube.com/embed/PkZNo7MFNFg",
     "thumbnail": "https://i.ytimg.com/vi/PkZNo7MFNFg/hqdefault.jpg",
     "description": "Shortcut tricks, calculus, vectors, 3D geometry, and algebra problem-solving by Neha Ma'am.",
     "videoCount": 56

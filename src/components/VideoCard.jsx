@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeApi';
 import { useVideoLearning } from '../hooks/useVideoLearning';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * VideoCard Component
@@ -9,7 +10,26 @@ import { useVideoLearning } from '../hooks/useVideoLearning';
  */
 export function VideoCard({ video }) {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const { getCourseProgress, isBookmarked, isSaved, toggleBookmark, toggleSave } = useVideoLearning();
+
+  const handleBookmarkClick = (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    toggleBookmark(targetId);
+  };
+
+  const handleSaveClick = (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    toggleSave(targetId);
+  };
 
   const [apiData, setApiData] = useState(null);
   const [thumbSrc, setThumbSrc] = useState(null);
@@ -157,9 +177,12 @@ export function VideoCard({ video }) {
         </h3>
 
         {initialObj.whyHighQuality && (
-          <p className="video-card-reason" style={{ WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-            <strong>Overview:</strong> {initialObj.whyHighQuality}
-          </p>
+          <div className="video-card-reason">
+            <span className="video-card-reason-label">Overview:</span>
+            <span className="video-card-reason-text">
+              {initialObj.whyHighQuality}
+            </span>
+          </div>
         )}
 
         {/* Progress Bar (if course has progress) */}
@@ -180,7 +203,7 @@ export function VideoCard({ video }) {
           <div style={{ display: 'flex', gap: '6px' }}>
             <button
               type="button"
-              onClick={() => toggleBookmark(targetId)}
+              onClick={handleBookmarkClick}
               title={bookmarked ? 'Remove Bookmark' : 'Bookmark Video'}
               style={{
                 background: bookmarked ? '#e6f7f3' : '#f8fafc',
@@ -196,7 +219,7 @@ export function VideoCard({ video }) {
             </button>
             <button
               type="button"
-              onClick={() => toggleSave(targetId)}
+              onClick={handleSaveClick}
               title={saved ? 'Saved in Wishlist' : 'Save Video'}
               style={{
                 background: saved ? '#fef2f2' : '#f8fafc',

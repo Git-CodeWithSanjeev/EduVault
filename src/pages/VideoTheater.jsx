@@ -5,12 +5,14 @@ import { educationalGalleryData } from '../data/educationalGalleryData';
 import { items } from '../data/openItems';
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeApi';
 import { useVideoLearning } from '../hooks/useVideoLearning';
+import { useAuth } from '../context/AuthContext';
 import { VideoCard } from '../components/VideoCard';
 import { ToastNotification } from '../components/FormElements';
 
 export function VideoTheater() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   const {
     isLessonCompleted,
@@ -365,6 +367,10 @@ export function VideoTheater() {
               type="button"
               className={`action-btn ${isCurrentCompleted ? 'completed' : ''}`}
               onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
                 toggleLessonCompleted(vid.id || primaryVidId, activeLessonIdx);
                 showToast(isCurrentCompleted ? 'Marked lesson as pending' : '✅ Lesson marked as completed!');
               }}
@@ -376,6 +382,10 @@ export function VideoTheater() {
               type="button"
               className={`action-btn ${saved ? 'active' : ''}`}
               onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
                 toggleSave(vid.id || primaryVidId);
                 showToast(saved ? 'Removed from saved' : '❤️ Saved to My Library');
               }}
@@ -387,6 +397,10 @@ export function VideoTheater() {
               type="button"
               className={`action-btn ${bookmarked ? 'active' : ''}`}
               onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
                 toggleBookmark(vid.id || primaryVidId);
                 showToast(bookmarked ? 'Bookmark removed' : '🔖 Bookmarked');
               }}
@@ -398,6 +412,10 @@ export function VideoTheater() {
               type="button"
               className={`action-btn ${liked ? 'active' : ''}`}
               onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
                 toggleLike(vid.id || primaryVidId);
                 showToast(liked ? 'Unliked' : '👍 Liked video lesson');
               }}
@@ -409,6 +427,10 @@ export function VideoTheater() {
               type="button"
               className={`action-btn ${learningListActive ? 'active' : ''}`}
               onClick={() => {
+                if (!isLoggedIn) {
+                  navigate('/login');
+                  return;
+                }
                 toggleLearningList(vid.id || primaryVidId);
                 showToast(learningListActive ? 'Removed from Learning List' : '➕ Added to Learning List');
               }}

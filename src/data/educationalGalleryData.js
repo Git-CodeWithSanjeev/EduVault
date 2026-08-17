@@ -366,13 +366,12 @@ export const educationalGalleryData = [
   },
   {
     "id": "bharat-panchal-chemistry",
-    "playlistId": "PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL",
     "videoId": "j8nAHeVKL08",
     "title": "Class 12 Chemistry One Shot & Concept Revision",
     "channel": "Bharat Panchal - Chemistry Guruji",
     "focusArea": "Class 11 & 12 Chemistry",
     "whyHighQuality": "Step-by-step organic mechanisms, physical chemistry formulas, and in-depth NCERT problem solving.",
-    "duration": "42 Videos Playlist",
+    "duration": "42 Videos Series",
     "videoCount": 42,
     "thumbnail": "https://img.youtube.com/vi/j8nAHeVKL08/hqdefault.jpg",
     "lessons": [

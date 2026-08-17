@@ -2,11 +2,21 @@ import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ExternalLink } from '../components/Cards';
+import { useAuth } from '../context/AuthContext';
 
 export function Detail({ saved, toggle }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const b = items.find((x) => x.id === id);
+
+  const handleToggleSaved = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+    toggle(b.id);
+  };
 
   const handleBack = (e) => {
     e.preventDefault();
@@ -53,10 +63,10 @@ export function Detail({ saved, toggle }) {
         <dd>Official external source</dd>
       </dl>
       <div className="detail-actions">
-        <Link className="detail-button" style={{ background: '#725de0', textDecoration: 'none' }} to={'/read/' + b.id}>
+        <Link className="detail-button" style={{ background: 'var(--p-gradient)', textDecoration: 'none' }} to={'/read/' + b.id}>
           📖 Read PDF on EduVault
         </Link>
-        <button onClick={() => toggle(b.id)}>
+        <button onClick={handleToggleSaved}>
           {saved.includes(b.id) ? 'Remove from saved' : 'Save to my library'}
         </button>
         <ExternalLink item={b}>
