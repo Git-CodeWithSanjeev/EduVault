@@ -118,6 +118,7 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
+const demoUsersMap = new Map();
 
 /* ─── User Authentication Endpoints ──────────────────────────────────── */
 
@@ -163,26 +164,33 @@ app.post('/api/auth/google', async (req, res) => {
 
     if (!dbConnected) {
       // Demo / offline fallback
-      return res.json({
-        success: true,
-        user: {
+      let existing = demoUsersMap.get(cleanEmail);
+      if (existing) {
+        existing.name = name || existing.name;
+        existing.avatar = existing.avatar || avatar || '🎓';
+        existing.lastLogin = new Date();
+      } else {
+        existing = {
           id: googleId || 'google-' + Date.now(),
           name: name || cleanEmail.split('@')[0],
           email: cleanEmail,
           avatar: avatar || '🎓',
           provider: 'google',
           isVerified: true,
+          savedBooks: [],
           joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        },
-      });
+        };
+        demoUsersMap.set(cleanEmail, existing);
+      }
+      return res.json({ success: true, user: existing });
     }
 
     let user = await User.findOne({ email: cleanEmail });
 
     if (user) {
-      // Update existing user
+      // Update existing user - preserve user.avatar if already set
       user.name = name || user.name;
-      user.avatar = avatar || user.avatar;
+      user.avatar = user.avatar || avatar || '🎓';
       user.provider = 'google';
       if (googleId) user.googleId = googleId;
       user.lastLogin = new Date();
@@ -232,17 +240,22 @@ app.post('/api/auth/oauth-sync', async (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
 
     if (!dbConnected) {
-      return res.json({
-        success: true,
-        user: { id: googleId || 'user-' + Date.now(), name, email: cleanEmail, avatar, provider },
-      });
+      let existing = demoUsersMap.get(cleanEmail);
+      if (existing) {
+        existing.name = name || existing.name;
+        existing.avatar = existing.avatar || avatar || '🎓';
+      } else {
+        existing = { id: googleId || 'user-' + Date.now(), name, email: cleanEmail, avatar: avatar || '🎓', provider };
+        demoUsersMap.set(cleanEmail, existing);
+      }
+      return res.json({ success: true, user: existing });
     }
 
     let user = await User.findOne({ email: cleanEmail });
 
     if (user) {
       user.name = name || user.name;
-      user.avatar = avatar || user.avatar;
+      user.avatar = user.avatar || avatar || '🎓';
       user.provider = provider || user.provider;
       if (googleId) user.googleId = googleId;
       user.lastLogin = new Date();
@@ -296,18 +309,22 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
     }
 
     if (!dbConnected) {
-      return res.json({
-        success: true,
-        user: {
-          id: 'user-' + Date.now(),
-          name: cleanName || cleanEmail.split('@')[0],
-          email: cleanEmail,
-          avatar: '🎓',
-          provider: 'email',
-          isVerified: true,
-          joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        },
-      });
+      let existing = demoUsersMap.get(cleanEmail);
+      if (existing) {
+        return res.status(400).json({ error: 'An account with this email address already exists. Please sign in.' });
+      }
+      const newUser = {
+        id: 'user-' + Date.now(),
+        name: cleanName || cleanEmail.split('@')[0],
+        email: cleanEmail,
+        avatar: '🎓',
+        provider: 'email',
+        isVerified: true,
+        savedBooks: [],
+        joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      };
+      demoUsersMap.set(cleanEmail, newUser);
+      return res.json({ success: true, user: newUser });
     }
 
     const existingUser = await User.findOne({ email: cleanEmail });
@@ -357,17 +374,23 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
 
     if (!dbConnected) {
-      return res.json({
-        success: true,
-        user: {
+      let demoUser = demoUsersMap.get(cleanEmail);
+      if (!demoUser) {
+        demoUser = {
           id: 'user-' + Date.now(),
           name: cleanEmail.split('@')[0] || 'Student',
           email: cleanEmail,
           avatar: '🎓',
           provider: 'email',
           isVerified: true,
+          savedBooks: [],
           joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        },
+        };
+        demoUsersMap.set(cleanEmail, demoUser);
+      }
+      return res.json({
+        success: true,
+        user: demoUser,
       });
     }
 
@@ -446,9 +469,23 @@ app.post('/api/auth/update-profile', async (req, res) => {
     const cleanEmail = email.toLowerCase().trim();
 
     if (!dbConnected) {
+      let demoUser = demoUsersMap.get(cleanEmail) || {
+        id: 'user-' + Date.now(),
+        email: cleanEmail,
+        provider: 'email',
+        isVerified: true,
+        savedBooks: [],
+        joinedDate: 'Recently',
+      };
+      if (name) demoUser.name = name.trim();
+      if (avatar) demoUser.avatar = avatar;
+      if (typeof bio === 'string') demoUser.bio = bio;
+      if (typeof grade === 'string') demoUser.grade = grade;
+      demoUsersMap.set(cleanEmail, demoUser);
+
       return res.json({
         success: true,
-        user: { name, avatar, bio, grade },
+        user: demoUser,
       });
     }
 

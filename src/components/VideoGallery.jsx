@@ -427,7 +427,7 @@ export function VideoGallery({
           style={{ '--desktop-cols': columns }}
         >
           {filteredVideos.map((item, idx) => (
-            <VideoCard key={item.id || item.videoId || idx} video={item} />
+            <VideoCard key={(item.id || item.videoId || 'vg') + '-' + idx} video={item} />
           ))}
         </div>
       ) : (

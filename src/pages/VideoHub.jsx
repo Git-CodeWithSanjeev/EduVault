@@ -284,8 +284,8 @@ export function VideoHub() {
 
       {/* Video Card Grid */}
       <div className="video-gallery-grid" style={{ '--desktop-cols': 3 }}>
-        {displayList.map((vid) => (
-          <VideoCard key={vid.id || vid.playlistId || vid.videoId} video={vid} />
+        {displayList.map((vid, idx) => (
+          <VideoCard key={(vid.id || vid.playlistId || vid.videoId || 'vid') + '-' + idx} video={vid} />
         ))}
       </div>
     </section>

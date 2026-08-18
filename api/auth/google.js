@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
     if (user) {
       user.name = name || user.name;
-      user.avatar = avatar || user.avatar;
+      user.avatar = user.avatar || avatar || '🎓';
       user.provider = 'google';
       if (googleId) user.googleId = googleId;
       user.lastLogin = new Date();

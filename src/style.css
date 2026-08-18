@@ -7260,13 +7260,14 @@ kbd {
     }
 
     .user-dropdown {
-        position: absolute !important;
-        top: calc(100% + 10px) !important;
-        right: -84px !important;
+        position: fixed !important;
+        top: 64px !important;
+        right: 12px !important;
         left: auto !important;
-        width: 220px !important;
+        width: 230px !important;
         max-width: calc(100vw - 24px) !important;
-        box-shadow: 0 16px 40px rgba(13, 148, 136, 0.2), 0 0 0 1px rgba(13, 148, 136, 0.1) !important;
+        box-shadow: 0 16px 40px rgba(13, 148, 136, 0.25), 0 0 0 1px rgba(13, 148, 136, 0.12) !important;
+        z-index: 9999 !important;
     }
 
     .user-avatar-img,

@@ -61,10 +61,20 @@ export function VideoTheater() {
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Determine playlistId
-  const playlistId = vid
-    ? vid.playlistId || (vid.embedUrl && vid.embedUrl.includes('list=') ? new URL(vid.embedUrl).searchParams.get('list') : null)
-    : null;
+  // Determine playlistId safely
+  const playlistId = useMemo(() => {
+    if (!vid) return null;
+    if (vid.playlistId) return vid.playlistId;
+    if (vid.embedUrl && vid.embedUrl.includes('list=')) {
+      try {
+        return new URL(vid.embedUrl).searchParams.get('list');
+      } catch {
+        const match = vid.embedUrl.match(/list=([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+      }
+    }
+    return null;
+  }, [vid]);
 
   useEffect(() => {
     if (!playlistId) return;

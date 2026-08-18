@@ -333,9 +333,16 @@ export function Profile() {
                     <button
                       key={opt.id}
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
                         setAvatar(targetVal);
                         setShowAvatarModal(false);
+                        try {
+                          if (typeof updateProfile === 'function') {
+                            await updateProfile({ name: name.trim() || user.name, avatar: targetVal, bio, grade });
+                          }
+                        } catch (err) {
+                          console.error('[Avatar Update Error]:', err);
+                        }
                       }}
                       title={opt.label}
                       className={`avatar-option-btn ${isSelected ? 'selected' : ''}`}
