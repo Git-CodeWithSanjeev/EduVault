@@ -1,44 +1,131 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { items } from '../data/openItems';
 import { educationalVideos } from '../data/educationalVideos';
 
 export function Shell({ children, welcomeMsg }) {
   const { user, isLoggedIn, loading, logout } = useAuth();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchTab, setSearchTab] = useState('all'); // 'all', 'books', 'videos', 'ncert'
+  const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
+
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      const saved = localStorage.getItem('eduvault_recent_searches');
+      return saved ? JSON.parse(saved) : ['Class 12 Physics', 'Chemistry NCERT', 'Python Programming', 'Calculus'];
+    } catch {
+      return ['Class 12 Physics', 'Chemistry NCERT', 'Python Programming', 'Calculus'];
+    }
+  });
+
+  const saveRecentSearch = (term) => {
+    if (!term || !term.trim()) return;
+    const clean = term.trim();
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((s) => s.toLowerCase() !== clean.toLowerCase());
+      const updated = [clean, ...filtered].slice(0, 6);
+      try {
+        localStorage.setItem('eduvault_recent_searches', JSON.stringify(updated));
+      } catch (err) {
+        console.error(err);
+      }
+      return updated;
+    });
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    try {
+      localStorage.removeItem('eduvault_recent_searches');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const closeDrawer = () => setDrawerOpen(false);
   const isReaderRoute = location.pathname.startsWith('/read/');
 
-  // Keyboard shortcut (Escape to close search)
+  // Keyboard shortcut listener (Ctrl+K or Cmd+K to toggle search, Escape to close, Arrow keys & Enter to navigate)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setSearchModalOpen(false);
+      if (e.key === 'Escape') {
+        setSearchModalOpen(false);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchModalOpen((prev) => !prev);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const searchResults = useMemo(() => {
+  const rawSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
     const books = items
-      .filter((b) => (b.title + ' ' + (b.subject || '') + ' ' + (b.author || '') + ' ' + (b.level || '')).toLowerCase().includes(q))
-      .slice(0, 5)
-      .map((b) => ({ type: 'book', id: b.id, title: b.title, meta: `${b.subject || 'Textbook'} · ${b.level || 'NCERT'}`, url: b.source === 'NCERT' ? `/read/${b.id}` : `/resource/${b.id}`, icon: '📚' }));
+      .filter((b) => (b.title + ' ' + (b.subject || '') + ' ' + (b.author || '') + ' ' + (b.level || '') + ' ' + (b.source || '')).toLowerCase().includes(q))
+      .map((b) => ({
+        type: b.source === 'NCERT' ? 'ncert' : 'book',
+        id: b.id,
+        title: b.title,
+        meta: `${b.subject || 'Textbook'} · ${b.level || 'Open Resource'}`,
+        url: b.source === 'NCERT' ? `/read/${b.id}` : `/resource/${b.id}`,
+        icon: b.source === 'NCERT' ? '🎓' : '📚',
+        badge: b.source === 'NCERT' ? 'NCERT' : 'Book',
+      }));
 
     const videos = educationalVideos
       .filter((v) => (v.title + ' ' + (v.channel || '') + ' ' + (v.category || '')).toLowerCase().includes(q))
-      .slice(0, 5)
-      .map((v) => ({ type: 'video', id: v.id, title: v.title, meta: `Video Course · ${v.channel}`, url: `/video/${v.id}`, icon: '🎬' }));
+      .map((v) => ({
+        type: 'video',
+        id: v.id,
+        title: v.title,
+        meta: `Video Course · ${v.channel}`,
+        url: `/video/${v.id}`,
+        icon: '🎬',
+        badge: 'Video',
+      }));
 
     return [...books, ...videos];
   }, [searchQuery]);
+
+  const searchResults = useMemo(() => {
+    if (searchTab === 'books') return rawSearchResults.filter((r) => r.type === 'book').slice(0, 8);
+    if (searchTab === 'videos') return rawSearchResults.filter((r) => r.type === 'video').slice(0, 8);
+    if (searchTab === 'ncert') return rawSearchResults.filter((r) => r.type === 'ncert').slice(0, 8);
+    return rawSearchResults.slice(0, 10);
+  }, [rawSearchResults, searchTab]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [searchQuery, searchTab]);
+
+  // Handle arrow key navigation in search modal
+  const handleModalKeyDown = (e) => {
+    if (!searchModalOpen || searchResults.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % searchResults.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev - 1 + searchResults.length) % searchResults.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const selected = searchResults[activeIndex];
+      if (selected) {
+        saveRecentSearch(searchQuery);
+        setSearchModalOpen(false);
+        navigate(selected.url);
+      }
+    }
+  };
 
   return (
     <>
@@ -86,37 +173,37 @@ export function Shell({ children, welcomeMsg }) {
 
               {menuOpen && (
                 <div className="user-dropdown" onClick={() => setMenuOpen(false)}>
-                  <div className="user-dropdown-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="user-avatar-img"
-                          style={{ width: '32px', height: '32px' }}
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span style={{ fontSize: '22px' }}>{user.avatar || '🎓'}</span>
-                      )}
-                      <div>
-                        <p>{user.name}</p>
-                        <small>{user.email}</small>
-                      </div>
+                  <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
+                    {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="user-avatar-img"
+                        style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
+                    )}
+                    <div style={{ textAlign: 'center', width: '100%' }}>
+                      <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
+                      <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
                     </div>
                   </div>
-                  <Link to="/profile" className="user-dropdown-item">
-                    Account &amp; Profile
-                  </Link>
-                  <Link to="/saved" className="user-dropdown-item">
-                    Saved Wishlist
-                  </Link>
-                  <Link to="/upload" className="user-dropdown-item">
-                    Contribute Books
-                  </Link>
-                  <button className="user-dropdown-item logout" onClick={logout}>
-                    Sign Out
-                  </button>
+                  <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
+                    <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                      Account &amp; Profile
+                    </Link>
+                    <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                      Saved Wishlist
+                    </Link>
+                    <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                      Contribute Books
+                    </Link>
+                    <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -131,22 +218,24 @@ export function Shell({ children, welcomeMsg }) {
             </div>
           )}
 
-          <Link className="outline" to="/upload">
-            Contribute
-          </Link>
-
-          {/* Premium Mobile & Global Search Button */}
+          {/* Desktop Command-K Search Trigger */}
           <button
             type="button"
-            className="mobile-search-btn"
+            className="desktop-search-trigger"
             onClick={() => setSearchModalOpen(true)}
-            aria-label="Search EduVault"
+            title="Search books, NCERT, video courses (Ctrl+K)"
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
+            <span>Search resources...</span>
+            <kbd className="search-kbd-shortcut">Ctrl K</kbd>
           </button>
+
+          <Link className="outline" to="/upload">
+            Contribute
+          </Link>
 
           {/* Hamburger Menu Toggle Button for Mobile (<768px) */}
           <button
@@ -381,7 +470,11 @@ export function Shell({ children, welcomeMsg }) {
       {/* ─── 4. GLOBAL SPOTLIGHT SEARCH MODAL OVERLAY ─── */}
       {searchModalOpen && (
         <div className="global-search-modal-overlay" onClick={() => setSearchModalOpen(false)}>
-          <div className="global-search-modal-card" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="global-search-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={handleModalKeyDown}
+          >
             <div className="global-search-modal-header">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
@@ -395,30 +488,93 @@ export function Shell({ children, welcomeMsg }) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
               />
-              {searchQuery ? (
+              {searchQuery && (
                 <button
-                  className="global-search-modal-close"
+                  type="button"
+                  className="search-input-clear-btn"
                   onClick={() => setSearchQuery('')}
-                  aria-label="Clear Search"
-                  style={{ width: '28px', height: '28px', fontSize: '13px' }}
+                  aria-label="Clear Search Input"
+                  title="Clear text"
                 >
                   ✕
                 </button>
-              ) : null}
+              )}
               <button
+                type="button"
                 className="global-search-modal-close"
                 onClick={() => setSearchModalOpen(false)}
                 aria-label="Close Modal"
+                title="Close (Esc)"
               >
                 ✕
+              </button>
+            </div>
+
+            {/* Filter Category Tabs */}
+            <div className="global-search-tabs">
+              <button
+                type="button"
+                className={`global-search-tab-btn ${searchTab === 'all' ? 'active' : ''}`}
+                onClick={() => setSearchTab('all')}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                className={`global-search-tab-btn ${searchTab === 'books' ? 'active' : ''}`}
+                onClick={() => setSearchTab('books')}
+              >
+                📚 Books
+              </button>
+              <button
+                type="button"
+                className={`global-search-tab-btn ${searchTab === 'videos' ? 'active' : ''}`}
+                onClick={() => setSearchTab('videos')}
+              >
+                🎬 Video Courses
+              </button>
+              <button
+                type="button"
+                className={`global-search-tab-btn ${searchTab === 'ncert' ? 'active' : ''}`}
+                onClick={() => setSearchTab('ncert')}
+              >
+                🎓 NCERT
               </button>
             </div>
 
             <div className="global-search-modal-body">
               {!searchQuery && (
                 <div>
-                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '10px' }}>
-                    POPULAR SEARCHES
+                  {recentSearches.length > 0 && (
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                          RECENT SEARCHES
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearRecentSearches}
+                          style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                        >
+                          Clear History
+                        </button>
+                      </div>
+                      <div className="global-search-chip-group" style={{ marginBottom: '12px' }}>
+                        {recentSearches.map((term) => (
+                          <button
+                            key={term}
+                            className="global-search-chip"
+                            onClick={() => setSearchQuery(term)}
+                          >
+                            🕒 {term}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    POPULAR TRENDING SEARCHES
                   </div>
                   <div className="global-search-chip-group">
                     {['Class 12 Physics', 'Chemistry NCERT', 'Mathematics', 'Biology', 'Python Programming', 'CodeWithHarry', 'Class 10 Science'].map((term) => (
@@ -427,7 +583,7 @@ export function Shell({ children, welcomeMsg }) {
                         className="global-search-chip"
                         onClick={() => setSearchQuery(term)}
                       >
-                        {term}
+                        🔥 {term}
                       </button>
                     ))}
                   </div>
@@ -435,10 +591,10 @@ export function Shell({ children, welcomeMsg }) {
               )}
 
               {searchQuery && searchResults.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '30px 16px', color: 'var(--muted)' }}>
-                  <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🔎</span>
+                <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--muted)' }}>
+                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '8px' }}>🔎</span>
                   <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '15px' }}>No matching resources found</div>
-                  <small style={{ fontSize: '13px' }}>Try searching for "Physics", "Class 12", "NCERT", or "Python"</small>
+                  <small style={{ fontSize: '13px', marginTop: '4px', display: 'block' }}>Try searching for "Physics", "Class 12", "NCERT", or "Python"</small>
                 </div>
               )}
 
@@ -447,27 +603,45 @@ export function Shell({ children, welcomeMsg }) {
                   <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '6px' }}>
                     SEARCH RESULTS ({searchResults.length})
                   </div>
-                  {searchResults.map((item) => (
+                  {searchResults.map((item, idx) => (
                     <Link
                       key={item.type + '-' + item.id}
                       to={item.url}
-                      className="global-search-result-item"
-                      onClick={() => setSearchModalOpen(false)}
+                      className={`global-search-result-item ${activeIndex === idx ? 'active' : ''}`}
+                      onClick={() => {
+                        saveRecentSearch(searchQuery);
+                        setSearchModalOpen(false);
+                      }}
+                      onMouseEnter={() => setActiveIndex(idx)}
                     >
                       <span className="global-search-result-badge">{item.icon}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {item.title}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {item.title}
+                          </span>
+                          <span style={{ fontSize: '10px', fontWeight: 800, background: 'var(--bg)', color: 'var(--p)', padding: '2px 6px', borderRadius: '6px', border: '1px solid var(--line)' }}>
+                            {item.badge}
+                          </span>
                         </div>
-                        <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>
+                        <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600, marginTop: '2px' }}>
                           {item.meta}
                         </div>
                       </div>
-                      <span style={{ fontSize: '14px', color: 'var(--p)', fontWeight: 700 }}>→</span>
+                      <span style={{ fontSize: '13px', color: 'var(--p)', fontWeight: 700 }}>
+                        {activeIndex === idx ? '↵ Select' : '→'}
+                      </span>
                     </Link>
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Keyboard Shortcuts Footer Bar */}
+            <div className="search-modal-footer-hints">
+              <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+              <span><kbd>↵</kbd> Select</span>
+              <span><kbd>Esc</kbd> Exit</span>
             </div>
           </div>
         </div>

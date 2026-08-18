@@ -107,7 +107,7 @@ export function Register() {
             <input
               id="reg-name"
               type="text"
-              placeholder="e.g. Alex Johnson"
+              placeholder="e.g. Sanjeev Sharma"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={loading || googleLoading}

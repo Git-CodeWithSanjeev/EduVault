@@ -347,104 +347,112 @@ export const educationalGalleryData = [
   },
   {
     "id": "pw-class12-physics",
-    "playlistId": "PLu0W_9lII9aiXlHcLx-mDH1Qul38wD3aR",
     "videoId": "ZSPZob_1TOk",
-    "title": "Class 12 Physics Complete Masterclass Series",
-    "channel": "Physics Wallah - Alakh Pandey",
-    "focusArea": "Class 11 & 12 Physics",
-    "whyHighQuality": "Comprehensive conceptual coverage of Class 12 Physics for Board exams and competitive entrance exams by Alakh Pandey Sir.",
-    "duration": "38 Videos Playlist",
-    "videoCount": 38,
+    "title": "C Language Masterclass & Computer Science Fundamentals",
+    "channel": "CodeWithHarry",
+    "focusArea": "Learn Programming Languages",
+    "whyHighQuality": "Complete C language programming tutorial in Hindi covering syntax, memory pointers, structures, and file I/O.",
+    "duration": "76 Videos Playlist",
+    "videoCount": 76,
     "thumbnail": "https://img.youtube.com/vi/ZSPZob_1TOk/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "ZSPZob_1TOk", "title": "1. Electrostatics & Electric Charges One Shot", "duration": "Lesson" },
-      { "id": 2, "videoId": "ZSPZob_1TOk", "title": "2. Electrostatic Potential & Capacitance", "duration": "Lesson" },
-      { "id": 3, "videoId": "ZSPZob_1TOk", "title": "3. Current Electricity Full Concept Revision", "duration": "Lesson" },
-      { "id": 4, "videoId": "ZSPZob_1TOk", "title": "4. Moving Charges & Magnetism", "duration": "Lesson" },
-      { "id": 5, "videoId": "ZSPZob_1TOk", "title": "5. Electromagnetic Induction (EMI)", "duration": "Lesson" }
+      { "id": 1, "videoId": "ZSPZob_1TOk", "title": "1. Introduction to C & Programming Basics", "duration": "Lesson" },
+      { "id": 2, "videoId": "ZSPZob_1TOk", "title": "2. Variables, Data Types & Operators in C", "duration": "Lesson" },
+      { "id": 3, "videoId": "ZSPZob_1TOk", "title": "3. Pointers & Memory Allocation Masterclass", "duration": "Lesson" }
     ]
   },
   {
-    "id": "bharat-panchal-chemistry",
+    "id": "cwh-cpp-course",
     "videoId": "j8nAHeVKL08",
-    "title": "Class 12 Chemistry One Shot & Concept Revision",
-    "channel": "Bharat Panchal - Chemistry Guruji",
-    "focusArea": "Class 11 & 12 Chemistry",
-    "whyHighQuality": "Step-by-step organic mechanisms, physical chemistry formulas, and in-depth NCERT problem solving.",
-    "duration": "42 Videos Series",
-    "videoCount": 42,
+    "title": "C++ Tutorial for Beginners (Complete Placement Series)",
+    "channel": "CodeWithHarry",
+    "focusArea": "Learn Programming Languages",
+    "whyHighQuality": "C++ programming tutorial in Hindi covering object-oriented programming, classes, objects, STL, and templates.",
+    "duration": "74 Videos Series",
+    "videoCount": 74,
     "thumbnail": "https://img.youtube.com/vi/j8nAHeVKL08/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "j8nAHeVKL08", "title": "1. Solutions Complete Chapter One Shot", "duration": "Lesson" },
-      { "id": 2, "videoId": "j8nAHeVKL08", "title": "2. Electrochemistry Numerical Formulas & Concepts", "duration": "Lesson" },
-      { "id": 3, "videoId": "j8nAHeVKL08", "title": "3. Chemical Kinetics Full Revision", "duration": "Lesson" },
-      { "id": 4, "videoId": "j8nAHeVKL08", "title": "4. d and f Block Elements Masterclass", "duration": "Lesson" }
+      { "id": 1, "videoId": "j8nAHeVKL08", "title": "1. Installing G++, VS Code & C++ Setup", "duration": "Lesson" },
+      { "id": 2, "videoId": "j8nAHeVKL08", "title": "2. Object-Oriented Programming (OOP) in C++", "duration": "Lesson" },
+      { "id": 3, "videoId": "j8nAHeVKL08", "title": "3. C++ Standard Template Library (STL) Guide", "duration": "Lesson" }
     ]
   },
   {
-    "id": "neha-maths-class12",
-    "playlistId": "PLu0W_9lII9ahR1blWXxgSlL4y9iQBnLpR",
+    "id": "cwh-js-course",
     "videoId": "PkZNo7MFNFg",
-    "title": "Class 12 Mathematics Complete Chapterwise Series",
-    "channel": "Neha Agrawal Mathematically Inclined",
-    "focusArea": "Class 11 & 12 Mathematics",
-    "whyHighQuality": "Shortcut tricks, calculus, vectors, 3D geometry, and algebra problem-solving by Neha Ma'am.",
-    "duration": "56 Videos Playlist",
-    "videoCount": 56,
+    "title": "JavaScript Tutorials for Beginners (ES6+ Complete Course)",
+    "channel": "CodeWithHarry",
+    "focusArea": "Web & Full-Stack Development",
+    "whyHighQuality": "Learn modern JavaScript from scratch in Hindi: variables, arrays, DOM manipulation, promises, async/await, and OOP.",
+    "duration": "103 Videos Playlist",
+    "videoCount": 103,
     "thumbnail": "https://img.youtube.com/vi/PkZNo7MFNFg/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "PkZNo7MFNFg", "title": "1. Matrices & Determinants Full Revision", "duration": "Lesson" },
-      { "id": 2, "videoId": "PkZNo7MFNFg", "title": "2. Continuity & Differentiability One Shot", "duration": "Lesson" },
-      { "id": 3, "videoId": "PkZNo7MFNFg", "title": "3. Application of Derivatives (AOD) Shortcuts", "duration": "Lesson" }
+      { "id": 1, "videoId": "PkZNo7MFNFg", "title": "1. JavaScript Introduction & Setup", "duration": "Lesson" },
+      { "id": 2, "videoId": "PkZNo7MFNFg", "title": "2. DOM Manipulation & Event Handling", "duration": "Lesson" },
+      { "id": 3, "videoId": "PkZNo7MFNFg", "title": "3. Promises, Async/Await & Fetch API", "duration": "Lesson" }
     ]
   },
   {
-    "id": "striver-dsa-a2z",
-    "playlistId": "PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz",
+    "id": "apna-cpp-dsa-course",
     "videoId": "z9bZufPHFLU",
-    "title": "A2Z Data Structures & Algorithms Masterclass",
-    "channel": "takeUforward (Striver)",
+    "title": "C++ Placement Course & DSA Masterclass",
+    "channel": "Apna College",
     "focusArea": "Data Structures & Algorithms",
-    "whyHighQuality": "Industry standard DSA roadmap covering arrays, trees, dynamic programming, and placement prep by Striver.",
-    "duration": "85 Videos Playlist",
-    "videoCount": 85,
+    "whyHighQuality": "Complete C++ and Data Structures Algorithms course with LeetCode problem solving, recursion, trees, and dynamic programming.",
+    "duration": "316 Videos Playlist",
+    "videoCount": 316,
     "thumbnail": "https://img.youtube.com/vi/z9bZufPHFLU/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "z9bZufPHFLU", "title": "1. Array Problems (Easy to Hard) - Striver A2Z", "duration": "Lesson" },
-      { "id": 2, "videoId": "z9bZufPHFLU", "title": "2. Binary Search Masterclass & Problem Solving", "duration": "Lesson" },
-      { "id": 3, "videoId": "z9bZufPHFLU", "title": "3. Linked List Complete Series", "duration": "Lesson" }
+      { "id": 1, "videoId": "z9bZufPHFLU", "title": "1. C++ Basics to Advanced Data Structures", "duration": "Lesson" },
+      { "id": 2, "videoId": "z9bZufPHFLU", "title": "2. Recursion & Backtracking Problem Solving", "duration": "Lesson" },
+      { "id": 3, "videoId": "z9bZufPHFLU", "title": "3. Binary Trees & Graph Algorithms", "duration": "Lesson" }
     ]
   },
   {
-    "id": "campusx-data-science",
-    "playlistId": "PLsyeobzWxl7poL9JTVyndKe62ieoN-MZ3",
+    "id": "apna-python-course",
     "videoId": "vLqTf2b6GZw",
-    "title": "Python for Data Science & Artificial Intelligence",
-    "channel": "CampusX",
+    "title": "Python for Beginners (Full Course) | Programming Tutorial",
+    "channel": "Telusko",
     "focusArea": "Data Science & AI",
     "whyHighQuality": "Real-world Python data analysis, NumPy, Pandas, Matplotlib, and Machine Learning algorithms.",
-    "duration": "64 Videos Playlist",
-    "videoCount": 64,
+    "duration": "124 Videos Playlist",
+    "videoCount": 124,
     "thumbnail": "https://img.youtube.com/vi/vLqTf2b6GZw/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "vLqTf2b6GZw", "title": "1. Python Basics to Advanced for Data Science", "duration": "Lesson" },
-      { "id": 2, "videoId": "vLqTf2b6GZw", "title": "2. NumPy & Pandas Full Tutorial for Analytics", "duration": "Lesson" }
+      { "id": 1, "videoId": "vLqTf2b6GZw", "title": "1. Python Installation & Fundamentals", "duration": "Lesson" },
+      { "id": 2, "videoId": "vLqTf2b6GZw", "title": "2. Data Structures & Functions in Python", "duration": "Lesson" }
     ]
   },
   {
-    "id": "rajat-arora-commerce",
-    "playlistId": "PLfqMhTWNBTe3LtFWcvwpqTkUSlB32kJop",
+    "id": "apna-java-course",
     "videoId": "yRpLlJmRo2w",
-    "title": "Class 12 Accountancy & Macroeconomics Series",
-    "channel": "Rajat Arora",
-    "focusArea": "Commerce & Economics",
-    "whyHighQuality": "Partnership accounting, company accounts, macroeconomics concepts, and Indian economic development.",
-    "duration": "48 Videos Playlist",
-    "videoCount": 48,
+    "title": "Java & DSA in 30 days : Course for Placement",
+    "channel": "Apna College",
+    "focusArea": "Learn Programming Languages",
+    "whyHighQuality": "Full Java programming course for placement preparation: JDK syntax, OOP principles, collections framework, and practice.",
+    "duration": "39 Videos Series",
+    "videoCount": 39,
     "thumbnail": "https://img.youtube.com/vi/yRpLlJmRo2w/hqdefault.jpg",
     "lessons": [
-      { "id": 1, "videoId": "yRpLlJmRo2w", "title": "1. Accounting for Partnership Firms Fundamentals", "duration": "Lesson" },
-      { "id": 2, "videoId": "yRpLlJmRo2w", "title": "2. Reconstitution of Partnership: Admission & Retirement", "duration": "Lesson" }
+      { "id": 1, "videoId": "yRpLlJmRo2w", "title": "1. Java Introduction & JDK Installation", "duration": "Lesson" },
+      { "id": 2, "videoId": "yRpLlJmRo2w", "title": "2. Object-Oriented Programming (OOP) in Java", "duration": "Lesson" }
+    ]
+  },
+  {
+    "id": "cwh-sigma-webdev",
+    "videoId": "tVzUXW6siu0",
+    "title": "Sigma Web Development Course (HTML, CSS, JS, React, Node.js)",
+    "channel": "CodeWithHarry",
+    "focusArea": "Web & Full-Stack Development",
+    "whyHighQuality": "100+ video full stack web development course covering HTML5, CSS3, Flexbox, Grid, JS, Express, React, and MongoDB.",
+    "duration": "139 Videos Playlist",
+    "videoCount": 139,
+    "thumbnail": "https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg",
+    "lessons": [
+      { "id": 1, "videoId": "tVzUXW6siu0", "title": "1. Introduction to Web Development & HTML5", "duration": "Lesson" },
+      { "id": 2, "videoId": "tVzUXW6siu0", "title": "2. CSS3 Flexbox & Responsive Design", "duration": "Lesson" },
+      { "id": 3, "videoId": "tVzUXW6siu0", "title": "3. Full Stack Node.js & React Application", "duration": "Lesson" }
     ]
   }
 ];

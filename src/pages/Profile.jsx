@@ -51,6 +51,9 @@ export function Profile() {
     { id: 'em-trophy', type: 'emoji', value: '🏆', label: 'Trophy' },
   ];
 
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [avatarTab, setAvatarTab] = useState('all'); // 'all', '3d', 'icon'
+
   useEffect(() => {
     if (user) {
       setName(user.name || '');
@@ -69,6 +72,18 @@ export function Profile() {
     }
     return () => clearInterval(timer);
   }, [resendCooldown]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowAvatarModal(false);
+      }
+    };
+    if (showAvatarModal) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showAvatarModal]);
 
   if (!user) {
     return (
@@ -123,10 +138,23 @@ export function Profile() {
     }
   };
 
+  const filteredAvatars = AVATAR_OPTIONS.filter((opt) => {
+    if (avatarTab === '3d') return opt.type === 'img';
+    if (avatarTab === 'icon') return opt.type === 'emoji';
+    return true;
+  });
+
   return (
     <div className="profile-container" style={{ maxWidth: '780px', margin: '0 auto' }}>
       <div className="profile-header-card">
-        <div className="profile-avatar-large">
+        {/* Profile Avatar Circle with Edit Badge & Click Event */}
+        <div
+          className="profile-avatar-large"
+          onClick={() => setShowAvatarModal(true)}
+          title="Click to edit 3D avatar"
+          role="button"
+          tabIndex={0}
+        >
           {avatar && typeof avatar === 'string' && avatar.startsWith('http') ? (
             <img
               src={avatar}
@@ -138,13 +166,17 @@ export function Profile() {
           ) : (
             <span>{avatar || '🎓'}</span>
           )}
+          <div className="profile-avatar-hover-overlay">
+            <span>✏️</span>
+          </div>
+          <div className="profile-avatar-edit-badge" title="Change Avatar">
+            ✏️
+          </div>
         </div>
+
         <div className="profile-header-info">
           <div className="profile-name-row">
             <h2>{user.name}</h2>
-            <span className={`verification-badge ${user.isVerified ? 'verified' : 'unverified'}`}>
-              {user.isVerified ? '✓ Verified Account' : '⚠️ Email Unverified'}
-            </span>
           </div>
           <p className="profile-email">{user.email}</p>
           <small className="profile-joined">Member since {user.joinedDate || 'Recently'}</small>
@@ -181,7 +213,7 @@ export function Profile() {
         {/* Edit Profile Options */}
         <div className="profile-card">
           <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>✏️</span> Edit Profile & 3D Avatars
+            <span>✏️</span> Edit Profile Details
           </h3>
           <form onSubmit={handleProfileSave} className="auth-form" noValidate>
             <div className="auth-field">
@@ -194,75 +226,6 @@ export function Profile() {
                 placeholder="Enter your full name"
                 required
               />
-            </div>
-
-            <div className="auth-field">
-              <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Choose 3D Avatar or Icon</span>
-                <span style={{ fontSize: '11px', color: 'var(--p)', fontWeight: 700 }}>
-                  Selected: {avatar.startsWith('http') ? '3D Avatar' : avatar}
-                </span>
-              </label>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))',
-                  gap: '12px',
-                  marginTop: '10px',
-                  padding: '16px',
-                  background: 'var(--bg)',
-                  borderRadius: '18px',
-                  border: '1px solid var(--line)',
-                }}
-              >
-                {AVATAR_OPTIONS.map((opt) => {
-                  const isSelected = opt.type === 'img' ? avatar === opt.url : avatar === opt.value;
-                  const targetVal = opt.type === 'img' ? opt.url : opt.value;
-
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setAvatar(targetVal)}
-                      title={opt.label}
-                      style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '50%',
-                        border: isSelected ? '2.5px solid var(--p)' : '1.5px solid var(--line)',
-                        background: isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.85)',
-                        boxShadow: isSelected
-                          ? '0 0 0 3px rgba(13, 148, 136, 0.25), 0 4px 14px rgba(13, 148, 136, 0.2)'
-                          : '0 2px 6px rgba(0, 0, 0, 0.04)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                        padding: '3px',
-                        transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-                        boxSizing: 'border-box',
-                      }}
-                    >
-                      {opt.type === 'img' ? (
-                        <img
-                          src={opt.url}
-                          alt={opt.label}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            display: 'block',
-                          }}
-                        />
-                      ) : (
-                        <span style={{ fontSize: '24px' }}>{opt.value}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             <div className="auth-field">
@@ -316,8 +279,104 @@ export function Profile() {
           </form>
         </div>
       </div>
+
+      {/* ── Avatar Picker Modal ── */}
+      {showAvatarModal && (
+        <div className="avatar-modal-overlay" onClick={() => setShowAvatarModal(false)}>
+          <div className="avatar-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="avatar-modal-header">
+              <h3>
+                <span>🎭</span> Choose 3D Avatar or Icon
+              </h3>
+              <button
+                type="button"
+                className="avatar-modal-close-btn"
+                onClick={() => setShowAvatarModal(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="avatar-modal-tabs">
+              <button
+                type="button"
+                className={`avatar-modal-tab-btn ${avatarTab === 'all' ? 'active' : ''}`}
+                onClick={() => setAvatarTab('all')}
+              >
+                All ({AVATAR_OPTIONS.length})
+              </button>
+              <button
+                type="button"
+                className={`avatar-modal-tab-btn ${avatarTab === '3d' ? 'active' : ''}`}
+                onClick={() => setAvatarTab('3d')}
+              >
+                3D Characters ({AVATAR_OPTIONS.filter((a) => a.type === 'img').length})
+              </button>
+              <button
+                type="button"
+                className={`avatar-modal-tab-btn ${avatarTab === 'icon' ? 'active' : ''}`}
+                onClick={() => setAvatarTab('icon')}
+              >
+                Icons & Emojis ({AVATAR_OPTIONS.filter((a) => a.type === 'emoji').length})
+              </button>
+            </div>
+
+            <div className="avatar-modal-body">
+              <div className="avatar-modal-grid">
+                {filteredAvatars.map((opt) => {
+                  const isSelected = opt.type === 'img' ? avatar === opt.url : avatar === opt.value;
+                  const targetVal = opt.type === 'img' ? opt.url : opt.value;
+
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setAvatar(targetVal);
+                        setShowAvatarModal(false);
+                      }}
+                      title={opt.label}
+                      className={`avatar-option-btn ${isSelected ? 'selected' : ''}`}
+                    >
+                      {opt.type === 'img' ? (
+                        <img
+                          src={opt.url}
+                          alt={opt.label}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: '26px' }}>{opt.value}</span>
+                      )}
+                      {isSelected && <span className="avatar-selected-check">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="avatar-modal-footer">
+              <button
+                type="button"
+                className="auth-submit-btn"
+                style={{ width: 'auto', padding: '8px 22px', margin: 0 }}
+                onClick={() => setShowAvatarModal(false)}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default Profile;
+

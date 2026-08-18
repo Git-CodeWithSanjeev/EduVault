@@ -299,17 +299,7 @@ export function VideoTheater() {
             )}
           </div>
 
-          {/* Direct YouTube link fallback for mobile devices */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px', marginBottom: '8px' }}>
-            <a
-              href={playlistId ? `https://www.youtube.com/playlist?list=${playlistId}` : `https://www.youtube.com/watch?v=${targetVidId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, textDecoration: 'none' }}
-            >
-              ↗ Open in YouTube App
-            </a>
-          </div>
+
 
           {/* Interactive Player Quick Controls */}
           <div className="player-speed-bar">
@@ -324,14 +314,20 @@ export function VideoTheater() {
                     showToast(`Speed set to ${speed}x`);
                   }}
                   style={{
-                    padding: '3px 6px',
-                    borderRadius: '6px',
+                    minWidth: '42px',
+                    height: '28px',
+                    padding: '0 8px',
+                    borderRadius: '20px',
                     fontSize: '11px',
                     fontWeight: 700,
-                    border: playbackSpeed === speed ? '1px solid var(--p)' : '1px solid var(--line)',
+                    border: playbackSpeed === speed ? '1.5px solid var(--p)' : '1px solid var(--line)',
                     background: playbackSpeed === speed ? '#e6f7f3' : '#ffffff',
                     color: playbackSpeed === speed ? 'var(--p-dark)' : 'var(--ink)',
                     cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: playbackSpeed === speed ? '0 2px 6px rgba(13, 148, 136, 0.12)' : 'none',
                   }}
                 >
                   {speed}x
@@ -372,10 +368,25 @@ export function VideoTheater() {
                   return;
                 }
                 toggleLessonCompleted(vid.id || primaryVidId, activeLessonIdx);
-                showToast(isCurrentCompleted ? 'Marked lesson as pending' : '✅ Lesson marked as completed!');
+                showToast(isCurrentCompleted ? 'Marked lesson as pending' : 'Lesson marked as completed!');
               }}
             >
-              {isCurrentCompleted ? '✅ Completed' : '⚪ Mark Completed'}
+              {isCurrentCompleted ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <span>Completed</span>
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <circle cx="12" cy="12" r="10" />
+                  </svg>
+                  <span>Mark Completed</span>
+                </>
+              )}
             </button>
 
             <button
@@ -387,10 +398,24 @@ export function VideoTheater() {
                   return;
                 }
                 toggleSave(vid.id || primaryVidId);
-                showToast(saved ? 'Removed from saved' : '❤️ Saved to My Library');
+                showToast(saved ? 'Removed from saved' : 'Saved to My Library');
               }}
             >
-              {saved ? '❤️ Saved' : '🤍 Save'}
+              {saved ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', color: '#e11d48' }}>
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                  </svg>
+                  <span>Saved</span>
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                  </svg>
+                  <span>Save</span>
+                </>
+              )}
             </button>
 
             <button
@@ -402,10 +427,24 @@ export function VideoTheater() {
                   return;
                 }
                 toggleBookmark(vid.id || primaryVidId);
-                showToast(bookmarked ? 'Bookmark removed' : '🔖 Bookmarked');
+                showToast(bookmarked ? 'Bookmark removed' : 'Bookmarked');
               }}
             >
-              {bookmarked ? '🔖 Bookmarked' : '📑 Bookmark'}
+              {bookmarked ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', color: 'var(--p)' }}>
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                  </svg>
+                  <span>Bookmarked</span>
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                  </svg>
+                  <span>Bookmark</span>
+                </>
+              )}
             </button>
 
             <button
@@ -417,10 +456,24 @@ export function VideoTheater() {
                   return;
                 }
                 toggleLike(vid.id || primaryVidId);
-                showToast(liked ? 'Unliked' : '👍 Liked video lesson');
+                showToast(liked ? 'Unliked' : 'Liked video lesson');
               }}
             >
-              {liked ? '👍 Liked' : '👍 Like'}
+              {liked ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', color: '#0284c7' }}>
+                    <path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
+                  </svg>
+                  <span>Liked</span>
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z" />
+                  </svg>
+                  <span>Like</span>
+                </>
+              )}
             </button>
 
             <button
@@ -432,14 +485,36 @@ export function VideoTheater() {
                   return;
                 }
                 toggleLearningList(vid.id || primaryVidId);
-                showToast(learningListActive ? 'Removed from Learning List' : '➕ Added to Learning List');
+                showToast(learningListActive ? 'Removed from Learning List' : 'Added to Learning List');
               }}
             >
-              {learningListActive ? '✓ In Learning List' : '➕ Add to List'}
+              {learningListActive ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="m5 12 5 5L20 7" />
+                  </svg>
+                  <span>In Learning List</span>
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  <span>Add to List</span>
+                </>
+              )}
             </button>
 
             <button type="button" className="action-btn" onClick={handleShare}>
-              🔗 Share
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+              <span>Share</span>
             </button>
           </div>
 
@@ -466,7 +541,10 @@ export function VideoTheater() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '20px' }}>👤</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--p-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
                 <strong style={{ fontSize: '14px', color: 'var(--ink)' }}>{channelTitle}</strong>
               </div>
               <span style={{ color: 'var(--line)' }}>•</span>
@@ -482,8 +560,13 @@ export function VideoTheater() {
 
           {/* Dedicated Section: What You'll Learn */}
           <div style={{ background: 'var(--card)', padding: '20px', borderRadius: '12px', border: '1px solid var(--line)', margin: '16px 0' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 800, margin: '0 0 14px', color: 'var(--ink)' }}>
-              🎯 What You'll Learn
+            <h3 style={{ fontSize: '16px', fontWeight: 800, margin: '0 0 14px', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--p)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+              <span>What You'll Learn</span>
             </h3>
             <div className="checklist-grid">
               {outcomes.map((item, idx) => (
@@ -502,8 +585,30 @@ export function VideoTheater() {
               className="accordion-header"
               onClick={() => setIsAccordionOpen(!isAccordionOpen)}
             >
-              <span>📖 About This Lesson & Course Blueprint</span>
-              <span>{isAccordionOpen ? '▲ Hide' : '▼ Expand'}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--p-dark)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+                <span>About This Lesson & Course Blueprint</span>
+              </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 700 }}>
+                {isAccordionOpen ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="18 15 12 9 6 15" />
+                    </svg>
+                    <span>Hide</span>
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                    <span>Expand</span>
+                  </>
+                )}
+              </span>
             </button>
 
             {isAccordionOpen && (
@@ -598,8 +703,12 @@ export function VideoTheater() {
 
           {/* Clickable Video Chapters / Timeline */}
           <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: '12px', padding: '16px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: 800, margin: '0 0 10px' }}>
-              📍 Video Chapters
+            <h3 style={{ fontSize: '15px', fontWeight: 800, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--p-dark)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="17" x2="12" y2="22" />
+                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+              </svg>
+              <span>Video Chapters</span>
             </h3>
             <p style={{ fontSize: '11px', color: 'var(--muted)', margin: '0 0 12px' }}>
               Tap any chapter to seek timestamp:

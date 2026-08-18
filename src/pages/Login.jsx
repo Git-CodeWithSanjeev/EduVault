@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PasswordInput, AuthAlert, GoogleAuthButton, AuthDivider } from '../components/FormElements';
 import { isValidEmail } from '../utils/validation';
-import { triggerDirectGoogleLogin, getDevFallbackGoogleProfile } from '../utils/googleAuth';
+import { triggerDirectGoogleLogin } from '../utils/googleAuth';
 
 export function Login() {
   const { login, loginWithGoogle, isLoggedIn } = useAuth();
@@ -15,7 +15,6 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [showDevFallback, setShowDevFallback] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -25,7 +24,6 @@ export function Login() {
 
   const handleGoogleLogin = async () => {
     setError('');
-    setShowDevFallback(false);
     setGoogleLoading(true);
 
     try {
@@ -34,25 +32,10 @@ export function Login() {
       navigate(from, { replace: true });
     } catch (err) {
       if (err.message === 'GOOGLE_ORIGIN_BLOCKED' || err.message?.includes('invalid_client')) {
-        setError('Google blocked this request because the Client ID belongs to an AI Studio project or missing origin in Google Cloud.');
-        setShowDevFallback(true);
+        setError('Google blocked this request because of client configuration or missing origin in Google Cloud console.');
       } else if (!err.message?.includes('popup_closed') && !err.message?.includes('user_closed')) {
         setError(err.message || 'Google sign-in failed. Please try again.');
       }
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  const handleDevFallbackLogin = async () => {
-    setError('');
-    setGoogleLoading(true);
-    try {
-      const fallbackProfile = getDevFallbackGoogleProfile();
-      await loginWithGoogle(fallbackProfile);
-      navigate(from, { replace: true });
-    } catch (err) {
-      setError(err.message || 'Dev Google login failed.');
     } finally {
       setGoogleLoading(false);
     }
@@ -104,26 +87,6 @@ export function Login() {
           disabled={loading || googleLoading}
           text="Continue with Google"
         />
-
-        {showDevFallback && (
-          <button
-            type="button"
-            onClick={handleDevFallbackLogin}
-            className="auth-submit-btn"
-            style={{
-              marginTop: '10px',
-              backgroundColor: '#4285F4',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px 16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-            }}
-          >
-            ⚡ Fast Sign-In as tzk7865@gmail.com (Bypass Origin Check)
-          </button>
-        )}
 
         <AuthDivider text="or sign in with email" />
 

@@ -259,12 +259,12 @@ export function VideoHub() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search topics (e.g. Class 10 Light, Calculus)..."
-          style={{ flex: 1, minWidth: '240px', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--line)', minHeight: '44px' }}
+          style={{ flex: 1, minWidth: '240px', padding: '10px 18px', borderRadius: '20px', border: '1px solid var(--line)', minHeight: '44px' }}
         />
         <select
           value={selectedChannel}
           onChange={(e) => setSelectedChannel(e.target.value)}
-          style={{ padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--line)', minHeight: '44px' }}
+          style={{ padding: '10px 18px', borderRadius: '20px', border: '1px solid var(--line)', minHeight: '44px' }}
         >
           {channels.map((ch) => (
             <option key={ch} value={ch}>

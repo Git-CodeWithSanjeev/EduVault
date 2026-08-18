@@ -55,11 +55,18 @@ export function VideoCarousel({ title, videosList }) {
                       {vid.title}
                     </Link>
                   </h3>
-                  <small style={{ color: 'var(--muted)', fontWeight: 700, marginBottom: '10px', marginTop: 'auto' }}>
-                    📺 Channel: {vid.channel}
+                  <small style={{ color: 'var(--muted)', fontWeight: 700, marginBottom: '10px', marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="4" width="20" height="15" rx="2" />
+                      <polygon points="10 9 15 11.5 10 14 10 9" fill="currentColor" />
+                    </svg>
+                    <span>Channel: {vid.channel}</span>
                   </small>
-                  <Link to={'/video/' + vid.id} className="hero-link" style={{ textAlign: 'center', display: 'block', fontSize: '12px', padding: '8px 12px', minHeight: '40px' }}>
-                    ▶ Start Video Course
+                  <Link to={'/video/' + vid.id} className="hero-link" style={{ textAlign: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', padding: '8px 12px', minHeight: '40px' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <span>Start Video Course</span>
                   </Link>
                 </div>
               </div>

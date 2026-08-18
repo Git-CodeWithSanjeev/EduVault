@@ -11,16 +11,7 @@ import { useAuth } from '../context/AuthContext';
 export function VideoCard({ video }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-  const { getCourseProgress, isBookmarked, isSaved, toggleBookmark, toggleSave } = useVideoLearning();
-
-  const handleBookmarkClick = (e) => {
-    e.preventDefault();
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
-    toggleBookmark(targetId);
-  };
+  const { getCourseProgress, isSaved, toggleSave } = useVideoLearning();
 
   const handleSaveClick = (e) => {
     e.preventDefault();
@@ -76,9 +67,6 @@ export function VideoCard({ video }) {
       if (isMounted && items && items.length > 0) {
         setDynamicLessons(items);
         setDataSource(items[0]?.source || 'api');
-        if (items[0] && items[0].thumbnail && !thumbSrc) {
-          setThumbSrc(items[0].thumbnail);
-        }
       }
     });
 
@@ -110,19 +98,14 @@ export function VideoCard({ video }) {
       setHasThumbError(true);
       setThumbSrc(`https://img.youtube.com/vi/${initialVideoId}/mqdefault.jpg`);
     } else {
-      setImageLoadFailed(true);
+      setThumbSrc('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80');
     }
   };
 
-  if (imageLoadFailed) {
-    return null;
-  }
-
-  const displayTitle = apiData?.title || initialObj.title;
-  const displayChannel = apiData?.channel || initialObj.channel;
+  const displayTitle = initialObj.title || apiData?.title;
+  const displayChannel = initialObj.channel || apiData?.channel;
   const videoDetailsUrl = `/video/${targetId}`;
 
-  const bookmarked = isBookmarked(targetId);
   const saved = isSaved(targetId);
 
   return (
@@ -165,7 +148,13 @@ export function VideoCard({ video }) {
             <span className="video-badge-focus">{initialObj.focusArea}</span>
           )}
           {displayChannel && (
-            <span className="video-channel-name">📺 {displayChannel}</span>
+            <span className="video-channel-name" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="15" rx="2" />
+                <polygon points="10 9 15 11.5 10 14 10 9" fill="currentColor" />
+              </svg>
+              <span>{displayChannel}</span>
+            </span>
           )}
         </div>
 
@@ -200,38 +189,25 @@ export function VideoCard({ video }) {
 
         {/* Quick Action & Details Link Bar */}
         <div style={{ marginTop: 'auto', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button
-              type="button"
-              onClick={handleBookmarkClick}
-              title={bookmarked ? 'Remove Bookmark' : 'Bookmark Video'}
-              style={{
-                background: bookmarked ? '#e6f7f3' : '#f8fafc',
-                border: '1px solid var(--line)',
-                borderRadius: '6px',
-                padding: '6px 10px',
-                fontSize: '13px',
-                cursor: 'pointer',
-                minHeight: '36px',
-              }}
-            >
-              {bookmarked ? '🔖' : '📑'}
-            </button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <button
               type="button"
               onClick={handleSaveClick}
-              title={saved ? 'Saved in Wishlist' : 'Save Video'}
-              style={{
-                background: saved ? '#fef2f2' : '#f8fafc',
-                border: '1px solid var(--line)',
-                borderRadius: '6px',
-                padding: '6px 10px',
-                fontSize: '13px',
-                cursor: 'pointer',
-                minHeight: '36px',
-              }}
+              title={saved ? 'Remove from Favorites' : 'Save to Favorites'}
+              className={`card-heart-btn ${saved ? 'saved' : ''}`}
+              aria-label={saved ? 'Remove from Favorites' : 'Save to Favorites'}
             >
-              {saved ? '❤️' : '🤍'}
+              <svg
+                className="card-heart-icon"
+                viewBox="0 0 24 24"
+                fill={saved ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+              </svg>
             </button>
           </div>
 
@@ -242,12 +218,15 @@ export function VideoCard({ video }) {
               background: 'var(--p)',
               color: '#ffffff',
               border: 0,
-              padding: '8px 14px',
-              borderRadius: '8px',
+              padding: '8px 16px',
+              borderRadius: '20px',
               fontSize: '12px',
               fontWeight: 700,
               textDecoration: 'none',
               minHeight: '40px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             Start Learning →

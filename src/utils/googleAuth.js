@@ -101,16 +101,3 @@ export async function triggerDirectGoogleLogin() {
   });
 }
 
-/**
- * Dev mode fallback profile for tzk7865@gmail.com
- */
-export function getDevFallbackGoogleProfile() {
-  return {
-    email: 'tzk7865@gmail.com',
-    name: 'TZK Student',
-    avatar: '🎓',
-    googleId: 'dev-google-tzk7865',
-    isGoogle: true,
-  };
-}
-
