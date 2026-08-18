@@ -84,14 +84,20 @@ export function PDFReader({ saved, toggle }) {
             </div>
           </div>
 
-          <div className="pdf-toolbar-actions">
-            <button className="pdf-btn secondary" onClick={() => toggle(b.id)}>
-              {saved.includes(b.id) ? '★ Saved' : '☆ Save'}
+          <div className="pdf-toolbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              className={`pdf-btn secondary ${saved.includes(b.id) ? 'saved' : ''}`}
+              onClick={() => toggle(b.id)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '7px' }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill={saved.includes(b.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span>{saved.includes(b.id) ? 'Saved' : 'Save'}</span>
             </button>
             <DownloadPDFButton
               url={activeChapter.pdfUrl}
               filename={`${b.title} - ${activeChapter.name}.pdf`}
-              label="📥 Download PDF"
             />
           </div>
         </div>
@@ -152,8 +158,14 @@ export function PDFReader({ saved, toggle }) {
               <Link
                 to={`/go/${b.id}`}
                 className="archive-download-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}
               >
-                📥 Download Full Zip ↗
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Download Full Zip ↗</span>
               </Link>
             </div>
           </div>
@@ -172,14 +184,17 @@ export function PDFReader({ saved, toggle }) {
           <button
             className={`mobile-bottom-btn ${saved.includes(b.id) ? 'saved' : ''}`}
             onClick={() => toggle(b.id)}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
           >
-            {saved.includes(b.id) ? '★ Saved' : '☆ Save'}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={saved.includes(b.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <span>{saved.includes(b.id) ? 'Saved' : 'Save'}</span>
           </button>
           <div className="mobile-bottom-dl">
             <DownloadPDFButton
               url={activeChapter.pdfUrl}
               filename={`${b.title} - ${activeChapter.name}.pdf`}
-              label="📥 Download"
               className="pdf-btn"
             />
           </div>

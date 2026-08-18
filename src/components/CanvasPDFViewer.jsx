@@ -48,7 +48,7 @@ const WORKER_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.w
 // Global In-Memory PDF Document & Buffer Cache for Instant Loading (0ms) across component mounts
 const pdfDocumentCache = new Map();
 
-const ZOOM_STEPS = [0.5, 0.6, 0.75, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
+const ZOOM_STEPS = [0.4, 0.5, 0.65, 0.8, 1.0, 1.15, 1.3, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5];
 
 function getNextZoomIn(currentScale) {
   for (let i = 0; i < ZOOM_STEPS.length; i++) {
@@ -56,7 +56,7 @@ function getNextZoomIn(currentScale) {
       return ZOOM_STEPS[i];
     }
   }
-  return 3.0;
+  return 3.5;
 }
 
 function getPrevZoomOut(currentScale) {
@@ -65,7 +65,7 @@ function getPrevZoomOut(currentScale) {
       return ZOOM_STEPS[i];
     }
   }
-  return 0.5;
+  return 0.4;
 }
 
 /** Build backend proxy URL */
@@ -158,7 +158,7 @@ function DownloadOverlay({ filename, progress, phase }) {
   );
 }
 
-export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', className = 'pdf-btn' }) {
+export function DownloadPDFButton({ url, filename, label, className = 'pdf-btn' }) {
   const [phase, setPhase] = useState('idle');
   const [progress, setProgress] = useState(0);
   const abortRef = useRef(null);
@@ -219,11 +219,43 @@ export function DownloadPDFButton({ url, filename, label = '📥 Download PDF', 
     }
   };
 
+  const defaultLabel = (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span>Download PDF</span>
+    </span>
+  );
+
+  const activeLabel = label || defaultLabel;
+
   const btnLabel = {
-    idle: label,
-    fetching: '⏳',
-    done: '✅',
-    error: '❌',
+    idle: activeLabel,
+    fetching: (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'auth-spin 0.8s linear infinite' }}>
+          <line x1="12" y1="2" x2="12" y2="6" />
+          <line x1="12" y1="18" x2="12" y2="22" />
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+          <line x1="2" y1="12" x2="6" y2="12" />
+          <line x1="18" y1="12" x2="22" y2="12" />
+        </svg>
+        <span>Downloading…</span>
+      </span>
+    ),
+    done: (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span>Downloaded!</span>
+      </span>
+    ),
+    error: '❌ Retry',
   }[phase];
 
   const btnClass = {
@@ -530,6 +562,15 @@ const PDFPageCard = memo(function PDFPageCard({
     };
   }, []);
 
+  const [debouncedScale, setDebouncedScale] = useState(scale);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedScale(scale);
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [scale]);
+
   useEffect(() => {
     if (!shouldRender) {
       if (renderTaskRef.current) {
@@ -551,7 +592,7 @@ const PDFPageCard = memo(function PDFPageCard({
 
     if (!pdfDoc || !canvasRef.current) return;
 
-    const renderKey = `${pIndex}_${scale}_${containerWidth}`;
+    const renderKey = `${pIndex}_${debouncedScale}_${containerWidth}`;
     if (lastRenderedKeyRef.current === renderKey && isRendered) return;
 
     let isCancelled = false;
@@ -579,10 +620,10 @@ const PDFPageCard = memo(function PDFPageCard({
             ? Math.max(window.innerWidth - 24, 300)
             : 800);
         const baseFitScale = availableWidth / viewport.width;
-        const finalScale = baseFitScale * scale;
+        const finalScale = baseFitScale * debouncedScale;
         const responsiveViewport = page.getViewport({ scale: finalScale });
 
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
         const renderWidth = Math.floor(responsiveViewport.width * dpr);
         const renderHeight = Math.floor(responsiveViewport.height * dpr);
         const cssWidth = `${Math.floor(responsiveViewport.width)}px`;
@@ -593,6 +634,8 @@ const PDFPageCard = memo(function PDFPageCard({
         offscreen.width = renderWidth;
         offscreen.height = renderHeight;
         const offscreenCtx = offscreen.getContext('2d', { willReadFrequently: true });
+        offscreenCtx.imageSmoothingEnabled = true;
+        offscreenCtx.imageSmoothingQuality = 'high';
         offscreenCtx.scale(dpr, dpr);
 
         const renderTask = page.render({
@@ -619,6 +662,8 @@ const PDFPageCard = memo(function PDFPageCard({
         canvas.style.height = cssHeight;
 
         const context = canvas.getContext('2d', { willReadFrequently: true });
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
         context.clearRect(0, 0, renderWidth, renderHeight);
         context.drawImage(offscreen, 0, 0);
 
@@ -645,7 +690,7 @@ const PDFPageCard = memo(function PDFPageCard({
         renderTaskRef.current = null;
       }
     };
-  }, [shouldRender, pdfDoc, pIndex, scale, containerWidth]);
+  }, [shouldRender, pdfDoc, pIndex, debouncedScale, containerWidth]);
 
   const availableW = containerWidth && containerWidth > 0
     ? containerWidth
@@ -853,6 +898,53 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     };
   }, [url]);
 
+  // ── Redis & LocalStorage Reading Progress Sync ──
+  useEffect(() => {
+    if (status === 'ready' && url) {
+      const cacheKey = `eduvault_pdf_progress_${encodeURIComponent(url)}`;
+      fetch(`/api/pdf/progress?url=${encodeURIComponent(url)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.success && data?.progress) {
+            const { pageNum: savedPage, scale: savedScale } = data.progress;
+            if (savedPage && savedPage > 1 && savedPage <= numPages) {
+              scrollToPage(savedPage, 'auto');
+            }
+            if (savedScale && savedScale >= 0.4 && savedScale <= 3.5) {
+              setScale(savedScale);
+            }
+          }
+        })
+        .catch(() => {
+          try {
+            const saved = localStorage.getItem(cacheKey);
+            if (saved) {
+              const { page, zoom } = JSON.parse(saved);
+              if (page && page > 1 && page <= numPages) scrollToPage(page, 'auto');
+              if (zoom && zoom >= 0.4 && zoom <= 3.5) setScale(zoom);
+            }
+          } catch (_) {}
+        });
+    }
+  }, [status, url]);
+
+  // Persist Page & Zoom scale to Redis API and LocalStorage
+  useEffect(() => {
+    if (status === 'ready' && url && pageNum) {
+      const cacheKey = `eduvault_pdf_progress_${encodeURIComponent(url)}`;
+      const payload = { pageNum, scale };
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(payload));
+      } catch (_) {}
+
+      fetch('/api/pdf/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, pageNum, scale }),
+      }).catch(() => {});
+    }
+  }, [pageNum, scale, status, url]);
+
   const pageNumRef = useRef(pageNum);
   useEffect(() => {
     pageNumRef.current = pageNum;
@@ -894,14 +986,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
   }, [isMobile, status]);
 
   const isZoomingRef = useRef(false);
-
-  useEffect(() => {
-    isZoomingRef.current = true;
-    const timer = setTimeout(() => {
-      isZoomingRef.current = false;
-    }, 450);
-    return () => clearTimeout(timer);
-  }, [scale]);
+  const zoomLockTimerRef = useRef(null);
 
   // Intersection Observer for Current Visible Page Tracking
   useEffect(() => {
@@ -963,7 +1048,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
   const pendingScrollRef = useRef(null);
 
   const commitZoomScale = useCallback((targetScale, anchor = null, baseScroll = null, baseScale = null) => {
-    const clamped = Math.max(0.5, Math.min(targetScale, 3.0));
+    const clamped = Math.max(0.4, Math.min(targetScale, 3.5));
     const container = scrollContainerRef.current;
     const currentS = baseScale || scaleRef.current || 1.0;
 
@@ -971,6 +1056,13 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
       setScale(clamped);
       return;
     }
+
+    // Synchronously lock page tracker to prevent unwanted page jumping
+    isZoomingRef.current = true;
+    if (zoomLockTimerRef.current) clearTimeout(zoomLockTimerRef.current);
+    zoomLockTimerRef.current = setTimeout(() => {
+      isZoomingRef.current = false;
+    }, 450);
 
     const scaleFactor = clamped / currentS;
 
@@ -1103,7 +1195,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
           e.touches[0].clientY - e.touches[1].clientY
         );
         currentFactor = dist / initialDist;
-        const targetScale = Math.min(Math.max(initialScale * currentFactor, 0.5), 3.0);
+        const targetScale = Math.min(Math.max(initialScale * currentFactor, 0.4), 3.5);
         gestureTargetScale = targetScale;
 
         if (pagesWrapperRef.current) {
@@ -1115,7 +1207,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
     const onTouchEnd = (e) => {
       if (isPinching && e.touches.length < 2) {
         isPinching = false;
-        const finalScale = gestureTargetScale || Math.min(Math.max(initialScale * currentFactor, 0.5), 3.0);
+        const finalScale = gestureTargetScale || Math.min(Math.max(initialScale * currentFactor, 0.4), 3.5);
         const anchor = gestureAnchor;
 
         if (initialDist > 0 && Math.abs(currentFactor - 1.0) > 0.01) {
@@ -1131,7 +1223,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
       }
     };
 
-    // Pointer-anchored wheel zoom (Ctrl / Cmd + Wheel)
+    // Pointer-anchored trackpad & mouse wheel zoom (Ctrl / Cmd + Wheel OR Trackpad pinch)
     const onWheel = (e) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.cancelable) e.preventDefault();
@@ -1142,6 +1234,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
         if (!isWheeling) {
           initialScroll = { left: container.scrollLeft, top: container.scrollTop };
           initialScale = scaleRef.current || 1.0;
+          gestureTargetScale = initialScale;
           isWheeling = true;
         }
 
@@ -1150,10 +1243,15 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
         const anchorY = e.clientY - rect.top;
         gestureAnchor = { x: anchorX, y: anchorY };
 
-        const delta = e.deltaY;
-        const factor = Math.pow(0.996, delta);
-        const currentS = gestureTargetScale || scaleRef.current || 1.0;
-        const targetScale = Math.min(Math.max(currentS * factor, 0.5), 3.0);
+        let delta = e.deltaY;
+        if (e.deltaMode === 1) delta *= 16;
+        if (e.deltaMode === 2) delta *= 200;
+
+        // Smooth logarithmic scaling anchored to initial scale during gesture
+        const zoomSensitivity = 0.0035;
+        const factor = Math.exp(-delta * zoomSensitivity);
+        const currentS = gestureTargetScale || initialScale || scaleRef.current || 1.0;
+        const targetScale = Math.min(Math.max(currentS * factor, 0.4), 3.5);
         gestureTargetScale = targetScale;
 
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -1172,7 +1270,7 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
           isWheeling = false;
           const finalScale = gestureTargetScale;
           const anchor = gestureAnchor;
-          if (finalScale) {
+          if (finalScale && initialScale && anchor) {
             commitZoomScale(finalScale, anchor, initialScroll, initialScale);
           } else {
             clearTransformStyles();
@@ -1180,32 +1278,45 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
           gestureTargetScale = null;
           gestureAnchor = null;
           initialScroll = null;
-        }, 160);
+        }, 180);
       }
     };
 
     const onGestureStart = (e) => {
       if (e.cancelable) e.preventDefault();
+      isWheeling = true;
       initialScale = scaleRef.current || 1.0;
+      const container = scrollContainerRef.current;
+      if (container) {
+        initialScroll = { left: container.scrollLeft, top: container.scrollTop };
+        const rect = container.getBoundingClientRect();
+        gestureAnchor = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      }
     };
 
     const onGestureChange = (e) => {
       if (e.cancelable) e.preventDefault();
-      const targetScale = Math.min(Math.max(initialScale * e.scale, 0.5), 3.0);
+      const targetScale = Math.min(Math.max(initialScale * (e.scale || 1.0), 0.4), 3.5);
       gestureTargetScale = targetScale;
-      if (pagesWrapperRef.current) {
+      if (pagesWrapperRef.current && gestureAnchor) {
+        pagesWrapperRef.current.style.transformOrigin = `${gestureAnchor.x}px ${gestureAnchor.y}px`;
         pagesWrapperRef.current.style.transform = `scale(${targetScale / initialScale})`;
       }
     };
 
     const onGestureEnd = (e) => {
       if (e.cancelable) e.preventDefault();
+      isWheeling = false;
       const finalScale = gestureTargetScale;
-      if (finalScale) {
-        commitZoomScale(finalScale);
+      const anchor = gestureAnchor;
+      if (finalScale && initialScale && anchor) {
+        commitZoomScale(finalScale, anchor, initialScroll, initialScale);
       } else {
         clearTransformStyles();
       }
+      gestureTargetScale = null;
+      gestureAnchor = null;
+      initialScroll = null;
     };
 
     stageEl.addEventListener('touchstart', onTouchStart, { passive: false });
@@ -1365,37 +1476,73 @@ export function CanvasPDFViewer({ url, title, isMobile = false }) {
               </div>
 
               {/* View & Zoom Box */}
-              <div className="pdf-rail-box">
+              <div className="pdf-rail-box" style={{ gap: '5px' }}>
                 <span className="pdf-rail-box-label">ZOOM &amp; VIEW</span>
-                <div className="pdf-rail-tools-row" style={{ marginBottom: '6px' }}>
+
+                {/* Preset Zoom Selector */}
+                <select
+                  className="pdf-zoom-select"
+                  value={Math.round(scale * 100)}
+                  onChange={(e) => commitZoomScale(parseFloat(e.target.value) / 100)}
+                  title="Preset Zoom Level"
+                  style={{
+                    width: '100%',
+                    height: '24px',
+                    fontSize: '11px',
+                    fontWeight: '800',
+                    padding: '0 4px',
+                    borderRadius: '5px',
+                    border: '1px solid var(--line)',
+                    background: 'var(--card)',
+                    color: 'var(--ink)',
+                    cursor: 'pointer',
+                    boxSizing: 'border-box',
+                    textAlign: 'center',
+                  }}
+                >
+                  <option value="50">50%</option>
+                  <option value="75">75%</option>
+                  <option value="100">100%</option>
+                  <option value="125">125%</option>
+                  <option value="150">150%</option>
+                  <option value="175">175%</option>
+                  <option value="200">200%</option>
+                  <option value="250">250%</option>
+                  <option value="300">300%</option>
+                  <option value="350">350%</option>
+                </select>
+
+                {/* Zoom - and Zoom + Buttons */}
+                <div className="pdf-rail-tools-grid" style={{ width: '100%' }}>
                   <button
                     className="pdf-rail-btn"
                     onClick={zoomOut}
-                    disabled={scale <= 0.5}
+                    disabled={scale <= 0.4}
                     title="Zoom Out (-)"
+                    style={{ fontSize: '13px', fontWeight: 'bold' }}
                   >
                     −
                   </button>
-                  <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--fg)', minWidth: '36px', textAlign: 'center', display: 'inline-block' }}>
-                    {Math.round(scale * 100)}%
-                  </span>
                   <button
                     className="pdf-rail-btn"
                     onClick={zoomIn}
-                    disabled={scale >= 3.0}
+                    disabled={scale >= 3.5}
                     title="Zoom In (+)"
+                    style={{ fontSize: '13px', fontWeight: 'bold' }}
                   >
                     +
                   </button>
                 </div>
-                <div className="pdf-rail-tools-row">
-                  <button className="pdf-rail-btn" onClick={resetZoom} title="Reset Zoom (0)">
+
+                {/* Reset 100%, Fullscreen, Help Buttons */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '3px', width: '100%' }}>
+                  <button className="pdf-rail-btn" onClick={resetZoom} title="Reset Zoom (100%)" style={{ fontSize: '10px', padding: 0 }}>
                     100%
                   </button>
-                  <button className="pdf-rail-btn" onClick={toggleFullscreen} title="Toggle Fullscreen (F)">
+                  <button className="pdf-rail-btn" onClick={toggleFullscreen} title="Toggle Fullscreen (F)" style={{ fontSize: '12px', padding: 0 }}>
                     {isFullscreen ? '↙' : '⤢'}
                   </button>
-                  <button className="pdf-rail-btn help-btn" onClick={() => setShowShortcuts(true)} title="Shortcuts (?)">
+                  <button className="pdf-rail-btn help-btn" onClick={() => setShowShortcuts(true)} title="Shortcuts (?)" style={{ fontSize: '11px', padding: 0 }}>
                     ?
                   </button>
                 </div>

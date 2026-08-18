@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { items } from '../data/openItems';
@@ -14,6 +14,22 @@ export function Shell({ children, welcomeMsg }) {
   const [searchTab, setSearchTab] = useState('all'); // 'all', 'books', 'videos', 'ncert'
   const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
+  const userMenuRef = useRef(null);
+
+  // Close user dropdown menu when tapping/clicking anywhere outside
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (menuOpen && userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
+  }, [menuOpen]);
 
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
@@ -149,7 +165,7 @@ export function Shell({ children, welcomeMsg }) {
           {loading ? (
             <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: 'var(--line)', opacity: 0.5 }} />
           ) : isLoggedIn ? (
-            <div className="user-menu-wrap" style={{ position: 'relative' }}>
+            <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
               <button
                 className="user-profile-btn"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -172,39 +188,55 @@ export function Shell({ children, welcomeMsg }) {
               </button>
 
               {menuOpen && (
-                <div className="user-dropdown" onClick={() => setMenuOpen(false)}>
-                  <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
-                    {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="user-avatar-img"
-                        style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
-                    )}
-                    <div style={{ textAlign: 'center', width: '100%' }}>
-                      <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
-                      <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
+                <>
+                  <div
+                    className="user-dropdown-backdrop"
+                    onClick={() => setMenuOpen(false)}
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      zIndex: 290,
+                      cursor: 'default',
+                      background: 'transparent',
+                    }}
+                  />
+                  <div className="user-dropdown" onClick={() => setMenuOpen(false)} style={{ zIndex: 300 }}>
+                    <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
+                      {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="user-avatar-img"
+                          style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
+                      )}
+                      <div style={{ textAlign: 'center', width: '100%' }}>
+                        <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
+                        <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
+                      </div>
+                    </div>
+                    <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
+                      <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                        Account &amp; Profile
+                      </Link>
+                      <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                        Saved Wishlist
+                      </Link>
+                      <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                        Contribute Books
+                      </Link>
+                      <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                        Sign Out
+                      </button>
                     </div>
                   </div>
-                  <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
-                    <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                      Account &amp; Profile
-                    </Link>
-                    <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                      Saved Wishlist
-                    </Link>
-                    <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                      Contribute Books
-                    </Link>
-                    <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
+                </>
               )}
             </div>
           ) : (

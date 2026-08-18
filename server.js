@@ -47,6 +47,32 @@ app.get('/api/redis/status', (req, res) => {
   });
 });
 
+// Redis PDF Reading Progress & Zoom Level Persistence API
+app.post('/api/pdf/progress', async (req, res) => {
+  try {
+    const { url, bookId, pageNum, scale } = req.body || {};
+    const key = `pdf_progress:${bookId || url}`;
+    if (!key) return res.status(400).json({ error: 'Missing bookId or url' });
+    const payload = { pageNum: Number(pageNum) || 1, scale: Number(scale) || 1.0, timestamp: Date.now() };
+    await redisSet(key, payload, 86400 * 30); // Store for 30 days in Redis
+    res.json({ success: true, progress: payload });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/pdf/progress', async (req, res) => {
+  try {
+    const { url, bookId } = req.query;
+    const key = `pdf_progress:${bookId || url}`;
+    if (!key) return res.status(400).json({ error: 'Missing bookId or url' });
+    const progress = await redisGet(key);
+    res.json({ success: true, progress: progress || null });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Redis-powered Auth Rate Limiting Middleware
 const authRateLimiter = async (req, res, next) => {
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';

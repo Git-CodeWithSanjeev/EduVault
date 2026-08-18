@@ -20,23 +20,23 @@ export function Profile() {
   const [resendCooldown, setResendCooldown] = useState(0);
 
   const AVATAR_OPTIONS = [
-    // ── Ultra-Clean Minimal 3D Student Avatars ──
-    { id: '3d-scholar-boy', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Aiden&backgroundColor=b6e3f4', label: 'Scholar Boy' },
-    { id: '3d-scholar-girl', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Sophia&backgroundColor=ffd5dc', label: 'Scholar Girl' },
-    { id: '3d-coder', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Alex&backgroundColor=c0aede', label: 'Developer' },
-    { id: '3d-scientist', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Emma&backgroundColor=d1d4f9', label: 'Scientist' },
-    { id: '3d-thinker', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Oliver&backgroundColor=ffdfbf', label: 'Thinker' },
-    { id: '3d-creative', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Maya&backgroundColor=ffd5dc', label: 'Creative Designer' },
-    { id: '3d-ai-bot', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=EduVaultBot&backgroundColor=b6e3f4', label: 'AI Tutor' },
-    { id: '3d-cyber-bot', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Quantum&backgroundColor=c0aede', label: 'Cyber Bot' },
-    { id: '3d-adventurer-1', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Lucas&backgroundColor=b6e3f4', label: 'Explorer' },
-    { id: '3d-adventurer-2', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Chloe&backgroundColor=ffd5dc', label: 'Researcher' },
-    { id: '3d-lorelei-1', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Leo&backgroundColor=ffdfbf', label: 'High Achiever' },
-    { id: '3d-lorelei-2', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Zoe&backgroundColor=d1d4f9', label: 'Medic Scholar' },
-    { id: '3d-lorelei-3', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Felix&backgroundColor=c0aede', label: 'Professor' },
-    { id: '3d-lorelei-4', type: 'img', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=Luna&backgroundColor=b6e3f4', label: 'Fast Learner' },
-    { id: '3d-notion-math', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Max&backgroundColor=ffd5dc', label: 'Math Genius' },
-    { id: '3d-notion-leader', type: 'img', url: 'https://api.dicebear.com/7.x/notionists-neutral/svg?seed=Elena&backgroundColor=b6e3f4', label: 'Young Leader' },
+    // ── 3D Realistic Pixar-Style Avatars ──
+    { id: 'pixar-ethan', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Ethan&backgroundColor=b6e3f4', label: 'Pixar Boy' },
+    { id: 'pixar-sophia', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Sophia&backgroundColor=ffd5dc', label: 'Pixar Girl' },
+    { id: 'pixar-leo', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Leo&backgroundColor=c0aede', label: 'Pixar Genius' },
+    { id: 'pixar-maya', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Maya&backgroundColor=d1d4f9', label: 'Pixar Scientist' },
+    { id: 'pixar-amara', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Amara&backgroundColor=ffdfbf', label: 'Pixar Scholar' },
+    { id: 'pixar-jayden', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Jayden&backgroundColor=b6e3f4', label: 'Pixar Techie' },
+    { id: 'pixar-mia', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Mia&backgroundColor=ffd5dc', label: 'Pixar Artist' },
+    { id: 'pixar-noah', type: 'img', url: 'https://api.dicebear.com/7.x/micah/svg?seed=Noah&backgroundColor=ffdfbf', label: 'Pixar Thinker' },
+    { id: 'pixar-ava', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Ava&backgroundColor=d1d4f9', label: 'Pixar Graduate' },
+    { id: 'pixar-arthur', type: 'img', url: 'https://api.dicebear.com/7.x/micah/svg?seed=Arthur&backgroundColor=c0aede', label: 'Pixar Professor' },
+    { id: 'pixar-lucas', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Lucas&backgroundColor=b6e3f4', label: 'Pixar Adventurer' },
+    { id: 'pixar-emma', type: 'img', url: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Emma&backgroundColor=ffd5dc', label: 'Pixar Explorer' },
+    { id: 'pixar-zoe', type: 'img', url: 'https://api.dicebear.com/7.x/micah/svg?seed=Zoe&backgroundColor=ffd5dc', label: 'Pixar Champion' },
+    { id: 'pixar-kai', type: 'img', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=Kai&backgroundColor=c0aede', label: 'Pixar Coder' },
+    { id: 'pixar-edubot', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=EduVaultBot&backgroundColor=b6e3f4', label: '3D AI Tutor' },
+    { id: 'pixar-aura', type: 'img', url: 'https://api.dicebear.com/7.x/bottts-neutral/svg?seed=Quantum&backgroundColor=c0aede', label: '3D Cyber Mentor' },
 
     // ── Classic Student Icons ──
     { id: 'em-grad', type: 'emoji', value: '🎓', label: 'Graduate' },
@@ -286,13 +286,14 @@ export function Profile() {
           <div className="avatar-modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="avatar-modal-header">
               <h3>
-                <span>🎭</span> Choose 3D Avatar or Icon
+                <span className="avatar-header-icon-badge">🎭</span> Choose 3D Avatar or Icon
               </h3>
               <button
                 type="button"
                 className="avatar-modal-close-btn"
                 onClick={() => setShowAvatarModal(false)}
                 aria-label="Close"
+                title="Close Modal"
               >
                 ✕
               </button>
@@ -338,6 +339,7 @@ export function Profile() {
                       }}
                       title={opt.label}
                       className={`avatar-option-btn ${isSelected ? 'selected' : ''}`}
+                      style={{ borderRadius: '50%' }}
                     >
                       {opt.type === 'img' ? (
                         <img

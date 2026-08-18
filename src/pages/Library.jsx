@@ -90,7 +90,6 @@ export function Library({ saved, toggle }) {
   }, [activeCat, visibleCount]);
 
 
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [libFilterOpen, setLibFilterOpen] = useState(false);
 
   // Active filter subject depending on current tab
@@ -175,7 +174,8 @@ export function Library({ saved, toggle }) {
             </div>
 
             {/* Filter Button on the RIGHT of Search Box */}
-            {!q && currentSubjectList.length > 1 && (
+            {/* Filter Button on the RIGHT of Search Box */}
+            {!q && (currentSubjectList.length > 1 || tab === 'class') && (
               <button
                 type="button"
                 onClick={() => setLibFilterOpen(!libFilterOpen)}
@@ -185,25 +185,29 @@ export function Library({ saved, toggle }) {
                   gap: '8px',
                   height: '46px',
                   padding: '0 18px',
-                  background: currentActiveSub !== 'All' ? 'var(--p-gradient)' : '#e6f7f3',
-                  color: currentActiveSub !== 'All' ? '#ffffff' : 'var(--p-dark)',
-                  border: currentActiveSub !== 'All' ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.25)',
+                  background: (currentActiveSub !== 'All' || tab === 'class') ? 'var(--p-gradient)' : '#e6f7f3',
+                  color: (currentActiveSub !== 'All' || tab === 'class') ? '#ffffff' : 'var(--p-dark)',
+                  border: (currentActiveSub !== 'All' || tab === 'class') ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.25)',
                   borderRadius: '20px',
                   fontSize: '13px',
                   fontWeight: 700,
                   cursor: 'pointer',
-                  boxShadow: currentActiveSub !== 'All' ? '0 4px 14px var(--p-glow)' : '0 2px 8px rgba(13, 148, 136, 0.05)',
+                  boxShadow: (currentActiveSub !== 'All' || tab === 'class') ? '0 4px 14px var(--p-glow)' : '0 2px 8px rgba(13, 148, 136, 0.05)',
                   transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                   whiteSpace: 'nowrap',
                   boxSizing: 'border-box',
                 }}
                 aria-expanded={libFilterOpen}
-                aria-label="Filter subjects dropdown"
+                aria-label="Filter options dropdown"
               >
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                 </svg>
-                <span>{currentActiveSub === 'All' ? 'Filter Subjects' : currentActiveSub}</span>
+                <span>
+                  {tab === 'class'
+                    ? (currentActiveSub === 'All' ? `Filter (${activeClass})` : `${activeClass} · ${currentActiveSub}`)
+                    : (currentActiveSub === 'All' ? 'Filter Subjects' : currentActiveSub)}
+                </span>
                 <span style={{ fontSize: '10px', opacity: 0.8 }}>{libFilterOpen ? '▲' : '▼'}</span>
               </button>
             )}
@@ -233,7 +237,7 @@ export function Library({ saved, toggle }) {
           </div>
 
           {/* Floating Dropdown Filter Options Popover */}
-          {!q && libFilterOpen && currentSubjectList.length > 1 && (
+          {!q && libFilterOpen && (
             <>
               <div
                 onClick={() => setLibFilterOpen(false)}
@@ -252,34 +256,88 @@ export function Library({ saved, toggle }) {
                   border: '1px solid rgba(13, 148, 136, 0.18)',
                   zIndex: 200,
                   textAlign: 'left',
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(13, 148, 136, 0.1)' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--ink)', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                {/* 1. FILTER BY CLASS SECTION (NCERT) */}
+                {tab === 'class' && (
+                  <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(13, 148, 136, 0.12)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                        Filter By Class ({activeClass})
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '6px',
+                        maxHeight: '220px',
+                        overflowY: 'auto',
+                        padding: '2px',
+                      }}
+                    >
+                      {NCERT_CLASSES.map((cls) => {
+                        const isClsActive = activeClass === cls;
+                        return (
+                          <button
+                            key={cls}
+                            type="button"
+                            onClick={() => {
+                              setActiveClass(cls);
+                              setActiveSub('All');
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '16px',
+                              fontSize: '12px',
+                              fontWeight: isClsActive ? 800 : 600,
+                              cursor: 'pointer',
+                              background: isClsActive ? 'var(--p-gradient)' : '#f1f5f9',
+                              color: isClsActive ? '#ffffff' : 'var(--ink)',
+                              border: isClsActive ? '1px solid transparent' : '1px solid rgba(13, 148, 136, 0.15)',
+                              boxShadow: isClsActive ? '0 2px 8px var(--p-glow)' : 'none',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            {isClsActive ? '✓ ' : ''}{cls}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. FILTER BY SUBJECT SECTION */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
                     Select Subject ({currentSubjectList.length})
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleClearSubject}
-                    style={{
-                      background: 'none',
-                      border: 0,
-                      color: 'var(--p)',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Reset to All
-                  </button>
+                  {currentActiveSub !== 'All' && (
+                    <button
+                      type="button"
+                      onClick={handleClearSubject}
+                      style={{
+                        background: 'none',
+                        border: 0,
+                        color: 'var(--p)',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Reset to All
+                    </button>
+                  )}
                 </div>
 
                 <div
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: '8px',
-                    maxHeight: '260px',
+                    gap: '6px',
+                    maxHeight: '320px',
                     overflowY: 'auto',
                     padding: '2px',
                   }}
@@ -292,7 +350,7 @@ export function Library({ saved, toggle }) {
                         type="button"
                         onClick={() => handleSelectSubject(s)}
                         style={{
-                          padding: '8px 14px',
+                          padding: '7px 13px',
                           borderRadius: '20px',
                           fontSize: '12px',
                           fontWeight: isActive ? 700 : 600,
@@ -300,11 +358,11 @@ export function Library({ saved, toggle }) {
                           background: isActive ? 'var(--p-gradient)' : '#f8fafc',
                           color: isActive ? '#ffffff' : 'var(--ink)',
                           border: isActive ? '1px solid transparent' : '1px solid rgba(13, 148, 136, 0.15)',
-                          boxShadow: isActive ? '0 4px 12px var(--p-glow)' : 'none',
+                          boxShadow: isActive ? '0 3px 10px var(--p-glow)' : 'none',
                           transition: 'all 0.15s ease',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '6px',
+                          gap: '5px',
                         }}
                       >
                         {isActive ? '✓ ' : (s !== 'All' ? subjectIcon(s) + ' ' : '')}{s}
@@ -333,79 +391,7 @@ export function Library({ saved, toggle }) {
         </div>
       )}
 
-      {/* Mobile-Only Filter Sheet Trigger */}
-      {!q && (
-        <div className="mobile-only-filter-container" style={{ padding: '0 16px', margin: '8px 0', display: 'none' }}>
-          <button
-            className="mobile-filter-trigger-btn"
-            onClick={() => setFilterSheetOpen(true)}
-          >
-            🎛️ Filter &amp; Select {tab === 'class' ? `Class (${activeClass})` : `Category (${activeCat})`}
-          </button>
-        </div>
-      )}
 
-      {/* Mobile Filter Bottom Sheet Modal */}
-      {filterSheetOpen && (
-        <>
-          <div className="mobile-filter-sheet-overlay" onClick={() => setFilterSheetOpen(false)} />
-          <div className="mobile-filter-sheet">
-            <div className="sheet-handle" />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <h3 style={{ margin: 0 }}>Select {tab === 'class' ? 'NCERT Class' : 'Category'}</h3>
-              <button
-                onClick={() => setFilterSheetOpen(false)}
-                style={{ background: 'transparent', border: 0, fontSize: '20px', cursor: 'pointer', minHeight: '44px', minWidth: '44px' }}
-              >
-                ✕
-              </button>
-            </div>
-            {tab === 'class' ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                {NCERT_CLASSES.map((cls) => (
-                  <button
-                    key={cls}
-                    onClick={() => { setActiveClass(cls); setActiveSub('All'); setFilterSheetOpen(false); }}
-                    style={{
-                      padding: '12px',
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      borderRadius: '10px',
-                      border: activeClass === cls ? '2px solid var(--p)' : '1px solid var(--line)',
-                      background: activeClass === cls ? 'rgba(13, 148, 136, 0.12)' : 'var(--bg2)',
-                      color: activeClass === cls ? 'var(--p-dark)' : 'var(--ink)',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {cls}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {cats.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => { setActiveCat(c); setFilterSheetOpen(false); }}
-                    style={{
-                      padding: '12px 14px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      borderRadius: '10px',
-                      border: activeCat === c ? '2px solid var(--p)' : '1px solid var(--line)',
-                      background: activeCat === c ? 'rgba(13, 148, 136, 0.12)' : 'var(--bg2)',
-                      color: activeCat === c ? 'var(--p-dark)' : 'var(--ink)',
-                      textAlign: 'left',
-                    }}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
-      )}
 
       {/* ════════════════════════════════════════════
            SEARCH RESULTS
