@@ -77,7 +77,28 @@ function SubjectWatermark({ subject, category, title }) {
 }
 
 export function BookCover({ item }) {
+  const [imgError, setImgError] = React.useState(false);
   const colorClass = getSubjectColorClass(item.subject, item.category, item.title);
+
+  if (item.coverUrl && !imgError) {
+    return (
+      <div className={`cover cover-with-image ${colorClass}`}>
+        <div className="cover-image-wrapper">
+          <img
+            src={item.coverUrl}
+            alt={item.title}
+            loading="lazy"
+            className="cover-img"
+            onError={() => setImgError(true)}
+          />
+        </div>
+        <div className="cover-spine-fold" />
+        <div className="cover-tag-overlay">
+          <span className="cover-tag">{item.source}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`cover ${colorClass}`}>

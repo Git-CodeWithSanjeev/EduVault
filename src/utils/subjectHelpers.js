@@ -15,7 +15,8 @@ export const SUBJECT_ICONS = {
   Accountancy: '🧾', 'Business Studies': '💼', Sanskrit: '🕉️',
   'Physical Education': '🏃', 'Fine Arts': '🎨', Music: '🎵',
   Science: '🔬', 'Social Science': '🌐', 'Environmental Science': '🌿',
-  'Home Science': '🏠', Urdu: '✒️',
+  'Home Science': '🏠', Urdu: '✒️', Philosophy: '🤔', 'Literature & Classics': '📜',
+  'Finance & Commerce': '💹', Medical: '🩺', Astronomy: '🌌', Law: '⚖️',
 };
 
 /** Get icon for a given subject */

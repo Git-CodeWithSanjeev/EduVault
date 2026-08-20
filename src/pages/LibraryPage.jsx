@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { items, cats } from '../data/openItems';
 import { Cards } from '../components/ResourceGrid';
 import { NCERT_CLASSES, subjectIcon, groupByClass } from '../utils/subjectHelpers';
+import { searchOpenLibrary, fetchOpenLibrarySubject } from '../services/openLibraryService';
 
 export { NCERT_CLASSES, subjectIcon, groupByClass };
 
@@ -13,6 +14,11 @@ export function Library({ saved = [], toggle = () => {} }) {
   const [activeCat, setActiveCat] = useState(() => sessionStorage.getItem('eduvault_lib_cat') || cats[0]);
   const [activeSub, setActiveSub] = useState(() => sessionStorage.getItem('eduvault_lib_sub') || 'All');
   const [openstaxSub, setOpenstaxSub] = useState(() => sessionStorage.getItem('eduvault_lib_openstax_sub') || 'All');
+  const [openlibSub, setOpenlibSub] = useState(() => sessionStorage.getItem('eduvault_lib_openlib_sub') || 'All');
+  const [openlibLiveQ, setOpenlibLiveQ] = useState('');
+  const [openlibLiveResults, setOpenlibLiveResults] = useState([]);
+  const [openlibLoading, setOpenlibLoading] = useState(false);
+  const [openlibSearchActive, setOpenlibSearchActive] = useState(false);
   const [visibleCount, setVisibleCount] = useState(16);
 
   useEffect(() => {
@@ -39,6 +45,54 @@ export function Library({ saved = [], toggle = () => {} }) {
     sessionStorage.setItem('eduvault_lib_openstax_sub', openstaxSub);
   }, [openstaxSub]);
 
+  useEffect(() => {
+    sessionStorage.setItem('eduvault_lib_openlib_sub', openlibSub);
+  }, [openlibSub]);
+
+  /* ─── OPEN LIBRARY tab data ─── */
+  const openlibBooksList = useMemo(() => items.filter(x => x.source === 'Open Library'), []);
+  const openlibSubjects = useMemo(() => {
+    const set = new Set(openlibBooksList.map(b => b.subject).filter(Boolean));
+    return ['All', ...Array.from(set).sort()];
+  }, [openlibBooksList]);
+  const filteredOpenlibBooks = useMemo(() => {
+    if (openlibSub === 'All') return openlibBooksList;
+    return openlibBooksList.filter(b => b.subject === openlibSub);
+  }, [openlibBooksList, openlibSub]);
+
+  /* Live search Open Library */
+  const handleOpenlibLiveSearch = useCallback(async (queryToSearch) => {
+    const targetQ = queryToSearch !== undefined ? queryToSearch : openlibLiveQ;
+    if (!targetQ.trim()) {
+      setOpenlibSearchActive(false);
+      setOpenlibLiveResults([]);
+      return;
+    }
+    setOpenlibLoading(true);
+    setOpenlibSearchActive(true);
+    try {
+      const res = await searchOpenLibrary(targetQ, 1, 24);
+      setOpenlibLiveResults(res.docs || []);
+    } catch (err) {
+      console.warn('Open Library search failed:', err);
+    } finally {
+      setOpenlibLoading(false);
+    }
+  }, [openlibLiveQ]);
+
+  const handleOpenlibLiveSubject = useCallback(async (subjectSlug) => {
+    setOpenlibLoading(true);
+    setOpenlibSearchActive(true);
+    setOpenlibLiveQ(`Subject: ${subjectSlug}`);
+    try {
+      const res = await fetchOpenLibrarySubject(subjectSlug, 24);
+      setOpenlibLiveResults(res.works || []);
+    } catch (err) {
+      console.warn('Open Library subject fetch failed:', err);
+    } finally {
+      setOpenlibLoading(false);
+    }
+  }, []);
 
   /* ─── OPENSTAX tab data ─── */
   const openstaxBooksList = useMemo(() => items.filter(x => x.source === 'OpenStax'), []);
@@ -80,11 +134,11 @@ export function Library({ saved = [], toggle = () => {} }) {
       const xSlug = (x.category || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
       if (xSlug === slug) return true;
       // fallback subject-based match
-      if (slug === 'science') return ['Physics','Chemistry','Biology','Mathematics','Science','Environmental Science'].includes(x.subject);
+      if (slug === 'science') return ['Physics','Chemistry','Biology','Mathematics','Science','Environmental Science','Astronomy'].includes(x.subject);
       if (slug === 'computer-science-it') return ['Computer Science','Informatics Practices'].includes(x.subject);
-      if (slug === 'arts-humanities') return ['History','Geography','Political Science','Economics','Sociology','Psychology'].includes(x.subject);
+      if (slug === 'arts-humanities') return ['History','Geography','Political Science','Economics','Sociology','Psychology','Philosophy','Literature & Classics'].includes(x.subject);
       if (slug === 'board-books') return x.source === 'NCERT';
-      if (slug === 'undergraduate-ug') return x.level === 'Undergraduate' || x.source === 'OpenStax';
+      if (slug === 'undergraduate-ug') return x.level === 'Undergraduate' || x.source === 'OpenStax' || x.source === 'Open Library';
       return false;
     }).slice(0, visibleCount);
   }, [activeCat, visibleCount]);
@@ -93,11 +147,14 @@ export function Library({ saved = [], toggle = () => {} }) {
   const [libFilterOpen, setLibFilterOpen] = useState(false);
 
   // Active filter subject depending on current tab
-  const currentActiveSub = tab === 'openstax' ? openstaxSub : (tab === 'class' ? activeSub : 'All');
-  const currentSubjectList = tab === 'openstax' ? openstaxSubjects : (tab === 'class' ? classSubjects : []);
+  const currentActiveSub = tab === 'openlib' ? openlibSub : (tab === 'openstax' ? openstaxSub : (tab === 'class' ? activeSub : 'All'));
+  const currentSubjectList = tab === 'openlib' ? openlibSubjects : (tab === 'openstax' ? openstaxSubjects : (tab === 'class' ? classSubjects : []));
 
   const handleSelectSubject = (sub) => {
-    if (tab === 'openstax') {
+    if (tab === 'openlib') {
+      setOpenlibSub(sub);
+      setOpenlibSearchActive(false);
+    } else if (tab === 'openstax') {
       setOpenstaxSub(sub);
     } else if (tab === 'class') {
       setActiveSub(sub);
@@ -106,7 +163,10 @@ export function Library({ saved = [], toggle = () => {} }) {
   };
 
   const handleClearSubject = () => {
-    if (tab === 'openstax') {
+    if (tab === 'openlib') {
+      setOpenlibSub('All');
+      setOpenlibSearchActive(false);
+    } else if (tab === 'openstax') {
       setOpenstaxSub('All');
     } else if (tab === 'class') {
       setActiveSub('All');
@@ -385,13 +445,14 @@ export function Library({ saved = [], toggle = () => {} }) {
           <button className={`lib-tab ${tab === 'openstax' ? 'active' : ''}`} onClick={() => setTab('openstax')}>
             OpenStax College
           </button>
+          <button className={`lib-tab ${tab === 'openlib' ? 'active' : ''}`} onClick={() => setTab('openlib')}>
+            🌐 Open Library
+          </button>
           <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
             By Category
           </button>
         </div>
       )}
-
-
 
       {/* ════════════════════════════════════════════
            SEARCH RESULTS
@@ -524,6 +585,187 @@ export function Library({ saved = [], toggle = () => {} }) {
             <div className="lib-empty">No OpenStax books found for subject "{openstaxSub}".</div>
           ) : (
             <Cards list={filteredOpenstaxBooks} saved={saved} toggle={toggle} />
+          )}
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════
+           OPEN LIBRARY TAB (GLOBAL DIGITAL ARCHIVE)
+      ════════════════════════════════════════════ */}
+      {tab === 'openlib' && (
+        <div className="lib-content">
+          {/* Open Library Banner & Live Search Bar */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(30, 41, 59, 0.04) 100%)',
+            border: '1px solid rgba(13, 148, 136, 0.2)',
+            borderRadius: '16px',
+            padding: '20px 24px',
+            marginBottom: '24px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '20px' }}>🌐</span>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: 'var(--ink)' }}>
+                    Open Library Digital Catalog
+                  </h3>
+                  <span style={{ fontSize: '11px', fontWeight: 800, padding: '2px 8px', borderRadius: '12px', background: 'var(--p-gradient)', color: '#fff' }}>
+                    Internet Archive
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--muted)', maxWidth: '650px' }}>
+                  Explore iconic textbooks, public domain masterpieces, scientific treatises, and millions of digitized editions with full cover artwork and digital reader integration.
+                </p>
+              </div>
+
+              {/* Reset to Curated Masterpieces */}
+              {openlibSearchActive && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpenlibSearchActive(false);
+                    setOpenlibLiveQ('');
+                    setOpenlibLiveResults([]);
+                  }}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    background: '#ffffff',
+                    color: 'var(--p)',
+                    border: '1px solid var(--p)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  ← Back to Curated Masterpieces
+                </button>
+              )}
+            </div>
+
+            {/* Live Search Form */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleOpenlibLiveSearch();
+              }}
+              style={{ display: 'flex', gap: '10px', maxWidth: '640px' }}
+            >
+              <input
+                type="text"
+                value={openlibLiveQ}
+                onChange={(e) => setOpenlibLiveQ(e.target.value)}
+                placeholder="Live search millions of books on Open Library (e.g., Deep Learning, Plato, Einstein)..."
+                style={{
+                  flex: 1,
+                  padding: '11px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(13, 148, 136, 0.25)',
+                  fontSize: '13.5px',
+                  background: '#ffffff',
+                  outline: 'none',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                }}
+              />
+              <button
+                type="submit"
+                disabled={openlibLoading}
+                style={{
+                  padding: '11px 20px',
+                  borderRadius: '12px',
+                  background: 'var(--p-gradient)',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '13.5px',
+                  border: 0,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px var(--p-glow)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {openlibLoading ? 'Searching…' : 'Search API ↗'}
+              </button>
+            </form>
+
+            {/* Quick Topic Chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '14px', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>
+                Quick Topics:
+              </span>
+              {[
+                { label: '💻 Computer Science', slug: 'computer_science' },
+                { label: '⚛️ Physics', slug: 'physics' },
+                { label: '📐 Mathematics', slug: 'mathematics' },
+                { label: '📜 Classic Literature', slug: 'classic_literature' },
+                { label: '🏛️ Philosophy', slug: 'philosophy' },
+                { label: '🌍 History', slug: 'history' },
+                { label: '🧠 Psychology', slug: 'psychology' },
+                { label: '📊 Economics', slug: 'economics' },
+              ].map(topic => (
+                <button
+                  key={topic.slug}
+                  type="button"
+                  onClick={() => handleOpenlibLiveSubject(topic.slug)}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: '14px',
+                    fontSize: '11.5px',
+                    fontWeight: 600,
+                    background: '#ffffff',
+                    border: '1px solid rgba(13, 148, 136, 0.18)',
+                    color: 'var(--ink)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {topic.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Section Header */}
+          <div className="lib-section-header">
+            <span>
+              {openlibSearchActive
+                ? `🔍 Open Library Results for "${openlibLiveQ}"`
+                : (openlibSub !== 'All' ? `${subjectIcon(openlibSub)} Open Library · ${openlibSub}` : '📚 Curated Open Library Masterpieces')
+              }
+            </span>
+            <span className="lib-count-badge">
+              {openlibSearchActive ? `${openlibLiveResults.length} live results` : `${filteredOpenlibBooks.length} books`}
+            </span>
+          </div>
+
+          {/* Loading Indicator */}
+          {openlibLoading && (
+            <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--muted)' }}>
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>⏳</div>
+              <p style={{ fontWeight: 600 }}>Fetching books from Open Library API…</p>
+            </div>
+          )}
+
+          {/* Books Results */}
+          {!openlibLoading && (
+            openlibSearchActive ? (
+              openlibLiveResults.length === 0 ? (
+                <div className="lib-empty">
+                  No books found on Open Library for "{openlibLiveQ}". Try searching another title or author.
+                </div>
+              ) : (
+                <Cards list={openlibLiveResults} saved={saved} toggle={toggle} />
+              )
+            ) : (
+              filteredOpenlibBooks.length === 0 ? (
+                <div className="lib-empty">No Open Library books found for subject "{openlibSub}".</div>
+              ) : (
+                <Cards list={filteredOpenlibBooks} saved={saved} toggle={toggle} />
+              )
+            )
           )}
         </div>
       )}

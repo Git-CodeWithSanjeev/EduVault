@@ -53,6 +53,18 @@ export function Detail({ saved = [], toggle = () => {} }) {
         <dd>{b.subject}</dd>
         <dt>Level</dt>
         <dd>{b.level}</dd>
+        {b.authors && (
+          <>
+            <dt>Author(s)</dt>
+            <dd>{b.authors}</dd>
+          </>
+        )}
+        {b.firstPublishYear && (
+          <>
+            <dt>First Published</dt>
+            <dd>{b.firstPublishYear}</dd>
+          </>
+        )}
         {b.medium && (
           <>
             <dt>Medium</dt>
@@ -60,7 +72,7 @@ export function Detail({ saved = [], toggle = () => {} }) {
           </>
         )}
         <dt>Hosting</dt>
-        <dd>Official external source</dd>
+        <dd>{b.source === 'Open Library' ? 'Internet Archive & Open Library' : 'Official external source'}</dd>
       </dl>
       <div className="detail-actions">
         <Link className="detail-button" style={{ background: 'var(--p-gradient)', textDecoration: 'none' }} to={'/read/' + b.id}>
@@ -70,7 +82,7 @@ export function Detail({ saved = [], toggle = () => {} }) {
           {saved.includes(b.id) ? 'Remove from saved' : 'Save to my library'}
         </button>
         <ExternalLink item={b}>
-          {b.source === 'NCERT' ? 'Download from NCERT ↗' : 'Read at official source ↗'}
+          {b.source === 'NCERT' ? 'Download from NCERT ↗' : (b.source === 'Open Library' ? 'Open on Open Library ↗' : 'Read at official source ↗')}
         </ExternalLink>
         {b.catalog && (
           <Link to="/go/ncert-catalog">Browse NCERT catalog</Link>
