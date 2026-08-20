@@ -86,24 +86,43 @@ export function Shell({ children, welcomeMsg }) {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
     const books = items
-      .filter((b) => (b.title + ' ' + (b.subject || '') + ' ' + (b.author || '') + ' ' + (b.level || '') + ' ' + (b.source || '')).toLowerCase().includes(q))
+      .filter((b) => {
+        const fullText = (
+          (b.title || '') + ' ' +
+          (b.subject || '') + ' ' +
+          (b.author || '') + ' ' +
+          (b.level || '') + ' ' +
+          (b.source || '') + ' ' +
+          (b.description || '') + ' ' +
+          (b.chapters ? b.chapters.join(' ') : '')
+        ).toLowerCase();
+        return fullText.includes(q);
+      })
       .map((b) => ({
         type: b.source === 'NCERT' ? 'ncert' : 'book',
         id: b.id,
         title: b.title,
-        meta: `${b.subject || 'Textbook'} · ${b.level || 'Open Resource'}`,
+        meta: `${b.subject || 'Textbook'} · ${b.level || 'Open Resource'} ${b.source ? `· ${b.source}` : ''}`,
         url: b.source === 'NCERT' ? `/read/${b.id}` : `/resource/${b.id}`,
         icon: b.source === 'NCERT' ? '🎓' : '📚',
         badge: b.source === 'NCERT' ? 'NCERT' : 'Book',
       }));
 
     const videos = educationalVideos
-      .filter((v) => (v.title + ' ' + (v.channel || '') + ' ' + (v.category || '')).toLowerCase().includes(q))
+      .filter((v) => {
+        const fullText = (
+          (v.title || '') + ' ' +
+          (v.channel || '') + ' ' +
+          (v.category || '') + ' ' +
+          (v.description || '')
+        ).toLowerCase();
+        return fullText.includes(q);
+      })
       .map((v) => ({
         type: 'video',
         id: v.id,
         title: v.title,
-        meta: `Video Course · ${v.channel}`,
+        meta: `Video Course · ${v.channel} · ${v.category || 'Educational'}`,
         url: `/video/${v.id}`,
         icon: '🎬',
         badge: 'Video',
@@ -148,9 +167,8 @@ export function Shell({ children, welcomeMsg }) {
       {/* ─── 1. MAIN WEBSITE HEADER ─── */}
       {/* ─── 1. MAIN WEBSITE HEADER ─── */}
       <header>
-        <Link className="logo" to="/">
+        <Link className="logo" to="/" aria-label="EduVault Home">
           <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
-          <span>Edu<span className="logo-highlight">Vault</span></span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -231,6 +249,9 @@ export function Shell({ children, welcomeMsg }) {
                       <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
                         Contribute Books
                       </Link>
+                      <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
+                        🛡️ Admin Console
+                      </Link>
                       <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
                         Sign Out
                       </button>
@@ -291,9 +312,8 @@ export function Shell({ children, welcomeMsg }) {
           <div className="mobile-drawer-overlay" onClick={closeDrawer} />
           <aside className="mobile-drawer">
             <div className="mobile-drawer-header">
-              <Link className="logo" to="/" onClick={closeDrawer}>
+              <Link className="logo" to="/" onClick={closeDrawer} aria-label="EduVault Home">
                 <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
-                <span>Edu<span className="logo-highlight">Vault</span></span>
               </Link>
               <button
                 type="button"
@@ -489,12 +509,23 @@ export function Shell({ children, welcomeMsg }) {
             </NavLink>
           </div>
 
-          <footer>
-            <b>
-              ◈ Edu<span>Vault</span>
-            </b>
-            <span>Learn openly. Share responsibly.</span>
-            <Link to="/copyright">Copyright &amp; takedown</Link>
+          <footer className="main-site-footer">
+            <div className="footer-brand-section">
+              <Link to="/" className="footer-logo-link" aria-label="EduVault Home">
+                <img src="/logo.png" alt="EduVault" className="footer-brand-logo" />
+              </Link>
+              <span className="footer-tagline">Learn openly. Share responsibly.</span>
+            </div>
+
+            <div className="footer-links-group">
+              <Link to="/copyright" className="footer-nav-link">Copyright &amp; takedown</Link>
+              <Link to="/admin" className="footer-admin-btn" title="Open Admin Console">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>Admin</span>
+              </Link>
+            </div>
           </footer>
         </>
       )}

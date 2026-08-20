@@ -7,11 +7,11 @@ export { ProtectedRoute } from './ProtectedRoute';
 export { BookCard } from './BookCard';
 export { BookCarousel } from './BookCarousel';
 export { BookCover } from './BookCover';
-export { Cards } from './Cards';
+export { Cards, Cards as ResourceGrid, ExternalLink } from './ResourceGrid';
 
 // PDF Reader Components
 export { PDFReader } from './PDFReader';
-export { CanvasPDFViewer } from './CanvasPDFViewer';
+export { AdobePDFViewer, DownloadPDFButton } from './AdobePDFViewer';
 
 // Video Learning Components
 export { VideoCard } from './VideoCard';

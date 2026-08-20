@@ -1,15 +1,15 @@
 import React from 'react';
 import { items } from '../data/openItems';
-import { Cards } from '../components/Cards';
+import { Cards } from '../components/ResourceGrid';
 import { useVideoLearning } from '../hooks/useVideoLearning';
 import { VideoCard } from '../components/VideoCard';
 import { educationalVideos } from '../data/educationalVideos';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 
-export function SavedPage({ saved, toggle }) {
+export function SavedPage({ saved = [], toggle = () => {} }) {
   const { savedVideos, bookmarkedVideos } = useVideoLearning();
 
-  const savedBooksList = items.filter((x) => saved.includes(x.id));
+  const savedBooksList = items.filter((x) => (Array.isArray(saved) ? saved : []).includes(x.id));
 
   // Combine saved & bookmarked video IDs
   const allSavedVideoIds = Array.from(new Set([...savedVideos, ...bookmarkedVideos]));

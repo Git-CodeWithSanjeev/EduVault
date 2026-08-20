@@ -68,11 +68,7 @@ export function Register() {
 
     try {
       const res = await register(name, email, password);
-      if (res?.autoConfirmed) {
-        navigate('/', { replace: true });
-      } else {
-        navigate('/verify-email', { state: { email: res.email } });
-      }
+      navigate('/verify-email', { state: { email: res.email || email.trim() } });
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -83,7 +79,10 @@ export function Register() {
   return (
     <div className="auth-page-container">
       <div className="auth-page-card">
-        <div className="auth-header">
+        <div className="auth-header" style={{ textAlign: 'center' }}>
+          <Link to="/" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            <img src="/logo.png" alt="EduVault" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+          </Link>
           <h2>Create Account</h2>
           <p>Join EduVault to access legal education, textbooks, and open resources.</p>
         </div>

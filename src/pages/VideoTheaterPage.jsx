@@ -158,11 +158,11 @@ export function VideoTheater() {
 
   const activeEmbedUrl = playlistId
     ? (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
-        ? `https://www.youtube-nocookie.com/embed/${targetVidId}?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
-        : `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`)
+      ? `https://www.youtube-nocookie.com/embed/${targetVidId}?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
+      : `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`)
     : (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
-        ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
-        : `https://www.youtube-nocookie.com/embed/7X8M8zUe-fI?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`);
+      ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
+      : `https://www.youtube-nocookie.com/embed/7X8M8zUe-fI?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`);
 
   // Course Progress calculation
   const totalLessonsCount = lessons.length;

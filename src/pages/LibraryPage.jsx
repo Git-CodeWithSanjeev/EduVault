@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { items, cats } from '../data/openItems';
-import { Cards } from '../components/Cards';
+import { Cards } from '../components/ResourceGrid';
 import { NCERT_CLASSES, subjectIcon, groupByClass } from '../utils/subjectHelpers';
 
 export { NCERT_CLASSES, subjectIcon, groupByClass };
 
 /* ── Component ──────────────────────────────────────────────────── */
-export function Library({ saved, toggle }) {
+export function Library({ saved = [], toggle = () => {} }) {
   const [tab, setTab] = useState(() => sessionStorage.getItem('eduvault_lib_tab') || 'class');
   const [q, setQ] = useState(() => sessionStorage.getItem('eduvault_lib_q') || '');
   const [activeClass, setActiveClass] = useState(() => sessionStorage.getItem('eduvault_lib_class') || NCERT_CLASSES[11]);

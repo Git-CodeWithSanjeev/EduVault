@@ -1,5 +1,8 @@
 import { connectToDatabase, User } from '../_db.js';
 import bcrypt from 'bcryptjs';
+import { sendSignupOtpEmail } from '../../services/email.js';
+
+const globalPendingSignups = global.pendingSignupsMap || (global.pendingSignupsMap = new Map());
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,35 +23,47 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    await connectToDatabase();
+    const cleanName = (name || '').trim();
+    const cleanEmail = email.toLowerCase().trim();
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User with this email already exists' });
+    if (cleanName.length < 2) {
+      return res.status(400).json({ error: 'Full Name must be at least 2 characters' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
+    try {
+      await connectToDatabase();
+      const existingUser = await User.findOne({ email: cleanEmail });
+      if (existingUser) {
+        return res.status(400).json({ error: 'An account with this email address already exists. Please sign in.' });
+      }
+    } catch (dbErr) {
+      console.warn('[Register DB Check Warning]:', dbErr.message);
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({
-      name: name || email.split('@')[0],
-      email: email.toLowerCase(),
-      password: hashedPassword,
-      avatar: '🎓',
-      provider: 'email',
-      savedBooks: [],
+
+    globalPendingSignups.set(cleanEmail, {
+      name: cleanName,
+      email: cleanEmail,
+      hashedPassword,
+      otp,
+      expiresAt: Date.now() + 600000,
     });
 
-    return res.status(201).json({
+    // Send Real Verification OTP Email in background
+    sendSignupOtpEmail(cleanEmail, otp, cleanName).catch((mailErr) => {
+      console.warn('[Vercel Signup Email Error]:', mailErr.message);
+    });
+
+    return res.status(200).json({
       success: true,
-      user: {
-        id: newUser._id.toString(),
-        name: newUser.name,
-        email: newUser.email,
-        avatar: newUser.avatar,
-        provider: 'email',
-        isVerified: true,
-        savedBooks: [],
-        joinedDate: newUser.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-      },
+      requireOtp: true,
+      email: cleanEmail,
+      message: `A 6-digit confirmation code has been sent to ${cleanEmail}. Please check your inbox.`,
     });
   } catch (err) {
     console.error('[Vercel Auth Register Error]:', err);

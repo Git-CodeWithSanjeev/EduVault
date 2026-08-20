@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { items } from '../data/openItems';
-import { ncertBooks } from '../ncertBooks';
+import { ncertBooks } from '../data/ncertBooksData';
 import { educationalVideos } from '../data/educationalVideos';
-import { Cards } from '../components/Cards';
+import { Cards } from '../components/ResourceGrid';
 import { BookCarousel } from '../components/BookCarousel';
 import { VideoGallery } from '../components/VideoGallery';
 import { educationalGalleryData } from '../data/educationalGalleryData';
@@ -78,11 +78,11 @@ export function VideoCarousel({ title, videosList }) {
   );
 }
 
-export function Home({ saved, toggle, recentIds }) {
+export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
   const { user, isLoggedIn } = useAuth();
 
   const recentItems = useMemo(
-    () => recentIds.map((id) => items.find((x) => x.id === id)).filter(Boolean),
+    () => (Array.isArray(recentIds) ? recentIds : []).map((id) => items.find((x) => x.id === id)).filter(Boolean),
     [recentIds],
   );
 
@@ -142,9 +142,9 @@ export function Home({ saved, toggle, recentIds }) {
               <div className="hero-card-preview">
                 <img
                   src="https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg"
-                  alt="Featured Video Course"
+                  alt="Sigma Web Development Masterclass"
                 />
-                <Link to="/video/cwh-c" className="hero-play-pulse" title="Play Featured Masterclass">
+                <Link to="/video/cwh-sigma-webdev" className="hero-play-pulse" title="Play Sigma Web Development Masterclass">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
@@ -156,19 +156,19 @@ export function Home({ saved, toggle, recentIds }) {
                     FEATURED MASTERCLASS
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--p)', fontWeight: 800 }}>
-                    76 Video Lessons
+                    139 Video Lessons
                   </span>
                 </div>
                 <h3 style={{ fontSize: '15px', fontWeight: 800, margin: '6px 0', color: 'var(--ink)' }}>
-                  C Language Complete Course In Hindi
+                  Sigma Web Development Course (HTML, CSS, JS, React)
                 </h3>
                 <p style={{ fontSize: '12px', color: 'var(--muted)', margin: 0 }}>
-                  CodeWithHarry · Beginner to Advanced
+                  CodeWithHarry · Full-Stack Web Development
                 </p>
                 <div className="hero-subject-chips">
-                  <span className="hero-chip">Programming</span>
-                  <span className="hero-chip">Class 1-12</span>
-                  <span className="hero-chip">Physics & Math</span>
+                  <span className="hero-chip">Web Development</span>
+                  <span className="hero-chip">Full-Stack</span>
+                  <span className="hero-chip">React & Node.js</span>
                 </div>
               </div>
             </div>

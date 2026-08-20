@@ -1,5 +1,5 @@
-import { NCERT_INDEX, ncertBooks } from '../ncertBooks';
-import { openstaxBooks } from '../openstaxBooks';
+import { NCERT_INDEX, ncertBooks } from './ncertBooksData';
+import { openstaxBooks } from './openstaxBooksData';
 
 
 export const otherItems = [

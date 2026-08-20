@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { cats, getCategorySlug, getResourcesForCategory } from '../data/openItems';
-import { Cards } from '../components/Cards';
+import { Cards } from '../components/ResourceGrid';
 
-export function CategoryView({ saved, toggle }) {
+export function CategoryView({ saved = [], toggle = () => {} }) {
   const { slug } = useParams();
   const matchedCat = cats.find((c) => getCategorySlug(c) === slug);
   const title = matchedCat || slug.split('-').map((x) => x[0].toUpperCase() + x.slice(1)).join(' ');

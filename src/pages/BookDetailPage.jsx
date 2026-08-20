@@ -1,10 +1,10 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
-import { ExternalLink } from '../components/Cards';
+import { ExternalLink } from '../components/ResourceGrid';
 import { useAuth } from '../context/AuthContext';
 
-export function Detail({ saved, toggle }) {
+export function Detail({ saved = [], toggle = () => {} }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();

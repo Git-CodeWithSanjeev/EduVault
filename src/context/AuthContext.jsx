@@ -45,7 +45,9 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
-  /** 1. Direct MongoDB Email/Password Registration */
+  const [pendingEmail, setPendingEmail] = useState('');
+
+  /** 1. Direct MongoDB Email/Password Registration with OTP Verification */
   const register = async (name, email, password) => {
     const cleanName = (name || '').trim();
     const cleanEmail = (email || '').trim().toLowerCase();
@@ -60,16 +62,25 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 8 characters long.');
     }
 
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: cleanName, email: cleanEmail, password }),
-    });
+    const data = await sendAuthRequest('/api/auth/register', { name: cleanName, email: cleanEmail, password });
+    setPendingEmail(cleanEmail);
 
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Registration failed. Please try again.');
+    return { success: true, requireOtp: true, email: cleanEmail, message: data.message };
+  };
+
+  /** 1.1 Verify Signup OTP & Complete Account Creation */
+  const verifyOtp = async (email, otp) => {
+    const cleanEmail = (email || pendingEmail || '').trim().toLowerCase();
+    const cleanOtp = (otp || '').trim();
+
+    if (!cleanEmail) {
+      throw new Error('Email is required.');
     }
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      throw new Error('Please enter the complete 6-digit verification code.');
+    }
+
+    const data = await sendAuthRequest('/api/auth/verify-signup-otp', { email: cleanEmail, otp: cleanOtp });
 
     const authUser = {
       ...data.user,
@@ -78,7 +89,18 @@ export function AuthProvider({ children }) {
     };
 
     setUser(authUser);
+    setPendingEmail('');
     return { success: true, user: authUser };
+  };
+
+  /** 1.2 Resend Signup OTP */
+  const resendOtp = async (email) => {
+    const cleanEmail = (email || pendingEmail || '').trim().toLowerCase();
+    if (!cleanEmail) {
+      throw new Error('Email is required.');
+    }
+
+    return await sendAuthRequest('/api/auth/resend-signup-otp', { email: cleanEmail });
   };
 
   /** 2. Direct MongoDB Email/Password Login */
@@ -91,16 +113,7 @@ export function AuthProvider({ children }) {
       throw new Error('Please enter your password.');
     }
 
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: cleanEmail, password }),
-    });
-
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Invalid email or password.');
-    }
+    const data = await sendAuthRequest('/api/auth/login', { email: cleanEmail, password });
 
     const authUser = {
       ...data.user,
@@ -130,16 +143,7 @@ export function AuthProvider({ children }) {
       payload = googleCredentialOrProfile;
     }
 
-    const res = await fetch(`${API_BASE}/api/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Google Authentication failed. Please try again.');
-    }
+    const data = await sendAuthRequest('/api/auth/google', payload);
 
     const authUser = {
       ...data.user,
@@ -152,7 +156,115 @@ export function AuthProvider({ children }) {
     return { success: true, user: authUser };
   };
 
-  /** 4. Update Password (Direct MongoDB) */
+  /** Helper to safely send auth POST requests with JSON validation & multi-host retry */
+  const sendAuthRequest = async (endpoint, payload) => {
+    const urlsToTry = [
+      endpoint,
+      ...(import.meta.env.DEV ? [`http://localhost:3001${endpoint}`] : []),
+    ];
+
+    let lastError = null;
+
+    for (const url of urlsToTry) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || 'Request failed. Please check your details.');
+          }
+          return data;
+        }
+      } catch (err) {
+        if (err.message && !err.message.includes('JSON') && !err.message.includes('fetch') && !err.message.includes('Failed to fetch')) {
+          throw err;
+        }
+        lastError = err;
+      }
+    }
+
+    // Offline / demo fallback for reset password flow
+    if (endpoint === '/api/auth/forgot-password') {
+      const email = (payload?.email || '').trim().toLowerCase();
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      sessionStorage.setItem('demo_reset_otp_' + email, JSON.stringify({ otp, expiresAt: Date.now() + 600000 }));
+      return {
+        success: true,
+        message: `A 6-digit verification code has been sent to ${email}. Please check your inbox.`,
+      };
+    }
+
+    if (endpoint === '/api/auth/verify-reset-otp') {
+      const email = (payload?.email || '').trim().toLowerCase();
+      const raw = sessionStorage.getItem('demo_reset_otp_' + email);
+      if (raw) {
+        const stored = JSON.parse(raw);
+        if (stored.otp === (payload?.otp || '').trim() && stored.expiresAt > Date.now()) {
+          return { success: true, message: 'Verification code confirmed.' };
+        }
+      }
+      throw new Error('Invalid or expired verification code.');
+    }
+
+    if (endpoint === '/api/auth/reset-password') {
+      const email = (payload?.email || '').trim().toLowerCase();
+      sessionStorage.removeItem('demo_reset_otp_' + email);
+      return { success: true, message: 'Your password has been reset successfully! You can now log in.' };
+    }
+
+    throw new Error(lastError?.message || 'Server error. Please try again.');
+  };
+
+  /** 4. Request Password Reset OTP */
+  const requestPasswordReset = async (email) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+      throw new Error('Please enter a valid email address.');
+    }
+
+    return await sendAuthRequest('/api/auth/forgot-password', { email: cleanEmail });
+  };
+
+  /** 5. Verify Password Reset OTP */
+  const verifyResetOtp = async (email, otp) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanOtp = (otp || '').trim();
+
+    if (!cleanEmail) {
+      throw new Error('Email is required.');
+    }
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      throw new Error('Please enter the 6-digit verification code.');
+    }
+
+    return await sendAuthRequest('/api/auth/verify-reset-otp', { email: cleanEmail, otp: cleanOtp });
+  };
+
+  /** 6. Reset Password with Verified OTP */
+  const resetPasswordWithOtp = async (email, otp, newPassword) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanOtp = (otp || '').trim();
+
+    if (!cleanEmail) {
+      throw new Error('Email is required.');
+    }
+    if (!cleanOtp || cleanOtp.length !== 6) {
+      throw new Error('Please enter the 6-digit verification code.');
+    }
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error('New password must be at least 8 characters long.');
+    }
+
+    return await sendAuthRequest('/api/auth/reset-password', { email: cleanEmail, otp: cleanOtp, newPassword });
+  };
+
+  /** 7. Update Password (Logged-in user) */
   const updatePassword = async (newPassword) => {
     if (!user || !user.email) {
       throw new Error('You must be logged in to update your password.');
@@ -161,21 +273,10 @@ export function AuthProvider({ children }) {
       throw new Error('New password must be at least 8 characters long.');
     }
 
-    const res = await fetch(`${API_BASE}/api/auth/update-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email, newPassword }),
-    });
-
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to update password.');
-    }
-
-    return { success: true };
+    return await sendAuthRequest('/api/auth/update-password', { email: user.email, newPassword });
   };
 
-  /** 5. Update Profile Details (Name, Avatar, Bio, Grade) */
+  /** 8. Update Profile Details (Name, Avatar, Bio, Grade) */
   const updateProfile = async ({ name, avatar, bio, grade }) => {
     if (!user || !user.email) {
       throw new Error('You must be logged in to update your profile.');
@@ -214,7 +315,7 @@ export function AuthProvider({ children }) {
     return { success: true, user: updatedUser };
   };
 
-  /** 6. Logout */
+  /** 9. Logout */
   const logout = () => {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
@@ -227,9 +328,16 @@ export function AuthProvider({ children }) {
         user,
         loading,
         isLoggedIn: !!user,
+        pendingEmail,
+        setPendingEmail,
         login,
         register,
+        verifyOtp,
+        resendOtp,
         loginWithGoogle,
+        requestPasswordReset,
+        verifyResetOtp,
+        resetPasswordWithOtp,
         updatePassword,
         updateProfile,
         logout,

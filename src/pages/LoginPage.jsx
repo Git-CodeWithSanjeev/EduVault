@@ -73,7 +73,10 @@ export function Login() {
   return (
     <div className="auth-page-container">
       <div className="auth-page-card">
-        <div className="auth-header">
+        <div className="auth-header" style={{ textAlign: 'center' }}>
+          <Link to="/" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            <img src="/logo.png" alt="EduVault" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
+          </Link>
           <h2>Sign In to EduVault</h2>
           <p>Choose your preferred sign-in method to access your account.</p>
         </div>

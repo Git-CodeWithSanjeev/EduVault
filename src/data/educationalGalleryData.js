@@ -442,18 +442,14 @@ export const educationalGalleryData = [
   {
     "id": "cwh-sigma-webdev",
     "videoId": "tVzUXW6siu0",
+    "playlistId": "PLu0W_9lII9agq5TrH9XLIKQvv0iaF2X3w",
     "title": "Sigma Web Development Course (HTML, CSS, JS, React, Node.js)",
     "channel": "CodeWithHarry",
     "focusArea": "Web & Full-Stack Development",
     "whyHighQuality": "100+ video full stack web development course covering HTML5, CSS3, Flexbox, Grid, JS, Express, React, and MongoDB.",
     "duration": "139 Videos Playlist",
     "videoCount": 139,
-    "thumbnail": "https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg",
-    "lessons": [
-      { "id": 1, "videoId": "tVzUXW6siu0", "title": "1. Introduction to Web Development & HTML5", "duration": "Lesson" },
-      { "id": 2, "videoId": "tVzUXW6siu0", "title": "2. CSS3 Flexbox & Responsive Design", "duration": "Lesson" },
-      { "id": 3, "videoId": "tVzUXW6siu0", "title": "3. Full Stack Node.js & React Application", "duration": "Lesson" }
-    ]
+    "thumbnail": "https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg"
   }
 ];
 

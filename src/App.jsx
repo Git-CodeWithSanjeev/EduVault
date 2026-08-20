@@ -3,22 +3,23 @@ import { useEffect } from 'react';
 import { useSaved, useRecentlyVisited, useWelcomeBack } from './hooks/useEduVault';
 import { Shell, ProtectedRoute, PDFReader } from './components';
 import {
-  Home,
-  Library,
-  Categories,
-  CategoryView,
-  Detail,
-  VideoHub,
-  VideoTheater,
-  Outbound,
-  Form,
-  SavedPage,
-  Login,
-  Register,
+  HomePage,
+  LibraryPage,
+  CategoriesPage,
+  CategoryDetailPage,
+  BookDetailPage,
+  VideoHubPage,
+  VideoTheaterPage,
+  OutboundGatewayPage,
+  ContributeReportPage,
+  SavedWishlistPage,
+  LoginPage,
+  RegisterPage,
   VerifyEmailPage,
-  Profile,
-  ResetPassword,
-  AuthCallback,
+  ProfilePage,
+  ResetPasswordPage,
+  AuthCallbackPage,
+  AdminDashboardPage,
 } from './pages';
 
 const scrollPositionsMap = new Map();
@@ -60,53 +61,53 @@ function ScrollRestorationManager() {
         }, delay);
       });
     } else if (navType === 'PUSH') {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [location, navType]);
 
   return null;
 }
 
-export default function App() {
-  const [saved, toggle] = useSaved();
-  const [recentIds] = useRecentlyVisited();
-  const welcomeMsg = useWelcomeBack();
+export function App() {
+  const { saved, toggle } = useSaved();
+  const { recentIds } = useRecentlyVisited();
+  useWelcomeBack();
 
   return (
-    <Shell welcomeMsg={welcomeMsg}>
+    <Shell saved={saved} toggle={toggle}>
       <ScrollRestorationManager />
-
       <Routes>
         {/* Public Browsing Routes */}
         <Route
           path="/"
-          element={<Home saved={saved} toggle={toggle} recentIds={recentIds} />}
+          element={<HomePage saved={saved} toggle={toggle} recentIds={recentIds} />}
         />
-        <Route path="/go/:id" element={<Outbound />} />
+        <Route path="/go/:id" element={<OutboundGatewayPage />} />
         <Route path="/read/:id" element={<PDFReader saved={saved} toggle={toggle} />} />
-        <Route path="/library" element={<Library saved={saved} toggle={toggle} />} />
-        <Route path="/videos" element={<VideoHub />} />
-        <Route path="/video/:id" element={<VideoTheater />} />
+        <Route path="/library" element={<LibraryPage saved={saved} toggle={toggle} />} />
+        <Route path="/videos" element={<VideoHubPage />} />
+        <Route path="/video/:id" element={<VideoTheaterPage />} />
         <Route
           path="/resource/:id"
-          element={<Detail saved={saved} toggle={toggle} />}
+          element={<BookDetailPage saved={saved} toggle={toggle} />}
         />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/category/:slug" element={<CategoryView saved={saved} toggle={toggle} />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/category/:slug" element={<CategoryDetailPage saved={saved} toggle={toggle} />} />
         
         {/* Unauthenticated Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/forgot-password" element={<ResetPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         {/* Authenticated & Verified Protected Routes */}
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <Home saved={saved} toggle={toggle} recentIds={recentIds} />
+              <HomePage saved={saved} toggle={toggle} recentIds={recentIds} />
             </ProtectedRoute>
           }
         />
@@ -114,7 +115,7 @@ export default function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Home saved={saved} toggle={toggle} recentIds={recentIds} />
+              <HomePage saved={saved} toggle={toggle} recentIds={recentIds} />
             </ProtectedRoute>
           }
         />
@@ -122,7 +123,7 @@ export default function App() {
           path="/saved"
           element={
             <ProtectedRoute>
-              <SavedPage saved={saved} toggle={toggle} />
+              <SavedWishlistPage saved={saved} toggle={toggle} />
             </ProtectedRoute>
           }
         />
@@ -130,7 +131,7 @@ export default function App() {
           path="/upload"
           element={
             <ProtectedRoute>
-              <Form />
+              <ContributeReportPage />
             </ProtectedRoute>
           }
         />
@@ -138,17 +139,20 @@ export default function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile />
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
+        <Route path="/admin" element={<AdminDashboardPage />} />
         
-        <Route path="/copyright" element={<Form report />} />
+        <Route path="/copyright" element={<ContributeReportPage report />} />
         <Route
           path="*"
-          element={<Home saved={saved} toggle={toggle} recentIds={recentIds} />}
+          element={<HomePage saved={saved} toggle={toggle} recentIds={recentIds} />}
         />
       </Routes>
     </Shell>
   );
 }
+
+export default App;

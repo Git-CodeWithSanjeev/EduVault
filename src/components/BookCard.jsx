@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookCover } from './BookCover';
-import { ExternalLink } from './Cards';
+import { ExternalLink } from './ResourceGrid';
 
 export function BookCard({ item, isSaved, onSaveToggle, style }) {
   return (

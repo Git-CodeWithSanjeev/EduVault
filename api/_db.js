@@ -1,6 +1,21 @@
 import mongoose from 'mongoose';
+import fs from 'fs';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+// Helper to load .env if process.env.MONGODB_URI is not set
+if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
+  try {
+    const envContent = fs.readFileSync('.env', 'utf-8');
+    for (const line of envContent.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [key, ...vals] = trimmed.split('=');
+        process.env[key.trim()] = vals.join('=').trim();
+      }
+    }
+  } catch (e) {}
+}
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://tzk7865_db_user:6ZHpE2Y12BxQVGZl@cluster0.e6rfj5s.mongodb.net/eduvault?retryWrites=true&w=majority';
 
 let cached = global.mongoose;
 if (!cached) {

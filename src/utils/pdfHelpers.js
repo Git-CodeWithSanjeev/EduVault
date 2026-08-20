@@ -55,3 +55,12 @@ export function getChapterPdfUrls(book) {
     { id: 'full', name: `${book.title} (Full PDF)`, pdfUrl: book.pdfUrl || book.url },
   ];
 }
+
+const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/proxy';
+
+export function proxyUrl(originalUrl) {
+  if (!originalUrl) return '';
+  if (originalUrl.startsWith('/api/proxy') || originalUrl.startsWith('/pdf/proxy')) return originalUrl;
+  return `${PROXY_BASE}?url=${encodeURIComponent(originalUrl)}`;
+}
+

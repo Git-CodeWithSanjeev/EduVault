@@ -33,9 +33,14 @@ export function VerifyEmailPage() {
     return () => clearInterval(timer);
   }, [resendCooldown]);
 
-  const handleVerify = async (e) => {
-    e?.preventDefault();
-    if (!otpToken || otpToken.length !== 6) {
+  const handleVerify = async (customTokenOrEvent) => {
+    if (customTokenOrEvent && typeof customTokenOrEvent === 'object' && customTokenOrEvent.preventDefault) {
+      customTokenOrEvent.preventDefault();
+    }
+
+    const tokenToVerify = (typeof customTokenOrEvent === 'string' ? customTokenOrEvent : otpToken).trim();
+
+    if (!tokenToVerify || tokenToVerify.length !== 6) {
       setError('Please enter the full 6-digit verification code');
       return;
     }
@@ -45,9 +50,9 @@ export function VerifyEmailPage() {
     setLoading(true);
 
     try {
-      await verifyOtp(email, otpToken);
-      setSuccess('Verification successful! Redirecting to Home…');
-      setTimeout(() => navigate('/', { replace: true }), 800);
+      await verifyOtp(email, tokenToVerify);
+      setSuccess('Verification successful! Welcome to EduVault. Redirecting…');
+      setTimeout(() => navigate('/', { replace: true }), 900);
     } catch (err) {
       setError(err.message || 'Invalid verification code. Please try again.');
     } finally {
@@ -61,8 +66,8 @@ export function VerifyEmailPage() {
     setSuccess('');
     setLoading(true);
     try {
-      await resendOtp(email);
-      setSuccess(`A new 6-digit code has been sent to ${email}.`);
+      const res = await resendOtp(email);
+      setSuccess(res?.message || `A new 6-digit confirmation code has been sent to ${email}.`);
       setResendCooldown(60);
     } catch (err) {
       setError(err.message || 'Could not resend verification code.');
@@ -86,13 +91,16 @@ export function VerifyEmailPage() {
         <AuthAlert type="error" message={error} />
         <AuthAlert type="success" message={success} />
 
-        <form onSubmit={handleVerify} className="auth-form" noValidate>
+        <form onSubmit={(e) => { e.preventDefault(); handleVerify(otpToken); }} className="auth-form" noValidate>
           <div className="auth-field" style={{ alignItems: 'center' }}>
             <OtpInput
               value={otpToken}
               onChange={(val) => {
                 setOtpToken(val);
                 if (error) setError('');
+                if (val && val.length === 6) {
+                  handleVerify(val);
+                }
               }}
               disabled={loading}
               autoFocus
