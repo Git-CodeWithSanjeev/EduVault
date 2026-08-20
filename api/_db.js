@@ -15,7 +15,34 @@ if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
   } catch (e) {}
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+export function getMongoURI() {
+  if (fs.existsSync('.env')) {
+    try {
+      const envContent = fs.readFileSync('.env', 'utf-8');
+      for (const line of envContent.split('\n')) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+          const [key, ...vals] = trimmed.split('=');
+          process.env[key.trim()] = vals.join('=').trim();
+        }
+      }
+    } catch (e) {}
+  }
+
+  let uri = process.env.MONGODB_URI || '';
+
+  // If URI has placeholders, or if username/password are provided separately
+  const username = process.env.MONGODB_USERNAME || '';
+  const password = process.env.MONGODB_PASSWORD || '';
+
+  if (uri && (uri.includes('<password>') || uri.includes('<db_password>')) && password) {
+    uri = uri.replace('<password>', encodeURIComponent(password)).replace('<db_password>', encodeURIComponent(password));
+  } else if (!uri && username && password) {
+    uri = `mongodb+srv://${encodeURIComponent(username)}:${encodeURIComponent(password)}@cluster0.e6rfj5s.mongodb.net/eduvault?retryWrites=true&w=majority`;
+  }
+
+  return uri;
+}
 
 let cached = global.mongoose;
 if (!cached) {
@@ -23,20 +50,25 @@ if (!cached) {
 }
 
 export async function connectToDatabase() {
-  if (cached.conn) {
+  if (cached.conn && cached.conn.readyState === 1) {
     return cached.conn;
   }
 
-  const uri = process.env.MONGODB_URI || MONGODB_URI;
+  const uri = getMongoURI();
   if (!uri || uri.includes('<db_password>') || uri.includes('<password>')) {
-    throw new Error('MONGODB_URI is not properly configured in environment variables.');
+    throw new Error('MongoDB connection is not properly configured. Please check MONGODB_URI in .env');
   }
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
     }).then((mongooseInstance) => {
       return mongooseInstance;
+    }).catch((err) => {
+      cached.promise = null;
+      cached.conn = null;
+      throw err;
     });
   }
 
@@ -44,6 +76,7 @@ export async function connectToDatabase() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    cached.conn = null;
     throw e;
   }
 
