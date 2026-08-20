@@ -15,7 +15,7 @@ if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
   } catch (e) {}
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://tzk7865_db_user:6ZHpE2Y12BxQVGZl@cluster0.e6rfj5s.mongodb.net/eduvault?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
 let cached = global.mongoose;
 if (!cached) {
@@ -27,12 +27,13 @@ export async function connectToDatabase() {
     return cached.conn;
   }
 
-  if (!MONGODB_URI || MONGODB_URI.includes('<db_password>')) {
-    throw new Error('MONGODB_URI is not properly configured.');
+  const uri = process.env.MONGODB_URI || MONGODB_URI;
+  if (!uri || uri.includes('<db_password>') || uri.includes('<password>')) {
+    throw new Error('MONGODB_URI is not properly configured in environment variables.');
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(uri, {
       bufferCommands: false,
     }).then((mongooseInstance) => {
       return mongooseInstance;
