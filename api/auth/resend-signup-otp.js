@@ -1,6 +1,5 @@
+import { connectToDatabase, PendingSignup } from '../_db.js';
 import { sendSignupOtpEmail } from '../../services/email.js';
-
-const globalPendingSignups = global.pendingSignupsMap || (global.pendingSignupsMap = new Map());
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,7 +21,10 @@ export default async function handler(req, res) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const pending = globalPendingSignups.get(cleanEmail);
+
+    await connectToDatabase();
+
+    const pending = await PendingSignup.findOne({ email: cleanEmail });
 
     if (!pending) {
       return res.status(400).json({ error: 'No pending registration found. Please sign up again.' });
@@ -30,9 +32,15 @@ export default async function handler(req, res) {
 
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
     pending.otp = newOtp;
-    pending.expiresAt = Date.now() + 600000;
+    pending.createdAt = new Date();
+    await pending.save();
 
-    await sendSignupOtpEmail(cleanEmail, newOtp, pending.name);
+    const emailResult = await sendSignupOtpEmail(cleanEmail, newOtp, pending.name);
+    if (!emailResult.sent && emailResult.reason === 'NO_SMTP_CONFIG') {
+      return res.status(500).json({
+        error: 'Email service is not configured on the server. Please add SMTP_USER and SMTP_PASS to Vercel Environment Variables.',
+      });
+    }
 
     return res.status(200).json({
       success: true,

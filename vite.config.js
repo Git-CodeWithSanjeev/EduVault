@@ -164,14 +164,12 @@ function authAndPdfDevPlugin() {
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             localOtpMap.set(email, { otp, expiresAt: Date.now() + 600000 });
 
-            // Send Real OTP Email in background without blocking screen transition
-            import('./services/email.js')
-              .then(({ sendPasswordResetEmail }) => {
-                sendPasswordResetEmail(email, otp).catch((mailErr) => {
-                  console.warn('[Vite Dev Reset Email Info]:', mailErr.message);
-                });
-              })
-              .catch((e) => console.warn('[Email Import Warning]:', e.message));
+            try {
+              const { sendPasswordResetEmail } = await import('./services/email.js');
+              await sendPasswordResetEmail(email, otp);
+            } catch (mailErr) {
+              console.warn('[Vite Dev Reset Email Info]:', mailErr.message);
+            }
 
             res.statusCode = 200;
             return res.end(JSON.stringify({

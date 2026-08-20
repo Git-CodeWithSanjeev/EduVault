@@ -1,4 +1,4 @@
-const globalOtpMap = global.resetOtpMap || (global.resetOtpMap = new Map());
+import { connectToDatabase, ResetOtp } from '../_db.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,9 +20,11 @@ export default async function handler(req, res) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const stored = globalOtpMap.get(cleanEmail);
+    await connectToDatabase();
 
-    if (!stored || stored.expiresAt < Date.now()) {
+    const stored = await ResetOtp.findOne({ email: cleanEmail });
+
+    if (!stored) {
       return res.status(400).json({ error: 'Verification code has expired or was not requested. Please request a new code.' });
     }
 

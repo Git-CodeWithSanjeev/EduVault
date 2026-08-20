@@ -575,10 +575,8 @@ app.post('/api/auth/forgot-password', authRateLimiter, async (req, res) => {
     await redisSet(`reset_otp:${cleanEmail}`, { otp, timestamp: Date.now() }, 600);
     resetOtpMap.set(cleanEmail, { otp, expiresAt: Date.now() + 600000 });
 
-    // Send Real OTP Email in background
-    sendPasswordResetEmail(cleanEmail, otp).catch((mailErr) => {
-      console.error('[Background Reset Email Error]:', mailErr.message);
-    });
+    // Send Real OTP Email
+    await sendPasswordResetEmail(cleanEmail, otp);
 
     res.json({
       success: true,

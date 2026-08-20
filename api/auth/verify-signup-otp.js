@@ -1,6 +1,4 @@
-import { connectToDatabase, User } from '../_db.js';
-
-const globalPendingSignups = global.pendingSignupsMap || (global.pendingSignupsMap = new Map());
+import { connectToDatabase, User, PendingSignup } from '../_db.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,9 +20,12 @@ export default async function handler(req, res) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const pending = globalPendingSignups.get(cleanEmail);
 
-    if (!pending || pending.expiresAt < Date.now()) {
+    await connectToDatabase();
+
+    const pending = await PendingSignup.findOne({ email: cleanEmail });
+
+    if (!pending) {
       return res.status(400).json({ error: 'Verification code has expired. Please sign up again.' });
     }
 
@@ -32,19 +33,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' });
     }
 
-    await connectToDatabase();
-
     const newUser = await User.create({
       name: pending.name || cleanEmail.split('@')[0],
       email: cleanEmail,
-      password: pending.hashedPassword,
+      password: pending.password,
       avatar: '🎓',
       provider: 'email',
       isVerified: true,
       savedBooks: [],
     });
 
-    globalPendingSignups.delete(cleanEmail);
+    await PendingSignup.deleteOne({ email: cleanEmail });
 
     return res.status(201).json({
       success: true,

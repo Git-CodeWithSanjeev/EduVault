@@ -1,8 +1,5 @@
-import { connectToDatabase, User } from '../_db.js';
+import { connectToDatabase, User, ResetOtp } from '../_db.js';
 import { sendPasswordResetEmail } from '../../services/email.js';
-
-// Serverless memory store for OTPs (with TTL)
-const globalOtpMap = global.resetOtpMap || (global.resetOtpMap = new Map());
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,26 +22,32 @@ export default async function handler(req, res) {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    try {
-      await connectToDatabase();
-      const user = await User.findOne({ email: cleanEmail });
-      if (!user) {
-        return res.status(404).json({ error: 'No account found with this email address. Please check and try again.' });
-      }
-      if (!user.password && user.provider === 'google') {
-        return res.status(400).json({ error: 'This account uses Google Sign-In. Please sign in with Google.' });
-      }
-    } catch (dbErr) {
-      console.warn('[Forgot Password DB Warning]:', dbErr.message);
+    await connectToDatabase();
+
+    const user = await User.findOne({ email: cleanEmail });
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with this email address. Please check and try again.' });
+    }
+    if (!user.password && user.provider === 'google') {
+      return res.status(400).json({ error: 'This account was created with Google Sign-In. Please sign in with Google.' });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    globalOtpMap.set(cleanEmail, { otp, expiresAt: Date.now() + 600000 });
 
-    // Send Real OTP Email in background
-    sendPasswordResetEmail(cleanEmail, otp).catch((mailErr) => {
-      console.warn('[Vercel Reset Email Error]:', mailErr.message);
-    });
+    // Persist OTP in MongoDB with 10-minute expiry
+    await ResetOtp.findOneAndUpdate(
+      { email: cleanEmail },
+      { email: cleanEmail, otp, createdAt: new Date() },
+      { upsert: true, new: true }
+    );
+
+    // Explicitly await email dispatch so Vercel does not terminate early
+    const emailResult = await sendPasswordResetEmail(cleanEmail, otp);
+    if (!emailResult.sent && emailResult.reason === 'NO_SMTP_CONFIG') {
+      return res.status(500).json({
+        error: 'Email service is not configured on the server. Please add SMTP_USER and SMTP_PASS to Vercel Environment Variables.',
+      });
+    }
 
     return res.status(200).json({
       success: true,

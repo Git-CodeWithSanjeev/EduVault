@@ -1,7 +1,5 @@
-import { connectToDatabase, User } from '../_db.js';
+import { connectToDatabase, User, ResetOtp } from '../_db.js';
 import bcrypt from 'bcryptjs';
-
-const globalOtpMap = global.resetOtpMap || (global.resetOtpMap = new Map());
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,17 +25,18 @@ export default async function handler(req, res) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const stored = globalOtpMap.get(cleanEmail);
 
-    if (!stored || stored.expiresAt < Date.now()) {
+    await connectToDatabase();
+
+    const stored = await ResetOtp.findOne({ email: cleanEmail });
+
+    if (!stored) {
       return res.status(400).json({ error: 'Verification session expired. Please request a new code.' });
     }
 
     if (String(stored.otp).trim() !== String(otp).trim()) {
       return res.status(400).json({ error: 'Invalid verification code.' });
     }
-
-    await connectToDatabase();
 
     const user = await User.findOne({ email: cleanEmail });
     if (!user) {
@@ -48,8 +47,8 @@ export default async function handler(req, res) {
     user.password = hashedPassword;
     await user.save();
 
-    // Invalidate OTP
-    globalOtpMap.delete(cleanEmail);
+    // Invalidate OTP in DB
+    await ResetOtp.deleteOne({ email: cleanEmail });
 
     console.log(`✅ [MongoDB Vercel] Password reset completed for: ${cleanEmail}`);
 

@@ -98,3 +98,21 @@ const userSchema = new mongoose.Schema({
 });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+const resetOtpSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true, index: true },
+  otp: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now, expires: 600 }, // 10 min TTL
+});
+
+export const ResetOtp = mongoose.models.ResetOtp || mongoose.model('ResetOtp', resetOtpSchema);
+
+const pendingSignupSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true, index: true },
+  password: { type: String, required: true },
+  otp: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now, expires: 600 }, // 10 min TTL
+});
+
+export const PendingSignup = mongoose.models.PendingSignup || mongoose.model('PendingSignup', pendingSignupSchema);

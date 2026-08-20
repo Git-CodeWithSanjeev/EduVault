@@ -1,8 +1,6 @@
-import { connectToDatabase, User } from '../_db.js';
+import { connectToDatabase, User, PendingSignup } from '../_db.js';
 import bcrypt from 'bcryptjs';
 import { sendSignupOtpEmail } from '../../services/email.js';
-
-const globalPendingSignups = global.pendingSignupsMap || (global.pendingSignupsMap = new Map());
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,31 +31,36 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    try {
-      await connectToDatabase();
-      const existingUser = await User.findOne({ email: cleanEmail });
-      if (existingUser) {
-        return res.status(400).json({ error: 'An account with this email address already exists. Please sign in.' });
-      }
-    } catch (dbErr) {
-      console.warn('[Register DB Check Warning]:', dbErr.message);
+    await connectToDatabase();
+
+    const existingUser = await User.findOne({ email: cleanEmail });
+    if (existingUser) {
+      return res.status(400).json({ error: 'An account with this email address already exists. Please sign in.' });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    globalPendingSignups.set(cleanEmail, {
-      name: cleanName,
-      email: cleanEmail,
-      hashedPassword,
-      otp,
-      expiresAt: Date.now() + 600000,
-    });
+    // Save pending registration in MongoDB with 10-minute expiry
+    await PendingSignup.findOneAndUpdate(
+      { email: cleanEmail },
+      {
+        name: cleanName || cleanEmail.split('@')[0],
+        email: cleanEmail,
+        password: hashedPassword,
+        otp,
+        createdAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
 
-    // Send Real Verification OTP Email in background
-    sendSignupOtpEmail(cleanEmail, otp, cleanName).catch((mailErr) => {
-      console.warn('[Vercel Signup Email Error]:', mailErr.message);
-    });
+    // Await email delivery so serverless does not terminate prematurely
+    const emailResult = await sendSignupOtpEmail(cleanEmail, otp, cleanName);
+    if (!emailResult.sent && emailResult.reason === 'NO_SMTP_CONFIG') {
+      return res.status(500).json({
+        error: 'Email service is not configured on the server. Please add SMTP_USER and SMTP_PASS to Vercel Environment Variables.',
+      });
+    }
 
     return res.status(200).json({
       success: true,
