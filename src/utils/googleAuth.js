@@ -24,6 +24,7 @@ export function loadGoogleScript() {
     script.async = true;
     script.defer = true;
     script.onload = () => resolve(window.google);
+    script.onerror = () => resolve(null);
     document.head.appendChild(script);
   });
 }
@@ -40,15 +41,53 @@ export async function triggerDirectGoogleLogin() {
     );
   }
 
-  await loadGoogleScript();
+  const google = await loadGoogleScript();
+  if (!google?.accounts?.oauth2) {
+    throw new Error('Google Identity Services SDK failed to load or is blocked by an ad-blocker.');
+  }
 
   return new Promise((resolve, reject) => {
-    try {
-      if (!window.google?.accounts?.oauth2) {
-        return reject(new Error('Google Identity Services SDK failed to load.'));
-      }
+    let settled = false;
 
-      const client = window.google.accounts.oauth2.initTokenClient({
+    const cleanup = () => {
+      window.removeEventListener('focus', onFocus);
+      clearTimeout(timeoutId);
+    };
+
+    const safeResolve = (val) => {
+      if (!settled) {
+        settled = true;
+        cleanup();
+        resolve(val);
+      }
+    };
+
+    const safeReject = (err) => {
+      if (!settled) {
+        settled = true;
+        cleanup();
+        reject(err);
+      }
+    };
+
+    // If user returns focus to main window after clicking popup and popup was closed
+    const onFocus = () => {
+      setTimeout(() => {
+        if (!settled) {
+          safeReject(new Error('Google sign-in popup was closed. Please try again.'));
+        }
+      }, 1500);
+    };
+
+    // Safety timeout: 45 seconds max
+    const timeoutId = setTimeout(() => {
+      if (!settled) {
+        safeReject(new Error('Google sign-in timed out. Please try again.'));
+      }
+    }, 45000);
+
+    try {
+      const client = google.accounts.oauth2.initTokenClient({
         client_id: clientId,
         scope: 'email profile openid',
         callback: async (tokenResponse) => {
@@ -59,9 +98,9 @@ export async function triggerDirectGoogleLogin() {
               tokenResponse.error === 'origin_mismatch' ||
               tokenResponse.error_description?.includes('origin')
             ) {
-              return reject(new Error('GOOGLE_ORIGIN_BLOCKED'));
+              return safeReject(new Error('GOOGLE_ORIGIN_BLOCKED'));
             }
-            return reject(new Error(tokenResponse.error_description || tokenResponse.error));
+            return safeReject(new Error(tokenResponse.error_description || tokenResponse.error));
           }
 
           try {
@@ -73,11 +112,11 @@ export async function triggerDirectGoogleLogin() {
             });
 
             if (!userInfoRes.ok) {
-              return reject(new Error('Failed to fetch user profile from Google.'));
+              return safeReject(new Error('Failed to fetch user profile from Google.'));
             }
 
             const profile = await userInfoRes.json();
-            resolve({
+            safeResolve({
               email: profile.email,
               name: profile.name || profile.given_name || profile.email.split('@')[0],
               avatar: profile.picture || '🎓',
@@ -85,19 +124,21 @@ export async function triggerDirectGoogleLogin() {
               accessToken: tokenResponse.access_token,
             });
           } catch (fetchErr) {
-            reject(fetchErr);
+            safeReject(fetchErr);
           }
         },
         error_callback: (err) => {
           console.error('[Google GIS Error Callback]:', err);
-          reject(new Error('GOOGLE_ORIGIN_BLOCKED'));
-        }
+          safeReject(new Error('GOOGLE_ORIGIN_BLOCKED'));
+        },
       });
+
+      // Listen for window focus to catch popup closure
+      window.addEventListener('focus', onFocus, { once: true });
 
       client.requestAccessToken({ prompt: 'select_account' });
     } catch (err) {
-      reject(err);
+      safeReject(err);
     }
   });
 }
-

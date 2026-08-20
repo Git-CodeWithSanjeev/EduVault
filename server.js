@@ -16,6 +16,27 @@ import path from 'path';
 import { redisGet, redisSet, redisDel, redisRateLimit, getRedisStatus } from './services/redis.js';
 import { sendPasswordResetEmail, sendSignupOtpEmail, createEmailTransporter } from './services/email.js';
 import { readEnvConfig, updateEnvConfig } from './services/envManager.js';
+import {
+  generateSecureOtp,
+  timingSafeMatch,
+  signAuthToken,
+  verifyAuthToken,
+  signAdminToken,
+  verifyAdminToken,
+  getBearerToken,
+  validateUrlForSsrf,
+  sanitizeInput,
+  sanitizeEmail,
+  checkRateLimit,
+  maskSecret,
+  sanitizeNoSql,
+  checkHoneypot,
+  checkAccountLockout,
+  recordFailedLogin,
+  clearFailedLogins,
+  checkEmailCooldown,
+  validatePasswordStrength,
+} from './services/security.js';
 
 // Read .env manually if process.env.MONGODB_URI is not set
 if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
@@ -32,13 +53,51 @@ if (!process.env.MONGODB_URI && fs.existsSync('.env')) {
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
+// Strip server fingerprinting
+app.disable('x-powered-by');
+
+// Global Security Headers Middleware
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json());
+// Payload size limits to prevent memory exhaustion DoS
+app.use(express.json({ limit: '500kb' }));
+app.use(express.urlencoded({ limit: '500kb', extended: true }));
+
+// Deep NoSQL query sanitizer middleware
+app.use((req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeNoSql(req.body);
+  }
+  if (req.query && typeof req.query === 'object') {
+    req.query = sanitizeNoSql(req.query);
+  }
+  next();
+});
+
+// Admin Authorization Middleware
+const requireAdminAuth = (req, res, next) => {
+  const token = getBearerToken(req);
+  if (!token || !verifyAdminToken(token)) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized: Admin authentication token is required or has expired.',
+    });
+  }
+  next();
+};
 
 // Redis API Health Endpoint
 app.get('/api/redis/status', (req, res) => {
@@ -294,22 +353,33 @@ app.post('/api/auth/oauth-sync', async (req, res) => {
 
 const pendingSignupsMap = new Map();
 
-// 2. Register Route - Sends 6-Digit OTP Email
+// 2. Register Route - Sends 6-Digit OTP Email (Anti-Bombing Cooldown + Honeypot + Password Strength)
 app.post('/api/auth/register', authRateLimiter, async (req, res) => {
   try {
-    const { name, email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+    if (checkHoneypot(req.body)) {
+      return res.status(200).json({ success: true, requireOtp: true, message: 'Verification code sent.' });
     }
 
-    const cleanName = (name || '').trim();
-    const cleanEmail = email.toLowerCase().trim();
+    const { name, email, password } = req.body || {};
+    const cleanName = sanitizeInput(name, 60);
+    const cleanEmail = sanitizeEmail(email);
+    const cleanPassword = sanitizeInput(password, 128);
 
+    if (!cleanEmail || !cleanPassword) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
     if (cleanName.length < 2) {
       return res.status(400).json({ error: 'Full Name must be at least 2 characters' });
     }
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+
+    const pwValidation = validatePasswordStrength(cleanPassword);
+    if (!pwValidation.valid) {
+      return res.status(400).json({ error: pwValidation.error });
+    }
+
+    const cooldown = checkEmailCooldown(cleanEmail);
+    if (!cooldown.allowed) {
+      return res.status(429).json({ error: cooldown.error });
     }
 
     if (dbConnected) {
@@ -319,9 +389,9 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
       }
     }
 
-    // Generate 6-digit verification code
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate cryptographically secure 6-digit verification code
+    const otp = generateSecureOtp();
+    const hashedPassword = await bcrypt.hash(cleanPassword, 10);
 
     const pendingData = {
       name: cleanName,
@@ -334,7 +404,6 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
     await redisSet(`signup_otp:${cleanEmail}`, pendingData, 600);
     pendingSignupsMap.set(cleanEmail, pendingData);
 
-    // Send Real OTP Email in background (non-blocking for instant UI navigation)
     sendSignupOtpEmail(cleanEmail, otp, cleanName).catch((mailErr) => {
       console.error('[Background Signup Email Error]:', mailErr.message);
     });
@@ -355,11 +424,13 @@ app.post('/api/auth/register', authRateLimiter, async (req, res) => {
 app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
   try {
     const { email, otp } = req.body || {};
-    if (!email || !otp) {
+    const cleanEmail = sanitizeEmail(email);
+    const cleanOtp = sanitizeInput(otp, 10);
+
+    if (!cleanEmail || !cleanOtp) {
       return res.status(400).json({ error: 'Email and verification code are required' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
     let pending = await redisGet(`signup_otp:${cleanEmail}`);
     if (!pending) {
       pending = pendingSignupsMap.get(cleanEmail);
@@ -369,7 +440,7 @@ app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Verification code has expired. Please sign up again.' });
     }
 
-    if (String(pending.otp).trim() !== String(otp).trim()) {
+    if (!timingSafeMatch(String(pending.otp).trim(), cleanOtp)) {
       return res.status(400).json({ error: 'Invalid verification code. Please check your email and try again.' });
     }
 
@@ -381,6 +452,8 @@ app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
         email: cleanEmail,
         password: pending.hashedPassword,
         avatar: '🎓',
+        bio: '',
+        grade: 'Student',
         provider: 'email',
         isVerified: true,
         savedBooks: [],
@@ -392,6 +465,8 @@ app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
         name: pending.name || cleanEmail.split('@')[0],
         email: cleanEmail,
         avatar: '🎓',
+        bio: '',
+        grade: 'Student',
         provider: 'email',
         isVerified: true,
         savedBooks: [],
@@ -404,14 +479,23 @@ app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
     await redisDel(`signup_otp:${cleanEmail}`);
     pendingSignupsMap.delete(cleanEmail);
 
+    const token = signAuthToken({
+      userId: newUser._id ? newUser._id.toString() : newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+    });
+
     res.status(201).json({
       success: true,
+      token,
       message: 'Account verified successfully!',
       user: {
         id: newUser._id ? newUser._id.toString() : newUser.id,
         name: newUser.name,
         email: newUser.email,
         avatar: newUser.avatar,
+        bio: newUser.bio || '',
+        grade: newUser.grade || 'Student',
         provider: 'email',
         isVerified: true,
         savedBooks: newUser.savedBooks || [],
@@ -428,11 +512,16 @@ app.post('/api/auth/verify-signup-otp', authRateLimiter, async (req, res) => {
 app.post('/api/auth/resend-signup-otp', authRateLimiter, async (req, res) => {
   try {
     const { email } = req.body || {};
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+    const cleanEmail = sanitizeEmail(email);
+    if (!cleanEmail) {
+      return res.status(400).json({ error: 'Valid email is required' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const cooldown = checkEmailCooldown(cleanEmail);
+    if (!cooldown.allowed) {
+      return res.status(429).json({ error: cooldown.error });
+    }
+
     let pending = await redisGet(`signup_otp:${cleanEmail}`);
     if (!pending) {
       pending = pendingSignupsMap.get(cleanEmail);
@@ -442,14 +531,13 @@ app.post('/api/auth/resend-signup-otp', authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: 'No pending registration found. Please sign up again.' });
     }
 
-    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const newOtp = generateSecureOtp();
     pending.otp = newOtp;
     pending.expiresAt = Date.now() + 600000;
 
     await redisSet(`signup_otp:${cleanEmail}`, pending, 600);
     pendingSignupsMap.set(cleanEmail, pending);
 
-    // Send in background
     sendSignupOtpEmail(cleanEmail, newOtp, pending.name).catch((mailErr) => {
       console.error('[Background Resend Email Error]:', mailErr.message);
     });
@@ -464,15 +552,25 @@ app.post('/api/auth/resend-signup-otp', authRateLimiter, async (req, res) => {
   }
 });
 
-// 3. Login Route (Direct MongoDB + Redis Rate Limiter)
+// 3. Login Route (Account Lockout + Honeypot + Rate Limiting + Signed Session Token)
 app.post('/api/auth/login', authRateLimiter, async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    if (checkHoneypot(req.body)) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const { email, password } = req.body || {};
+    const cleanEmail = sanitizeEmail(email);
+    const cleanPassword = sanitizeInput(password, 128);
+
+    if (!cleanEmail || !cleanPassword) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const lockout = checkAccountLockout(cleanEmail);
+    if (lockout.locked) {
+      return res.status(423).json({ error: lockout.error });
+    }
 
     if (!dbConnected) {
       let demoUser = demoUsersMap.get(cleanEmail);
@@ -482,6 +580,8 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
           name: cleanEmail.split('@')[0] || 'Student',
           email: cleanEmail,
           avatar: '🎓',
+          bio: '',
+          grade: 'Student',
           provider: 'email',
           isVerified: true,
           savedBooks: [],
@@ -489,14 +589,17 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
         };
         demoUsersMap.set(cleanEmail, demoUser);
       }
+      const token = signAuthToken({ userId: demoUser.id, email: cleanEmail, name: demoUser.name });
       return res.json({
         success: true,
+        token,
         user: demoUser,
       });
     }
 
     const user = await User.findOne({ email: cleanEmail });
     if (!user) {
+      recordFailedLogin(cleanEmail);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
@@ -504,23 +607,38 @@ app.post('/api/auth/login', authRateLimiter, async (req, res) => {
       return res.status(400).json({ error: 'This account uses Google Sign-In. Please click "Continue with Google".' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(cleanPassword, user.password || '');
     if (!isMatch) {
+      const failStatus = recordFailedLogin(cleanEmail);
+      if (failStatus && failStatus.locked) {
+        return res.status(423).json({
+          error: 'Too many failed login attempts. Your account is temporarily locked for 15 minutes for your security.',
+        });
+      }
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    clearFailedLogins(cleanEmail);
 
     user.lastLogin = new Date();
     await user.save();
 
-    console.log(`✅ [MongoDB] User logged in: ${cleanEmail}`);
+    const token = signAuthToken({
+      userId: user._id.toString(),
+      email: user.email,
+      name: user.name,
+    });
 
     res.json({
       success: true,
+      token,
       user: {
         id: user._id.toString(),
         name: user.name,
         email: user.email,
         avatar: user.avatar || '🎓',
+        bio: user.bio || '',
+        grade: user.grade || 'Student',
         provider: user.provider || 'email',
         isVerified: true,
         savedBooks: user.savedBooks || [],
@@ -670,41 +788,77 @@ app.post('/api/auth/reset-password', authRateLimiter, async (req, res) => {
   }
 });
 
-// 7. Update Password Route (For logged-in users)
-app.post('/api/auth/update-password', async (req, res) => {
+// 7. Update Password Route (For logged-in users - Requires Valid Bearer Token)
+app.post('/api/auth/update-password', authRateLimiter, async (req, res) => {
   try {
-    const { email, newPassword } = req.body;
-    if (!email || !newPassword || newPassword.length < 8) {
-      return res.status(400).json({ error: 'Email and new password (min 8 chars) are required' });
+    const token = getBearerToken(req);
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized: Authentication token is required.' });
+    }
+
+    const { email, newPassword } = req.body || {};
+    const cleanEmail = sanitizeEmail(email);
+    const cleanPassword = sanitizeInput(newPassword, 128);
+
+    if (!cleanEmail || !cleanPassword) {
+      return res.status(400).json({ error: 'Email and new password are required' });
+    }
+
+    const decoded = verifyAuthToken(token);
+    if (!decoded || !decoded.email || decoded.email.toLowerCase() !== cleanEmail) {
+      return res.status(403).json({ error: 'Forbidden: You can only update your own password.' });
+    }
+
+    const pwValidation = validatePasswordStrength(cleanPassword);
+    if (!pwValidation.valid) {
+      return res.status(400).json({ error: pwValidation.error });
     }
 
     if (!dbConnected) {
       return res.json({ success: true, message: 'Password updated (demo mode)' });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = await bcrypt.hash(cleanPassword, 10);
+    if (user.provider === 'google' && !user.password) {
+      user.provider = 'both';
+    }
     await user.save();
 
     res.json({ success: true, message: 'Password updated successfully' });
   } catch (err) {
+    console.error('[Update Password Error]:', err);
     res.status(500).json({ error: err.message || 'Failed to update password' });
   }
 });
 
-// 5. Update Profile Details Route (Name, Avatar, Bio, Grade)
-app.post('/api/auth/update-profile', async (req, res) => {
+// 5. Update Profile Details Route (Name, Avatar, Bio, Grade - Requires Valid Bearer Token)
+app.post('/api/auth/update-profile', authRateLimiter, async (req, res) => {
   try {
-    const { email, name, avatar, bio, grade } = req.body;
-    if (!email) {
+    const token = getBearerToken(req);
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized: Authentication token is required.' });
+    }
+
+    const { email, name, avatar, bio, grade } = req.body || {};
+    const cleanEmail = sanitizeEmail(email);
+    if (!cleanEmail) {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const decoded = verifyAuthToken(token);
+    if (!decoded || !decoded.email || decoded.email.toLowerCase() !== cleanEmail) {
+      return res.status(403).json({ error: 'Forbidden: You can only update your own profile.' });
+    }
+
+    const cleanName = sanitizeInput(name, 60);
+    const cleanAvatar = sanitizeInput(avatar, 500);
+    const cleanBio = sanitizeInput(bio, 500);
+    const cleanGrade = sanitizeInput(grade, 50);
 
     if (!dbConnected) {
       let demoUser = demoUsersMap.get(cleanEmail) || {
@@ -715,10 +869,10 @@ app.post('/api/auth/update-profile', async (req, res) => {
         savedBooks: [],
         joinedDate: 'Recently',
       };
-      if (name) demoUser.name = name.trim();
-      if (avatar) demoUser.avatar = avatar;
-      if (typeof bio === 'string') demoUser.bio = bio;
-      if (typeof grade === 'string') demoUser.grade = grade;
+      if (cleanName) demoUser.name = cleanName;
+      if (cleanAvatar) demoUser.avatar = cleanAvatar;
+      if (typeof bio === 'string') demoUser.bio = cleanBio;
+      if (typeof grade === 'string') demoUser.grade = cleanGrade;
       demoUsersMap.set(cleanEmail, demoUser);
 
       return res.json({
@@ -732,13 +886,12 @@ app.post('/api/auth/update-profile', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (name) user.name = name.trim();
-    if (avatar) user.avatar = avatar;
-    if (typeof bio === 'string') user.bio = bio;
-    if (typeof grade === 'string') user.grade = grade;
+    if (cleanName) user.name = cleanName;
+    if (cleanAvatar) user.avatar = cleanAvatar;
+    if (typeof bio === 'string') user.bio = cleanBio;
+    if (typeof grade === 'string') user.grade = cleanGrade;
 
     await user.save();
-    console.log(`✅ [MongoDB] Profile updated for: ${cleanEmail}`);
 
     res.json({
       success: true,
@@ -752,8 +905,8 @@ app.post('/api/auth/update-profile', async (req, res) => {
         provider: user.provider,
         isVerified: true,
         savedBooks: user.savedBooks || [],
-        joinedDate: user.createdAt ? user.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently'
-      }
+        joinedDate: user.createdAt ? user.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently',
+      },
     });
   } catch (err) {
     console.error('[Update Profile Error]:', err);
@@ -863,12 +1016,14 @@ app.get('/pdf/proxy', async (req, res) => {
   let decoded;
   try {
     decoded = decodeURIComponent(url);
-    const p = new URL(decoded);
-    if (!['http:', 'https:'].includes(p.protocol)) {
-      return res.status(400).json({ error: 'Only http/https URLs allowed' });
-    }
   } catch {
-    return res.status(400).json({ error: 'Invalid URL' });
+    return res.status(400).json({ error: 'Invalid URL encoding' });
+  }
+
+  // Anti-SSRF Validation
+  const validation = validateUrlForSsrf(decoded);
+  if (!validation.valid) {
+    return res.status(403).json({ error: `Security check failed: ${validation.reason}` });
   }
 
   // Cache hit
@@ -910,17 +1065,27 @@ app.get('/pdf/proxy', async (req, res) => {
 
 /* ── ADMIN MANAGEMENT API ─────────────────────────────────────────── */
 
-// 0. Admin Login Verification
-app.post('/api/admin/login', (req, res) => {
+// 0. Admin Login Verification (Rate limited & constant-time compare)
+app.post('/api/admin/login', async (req, res) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
+  const rateCheck = await checkRateLimit(`admin_login:${clientIp}`, 6, 60);
+  if (!rateCheck.allowed) {
+    return res.status(429).json({ error: `Too many admin login attempts. Please wait ${rateCheck.resetIn} seconds.` });
+  }
+
   const { username, password } = req.body || {};
   const expectedUser = (process.env.ADMIN_USERNAME || 'admin').trim();
   const expectedPass = (process.env.ADMIN_PASSWORD || 'admin@eduvault123').trim();
 
-  if (username === expectedUser && password === expectedPass) {
+  if (
+    timingSafeMatch(String(username || '').trim(), expectedUser) &&
+    timingSafeMatch(String(password || '').trim(), expectedPass)
+  ) {
+    const token = signAdminToken();
     return res.json({
       success: true,
       message: 'Admin authenticated successfully',
-      token: 'admin-authorized-session',
+      token,
     });
   }
 
@@ -930,13 +1095,25 @@ app.post('/api/admin/login', (req, res) => {
   });
 });
 
-// 1. Get All Credentials
-app.get('/api/admin/credentials', (req, res) => {
+// 1. Get All Credentials (Protected with requireAdminAuth)
+app.get('/api/admin/credentials', requireAdminAuth, (req, res) => {
   try {
     const rawConfig = readEnvConfig();
+    const isReveal = req.query?.reveal === 'true';
+
+    // Mask sensitive credentials unless specifically requested by authenticated admin
+    const safeConfig = {};
+    for (const [k, v] of Object.entries(rawConfig)) {
+      if (!isReveal && (k.includes('PASS') || k.includes('SECRET') || k.includes('KEY') || k.includes('URI'))) {
+        safeConfig[k] = maskSecret(v);
+      } else {
+        safeConfig[k] = v;
+      }
+    }
+
     res.json({
       success: true,
-      config: rawConfig,
+      config: safeConfig,
       system: {
         nodeVersion: process.version,
         platform: process.platform,
@@ -951,8 +1128,8 @@ app.get('/api/admin/credentials', (req, res) => {
   }
 });
 
-// 1.1 Get All Users (User Management)
-app.get('/api/admin/users', async (req, res) => {
+// 1.1 Get All Users (Protected with requireAdminAuth - Never returns password hashes)
+app.get('/api/admin/users', requireAdminAuth, async (req, res) => {
   try {
     let usersList = [];
     if (dbConnected) {
@@ -961,7 +1138,6 @@ app.get('/api/admin/users', async (req, res) => {
         id: u._id.toString(),
         name: u.name || 'Anonymous User',
         email: u.email,
-        password: u.password || '', // Stored password hash
         avatar: u.avatar || '',
         provider: u.provider || (u.googleId ? 'google' : 'email'),
         role: u.role || 'student',
@@ -971,12 +1147,10 @@ app.get('/api/admin/users', async (req, res) => {
         lastLogin: u.lastLogin || u.updatedAt || u.createdAt,
       }));
     } else {
-      // Fallback demo users
       usersList = Array.from(demoUsersMap.values()).map((u) => ({
         id: u.id || u._id,
         name: u.name,
         email: u.email,
-        password: u.password || '',
         avatar: u.avatar || '',
         provider: u.provider || 'email',
         role: 'student',
@@ -998,7 +1172,7 @@ app.get('/api/admin/users', async (req, res) => {
 });
 
 // 1.2 Update User (Role / Verification / Name / Password)
-app.patch('/api/admin/users/:id', async (req, res) => {
+app.patch('/api/admin/users/:id', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { role, isVerified, name, newPassword } = req.body || {};
@@ -1008,14 +1182,14 @@ app.patch('/api/admin/users/:id', async (req, res) => {
     }
 
     const updateFields = {
-      ...(role !== undefined ? { role } : {}),
-      ...(isVerified !== undefined ? { isVerified } : {}),
-      ...(name ? { name } : {}),
+      ...(role !== undefined ? { role: sanitizeInput(role, 20) } : {}),
+      ...(isVerified !== undefined ? { isVerified: Boolean(isVerified) } : {}),
+      ...(name ? { name: sanitizeInput(name, 60) } : {}),
     };
 
-    if (newPassword && newPassword.trim()) {
+    if (newPassword && String(newPassword).trim().length >= 8) {
       const salt = await bcrypt.genSalt(10);
-      updateFields.password = await bcrypt.hash(newPassword.trim(), salt);
+      updateFields.password = await bcrypt.hash(String(newPassword).trim(), salt);
     }
 
     const updated = await User.findByIdAndUpdate(
@@ -1035,7 +1209,6 @@ app.patch('/api/admin/users/:id', async (req, res) => {
         id: updated._id.toString(),
         name: updated.name,
         email: updated.email,
-        password: updated.password,
         role: updated.role,
         isVerified: updated.isVerified,
       },
@@ -1046,7 +1219,7 @@ app.patch('/api/admin/users/:id', async (req, res) => {
 });
 
 // 1.3 Delete User
-app.delete('/api/admin/users/:id', async (req, res) => {
+app.delete('/api/admin/users/:id', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     if (dbConnected) {
@@ -1059,7 +1232,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
 });
 
 // 1.4 Get Analytics & Traffic Data from Real MongoDB Records
-app.get('/api/admin/analytics', async (req, res) => {
+app.get('/api/admin/analytics', requireAdminAuth, async (req, res) => {
   try {
     let allUsers = [];
     if (dbConnected) {
@@ -1112,7 +1285,7 @@ app.get('/api/admin/analytics', async (req, res) => {
         verifiedUsers,
         googleUsers,
         emailUsers,
-        totalBooks: 178, // 110 OpenStax + 28 NCERT + 40 Video Hub courses
+        totalBooks: 178,
         totalSavedBooks,
         activeToday: Math.max(1, totalUsers),
         monthlyPageViews: `${Math.max(1, totalUsers) * 240 + 1250}`,
@@ -1135,7 +1308,7 @@ app.get('/api/admin/analytics', async (req, res) => {
 });
 
 // 2. Save Credentials & Hot-Reload
-app.post('/api/admin/credentials', (req, res) => {
+app.post('/api/admin/credentials', requireAdminAuth, (req, res) => {
   try {
     const updates = req.body || {};
     if (typeof updates !== 'object' || Array.isArray(updates)) {
@@ -1144,7 +1317,6 @@ app.post('/api/admin/credentials', (req, res) => {
 
     const updatedConfig = updateEnvConfig(updates);
 
-    // If MONGODB_URI changed, attempt reconnect
     if (updates.MONGODB_URI && updates.MONGODB_URI !== process.env.MONGODB_URI) {
       connectMongo(updates.MONGODB_URI).catch((e) => console.warn('[Admin Mongo Reconnect]:', e.message));
     }
@@ -1160,7 +1332,7 @@ app.post('/api/admin/credentials', (req, res) => {
 });
 
 // 3. Test MongoDB Connection
-app.post('/api/admin/test-db', async (req, res) => {
+app.post('/api/admin/test-db', requireAdminAuth, async (req, res) => {
   const uri = req.body?.uri || process.env.MONGODB_URI;
   if (!uri) {
     return res.status(400).json({ error: 'MongoDB URI is required' });
@@ -1196,7 +1368,7 @@ app.post('/api/admin/test-db', async (req, res) => {
 });
 
 // 4. Test SMTP / Email Gateway
-app.post('/api/admin/test-email', async (req, res) => {
+app.post('/api/admin/test-email', requireAdminAuth, async (req, res) => {
   const { toEmail, host, port, user, pass, from } = req.body || {};
   const targetEmail = (toEmail || process.env.SMTP_USER || '').trim();
 
@@ -1249,7 +1421,7 @@ app.post('/api/admin/test-email', async (req, res) => {
 });
 
 // 5. Test Redis Cache Connection
-app.post('/api/admin/test-redis', async (req, res) => {
+app.post('/api/admin/test-redis', requireAdminAuth, async (req, res) => {
   const startTime = Date.now();
   try {
     const testKey = `admin_ping_${Date.now()}`;

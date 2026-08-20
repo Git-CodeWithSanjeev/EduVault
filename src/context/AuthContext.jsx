@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
   const [pendingEmail, setPendingEmail] = useState('');
 
   /** 1. Direct MongoDB Email/Password Registration with OTP Verification */
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, honeypot = '') => {
     const cleanName = (name || '').trim();
     const cleanEmail = (email || '').trim().toLowerCase();
 
@@ -62,7 +62,12 @@ export function AuthProvider({ children }) {
       throw new Error('Password must be at least 8 characters long.');
     }
 
-    const data = await sendAuthRequest('/api/auth/register', { name: cleanName, email: cleanEmail, password });
+    const data = await sendAuthRequest('/api/auth/register', {
+      name: cleanName,
+      email: cleanEmail,
+      password,
+      website_url_hp: honeypot,
+    });
     setPendingEmail(cleanEmail);
 
     return { success: true, requireOtp: true, email: cleanEmail, message: data.message };
@@ -84,9 +89,14 @@ export function AuthProvider({ children }) {
 
     const authUser = {
       ...data.user,
+      token: data.token || '',
       isVerified: true,
       isGoogle: false,
     };
+
+    // Purge admin console tokens to prevent cross-account privilege inheritance
+    sessionStorage.removeItem('eduvault_admin_auth');
+    sessionStorage.removeItem('eduvault_admin_token');
 
     setUser(authUser);
     setPendingEmail('');
@@ -104,7 +114,7 @@ export function AuthProvider({ children }) {
   };
 
   /** 2. Direct MongoDB Email/Password Login */
-  const login = async (email, password) => {
+  const login = async (email, password, honeypot = '') => {
     const cleanEmail = (email || '').trim().toLowerCase();
     if (!cleanEmail) {
       throw new Error('Please enter your email address.');
@@ -113,13 +123,22 @@ export function AuthProvider({ children }) {
       throw new Error('Please enter your password.');
     }
 
-    const data = await sendAuthRequest('/api/auth/login', { email: cleanEmail, password });
+    const data = await sendAuthRequest('/api/auth/login', {
+      email: cleanEmail,
+      password,
+      website_url_hp: honeypot,
+    });
 
     const authUser = {
       ...data.user,
+      token: data.token || '',
       isVerified: true,
       isGoogle: data.user.provider === 'google',
     };
+
+    // Purge admin console tokens on student login
+    sessionStorage.removeItem('eduvault_admin_auth');
+    sessionStorage.removeItem('eduvault_admin_token');
 
     setUser(authUser);
     return { success: true, user: authUser };
@@ -147,10 +166,15 @@ export function AuthProvider({ children }) {
 
     const authUser = {
       ...data.user,
+      token: data.token || '',
       isVerified: true,
       isGoogle: true,
       provider: 'google',
     };
+
+    // Purge admin console tokens on Google auth
+    sessionStorage.removeItem('eduvault_admin_auth');
+    sessionStorage.removeItem('eduvault_admin_token');
 
     setUser(authUser);
     return { success: true, user: authUser };
@@ -167,9 +191,13 @@ export function AuthProvider({ children }) {
 
     for (const url of urlsToTry) {
       try {
+        const token = user?.token || '';
         const res = await fetch(url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify(payload),
         });
 
@@ -282,9 +310,13 @@ export function AuthProvider({ children }) {
       throw new Error('You must be logged in to update your profile.');
     }
 
+    const token = user?.token || '';
     const res = await fetch(`${API_BASE}/api/auth/update-profile`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({ email: user.email, name, avatar, bio, grade }),
     });
 
@@ -309,6 +341,7 @@ export function AuthProvider({ children }) {
       avatar: avatar || user.avatar,
       bio: typeof bio === 'string' ? bio : user.bio,
       grade: typeof grade === 'string' ? grade : user.grade,
+      token: user.token,
     };
 
     setUser(updatedUser);
@@ -320,6 +353,8 @@ export function AuthProvider({ children }) {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem('eduvault-redirect-after-auth');
+    sessionStorage.removeItem('eduvault_admin_auth');
+    sessionStorage.removeItem('eduvault_admin_token');
   };
 
   return (

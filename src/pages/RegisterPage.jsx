@@ -13,6 +13,7 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,7 @@ export function Register() {
     setLoading(true);
 
     try {
-      const res = await register(name, email, password);
+      const res = await register(name, email, password, honeypot);
       navigate('/verify-email', { state: { email: res.email || email.trim() } });
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -100,6 +101,17 @@ export function Register() {
         <AuthDivider text="or register with email" />
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          {/* Invisible Anti-Bot Honeypot Field */}
+          <div style={{ display: 'none', opacity: 0, position: 'absolute', left: '-9999px' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website_url_hp"
+              tabIndex="-1"
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
           {/* STEP 1: Full Name */}
           <div className="auth-field">
             <label htmlFor="reg-name">Full Name</label>
@@ -172,7 +184,7 @@ export function Register() {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="auth-submit-btn" disabled={loading || googleLoading}>
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? 'Creating Account…' : 'Create Account / Next →'}
           </button>
         </form>

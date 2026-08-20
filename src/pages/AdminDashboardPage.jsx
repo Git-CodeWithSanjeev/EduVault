@@ -249,12 +249,65 @@ export function AdminPanel() {
   // Copy indicator
   const [copiedKey, setCopiedKey] = useState('');
 
+  // Inactivity Auto-Lock Timer (10 minutes = 600 seconds)
+  const [inactivityTimer, setInactivityTimer] = useState(600);
+
+  // Helper for authenticated Admin API requests
+  const getAdminHeaders = () => {
+    const token = sessionStorage.getItem('eduvault_admin_token') || '';
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
+  const handleLockConsole = (reason = '') => {
+    sessionStorage.removeItem('eduvault_admin_auth');
+    sessionStorage.removeItem('eduvault_admin_token');
+    setIsUnlocked(false);
+    setAdminPasswordInput('');
+    if (reason && typeof reason === 'string') {
+      setLoginError(reason);
+    }
+  };
+
+  // 10-minute Inactivity Auto-Lock
+  useEffect(() => {
+    if (!isUnlocked) return;
+
+    const resetTimer = () => {
+      setInactivityTimer(600);
+    };
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach((evt) => window.addEventListener(evt, resetTimer, { passive: true }));
+
+    const interval = setInterval(() => {
+      setInactivityTimer((prev) => {
+        if (prev <= 1) {
+          handleLockConsole('Admin Console auto-locked due to 10 minutes of inactivity.');
+          return 600;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      events.forEach((evt) => window.removeEventListener(evt, resetTimer));
+    };
+  }, [isUnlocked]);
+
   // Fetch current credentials
   const fetchCredentials = async () => {
     setLoading(true);
     setSaveError('');
     try {
-      const res = await fetch('/api/admin/credentials');
+      const res = await fetch('/api/admin/credentials', { headers: getAdminHeaders() });
+      if (res.status === 401) {
+        handleLockConsole('Admin session has expired or is unauthorized. Please log in.');
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch configuration`);
       const data = await res.json();
       if (data.config) {
@@ -277,7 +330,11 @@ export function AdminPanel() {
   const fetchUsers = async () => {
     setUsersLoading(true);
     try {
-      const res = await fetch('/api/admin/users');
+      const res = await fetch('/api/admin/users', { headers: getAdminHeaders() });
+      if (res.status === 401) {
+        handleLockConsole('Admin session has expired or is unauthorized. Please log in.');
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setUsersList(data.users || []);
@@ -293,7 +350,11 @@ export function AdminPanel() {
   const fetchAnalytics = async () => {
     setAnalyticsLoading(true);
     try {
-      const res = await fetch('/api/admin/analytics');
+      const res = await fetch('/api/admin/analytics', { headers: getAdminHeaders() });
+      if (res.status === 401) {
+        handleLockConsole('Admin session has expired or is unauthorized. Please log in.');
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setAnalyticsData(data);
@@ -334,7 +395,11 @@ export function AdminPanel() {
         throw new Error(data.error || 'Invalid Admin ID or Password');
       }
 
+      if (data.token) {
+        sessionStorage.setItem('eduvault_admin_token', data.token);
+      }
       sessionStorage.setItem('eduvault_admin_auth', 'true');
+      setInactivityTimer(600);
       setIsUnlocked(true);
       fetchCredentials();
       fetchUsers();
@@ -344,12 +409,6 @@ export function AdminPanel() {
     } finally {
       setLoginLoading(false);
     }
-  };
-
-  const handleLockConsole = () => {
-    sessionStorage.removeItem('eduvault_admin_auth');
-    setIsUnlocked(false);
-    setAdminPasswordInput('');
   };
 
   const handleFieldChange = (key, value) => {
@@ -385,7 +444,7 @@ export function AdminPanel() {
     try {
       const res = await fetch('/api/admin/credentials', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify(config),
       });
 
@@ -409,7 +468,7 @@ export function AdminPanel() {
     try {
       const res = await fetch('/api/admin/test-db', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ uri: config.MONGODB_URI }),
       });
       const data = await res.json();
@@ -428,7 +487,7 @@ export function AdminPanel() {
     try {
       const res = await fetch('/api/admin/test-email', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ toEmail: smtpTestEmail || config.SMTP_USER }),
       });
       const data = await res.json();
@@ -445,7 +504,10 @@ export function AdminPanel() {
     setRedisTestLoading(true);
     setRedisTestResult(null);
     try {
-      const res = await fetch('/api/admin/test-redis', { method: 'POST' });
+      const res = await fetch('/api/admin/test-redis', {
+        method: 'POST',
+        headers: getAdminHeaders(),
+      });
       const data = await res.json();
       setRedisTestResult(data);
     } catch (err) {
@@ -460,7 +522,7 @@ export function AdminPanel() {
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify(updates),
       });
       const data = await res.json();
@@ -484,7 +546,7 @@ export function AdminPanel() {
     try {
       const res = await fetch(`/api/admin/users/${resetModalUser.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ newPassword: newPasswordInput.trim() }),
       });
       const data = await res.json();
@@ -511,7 +573,10 @@ export function AdminPanel() {
     }
 
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: getAdminHeaders(),
+      });
       const data = await res.json();
       if (data.success) {
         setUserActionFeedback(`User ${userEmail} deleted successfully`);
@@ -656,11 +721,32 @@ export function AdminPanel() {
           <p>Securely manage MongoDB Atlas users, inspect credentials, Gmail SMTP, Redis, and API keys in real time.</p>
         </div>
 
-        <div className="admin-header-actions">
+        <div className="admin-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              background: inactivityTimer < 60 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+              border: `1px solid ${inactivityTimer < 60 ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.1)'}`,
+              color: inactivityTimer < 60 ? '#f87171' : '#94a3b8',
+              fontSize: '12px',
+              fontWeight: 500,
+            }}
+            title="Console will automatically lock itself if no activity is detected."
+          >
+            <span>⏱️</span>
+            <span>
+              Auto-locks in {Math.floor(inactivityTimer / 60).toString().padStart(2, '0')}:{(inactivityTimer % 60).toString().padStart(2, '0')}
+            </span>
+          </div>
+
           <button
             type="button"
             className="admin-btn secondary"
-            onClick={handleLockConsole}
+            onClick={() => handleLockConsole('Admin console manually locked.')}
             title="Lock Console"
           >
             <IconLock size={15} />

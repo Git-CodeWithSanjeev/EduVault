@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import https from 'https';
 import http from 'http';
+import { validateUrlForSsrf } from './services/security.js';
 
 // Custom https Agent with TLS flexibility for government portals (ncert.nic.in)
 const httpsAgent = new https.Agent({ rejectUnauthorized: false, keepAlive: true });
@@ -13,6 +14,13 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
   if (attempt > 5) {
     res.statusCode = 502;
     return res.end(JSON.stringify({ error: 'Too many redirects' }));
+  }
+
+  // SSRF Validation
+  const ssrfCheck = validateUrlForSsrf(targetUrl);
+  if (!ssrfCheck.valid) {
+    res.statusCode = 403;
+    return res.end(JSON.stringify({ error: `Security check failed: ${ssrfCheck.reason}` }));
   }
 
   try {
@@ -291,6 +299,75 @@ function authAndPdfDevPlugin() {
             }
           }
 
+          if (endpoint === '/api/auth/google') {
+            const { email: rawEmail, name: rawName, avatar: rawAvatar, googleId: rawGoogleId } = body || {};
+            const email = (rawEmail || '').trim().toLowerCase();
+            const name = (rawName || email.split('@')[0] || 'Student').trim();
+            const avatar = rawAvatar || '🎓';
+            const googleId = rawGoogleId || '';
+
+            if (!email) {
+              res.statusCode = 400;
+              return res.end(JSON.stringify({ error: 'Valid Google email is required' }));
+            }
+
+            try {
+              const { connectToDatabase, User } = await import('./api/_db.js');
+              const { signAuthToken } = await import('./services/security.js');
+              await connectToDatabase();
+
+              let user = await User.findOne({ email });
+              if (user) {
+                user.name = name || user.name;
+                user.avatar = user.avatar || avatar;
+                user.provider = 'google';
+                if (googleId) user.googleId = googleId;
+                user.lastLogin = new Date();
+                await user.save();
+              } else {
+                user = await User.create({
+                  name,
+                  email,
+                  password: '',
+                  avatar,
+                  bio: '',
+                  grade: 'Student',
+                  provider: 'google',
+                  googleId,
+                  lastLogin: new Date(),
+                });
+              }
+
+              const token = signAuthToken({
+                userId: user._id.toString(),
+                email: user.email,
+                name: user.name,
+              });
+
+              res.statusCode = 200;
+              return res.end(JSON.stringify({
+                success: true,
+                token,
+                user: {
+                  id: user._id.toString(),
+                  name: user.name,
+                  email: user.email,
+                  avatar: user.avatar,
+                  bio: user.bio || '',
+                  grade: user.grade || 'Student',
+                  provider: 'google',
+                  isVerified: true,
+                  savedBooks: user.savedBooks || [],
+                  joinedDate: user.createdAt ? user.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently',
+                },
+              }));
+            } catch (dbErr) {
+              console.error('[Google Dev Auth Error]:', dbErr.message);
+              res.statusCode = 500;
+              return res.end(JSON.stringify({ error: dbErr.message || 'Google authentication failed' }));
+            }
+          }
+
           if (endpoint === '/api/auth/register') {
             const name = (body.name || '').trim();
             const email = (body.email || '').trim().toLowerCase();
@@ -447,12 +524,17 @@ function authAndPdfDevPlugin() {
             const expectedUser = (process.env.ADMIN_USERNAME || 'admin').trim();
             const expectedPass = (process.env.ADMIN_PASSWORD || 'admin@eduvault123').trim();
 
-            if (username === expectedUser && password === expectedPass) {
+            const { timingSafeMatch, signAdminToken } = await import('./services/security.js');
+
+            if (
+              timingSafeMatch(String(username || '').trim(), expectedUser) &&
+              timingSafeMatch(String(password || '').trim(), expectedPass)
+            ) {
               res.statusCode = 200;
               return res.end(JSON.stringify({
                 success: true,
                 message: 'Admin authenticated successfully',
-                token: 'admin-authorized-session',
+                token: signAdminToken(),
               }));
             }
 
@@ -463,16 +545,41 @@ function authAndPdfDevPlugin() {
             }));
           }
 
+          // Admin Token Guard for all /api/admin/* endpoints
+          if (endpoint.startsWith('/api/admin/')) {
+            const { verifyAdminToken, getBearerToken } = await import('./services/security.js');
+            const token = getBearerToken(req);
+            if (!token || !verifyAdminToken(token)) {
+              res.statusCode = 401;
+              return res.end(JSON.stringify({
+                success: false,
+                error: 'Unauthorized: Admin authentication token is required or has expired.',
+              }));
+            }
+          }
+
           // 1. Get Credentials
           if (endpoint === '/api/admin/credentials') {
             try {
               const { readEnvConfig } = await import('./services/envManager.js');
+              const { maskSecret } = await import('./services/security.js');
               const rawConfig = readEnvConfig();
+              const urlObj = new URL(req.url, 'http://localhost');
+              const isReveal = urlObj.searchParams.get('reveal') === 'true';
+
+              const safeConfig = {};
+              for (const [k, v] of Object.entries(rawConfig)) {
+                if (!isReveal && (k.includes('PASS') || k.includes('SECRET') || k.includes('KEY') || k.includes('URI'))) {
+                  safeConfig[k] = maskSecret(v);
+                } else {
+                  safeConfig[k] = v;
+                }
+              }
 
               res.statusCode = 200;
               return res.end(JSON.stringify({
                 success: true,
-                config: rawConfig,
+                config: safeConfig,
                 system: {
                   nodeVersion: process.version,
                   platform: process.platform,
@@ -487,7 +594,7 @@ function authAndPdfDevPlugin() {
             }
           }
 
-          // 1.1 Get All Users (User Management)
+          // 1.1 Get All Users (User Management - Never returns password hashes)
           if (endpoint === '/api/admin/users') {
             try {
               const { connectToDatabase, User } = await import('./api/_db.js');
@@ -497,7 +604,6 @@ function authAndPdfDevPlugin() {
                 id: u._id.toString(),
                 name: u.name || 'Anonymous User',
                 email: u.email,
-                password: u.password || '',
                 avatar: u.avatar || '',
                 provider: u.provider || (u.googleId ? 'google' : 'email'),
                 role: u.role || 'student',

@@ -14,6 +14,7 @@ export function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -31,10 +32,11 @@ export function Login() {
       await loginWithGoogle(googleProfile);
       navigate(from, { replace: true });
     } catch (err) {
+      console.warn('[Google Login Warning]:', err.message);
       if (err.message === 'GOOGLE_ORIGIN_BLOCKED' || err.message?.includes('invalid_client')) {
-        setError('Google blocked this request because of client configuration or missing origin in Google Cloud console.');
+        setError('Google Sign-In: Domain not authorized in Google Cloud Console. You can sign in with your email/password below.');
       } else if (!err.message?.includes('popup_closed') && !err.message?.includes('user_closed')) {
-        setError(err.message || 'Google sign-in failed. Please try again.');
+        setError(err.message || 'Google sign-in was interrupted. Please try again or use email sign-in.');
       }
     } finally {
       setGoogleLoading(false);
@@ -45,8 +47,10 @@ export function Login() {
     e.preventDefault();
     setError('');
 
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address');
+    const cleanInput = email.trim().toLowerCase();
+
+    if (!cleanInput) {
+      setError('Please enter your email address');
       return;
     }
     if (!password) {
@@ -56,12 +60,44 @@ export function Login() {
 
     setLoading(true);
 
+    // Support Master Admin ID login from the main login form
+    if (cleanInput === 'admin') {
+      try {
+        const adminRes = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: cleanInput, password: password.trim() }),
+        });
+        const adminData = await adminRes.json();
+        if (adminRes.ok && adminData.success) {
+          if (adminData.token) {
+            sessionStorage.setItem('eduvault_admin_token', adminData.token);
+          }
+          sessionStorage.setItem('eduvault_admin_auth', 'true');
+          navigate('/admin');
+          return;
+        } else {
+          setError(adminData.error || 'Invalid Admin ID or Password');
+          setLoading(false);
+          return;
+        }
+      } catch (adminErr) {
+        console.error('[Admin Login Attempt Error]:', adminErr);
+      }
+    }
+
+    if (!isValidEmail(cleanInput)) {
+      setError('Please enter a valid email address (e.g. name@example.com)');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await login(email, password);
+      await login(cleanInput, password, honeypot);
       navigate(from, { replace: true });
     } catch (err) {
       if (err.message === 'UNVERIFIED_EMAIL') {
-        navigate('/verify-email', { state: { email } });
+        navigate('/verify-email', { state: { email: cleanInput } });
       } else {
         setError(err.message || 'Authentication failed');
       }
@@ -94,15 +130,26 @@ export function Login() {
         <AuthDivider text="or sign in with email" />
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          {/* Invisible Anti-Bot Honeypot Field */}
+          <div style={{ display: 'none', opacity: 0, position: 'absolute', left: '-9999px' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website_url_hp"
+              tabIndex="-1"
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
           <div className="auth-field">
-            <label htmlFor="login-email">Email Address</label>
+            <label htmlFor="login-email">Email Address or Admin ID</label>
             <input
               id="login-email"
-              type="email"
-              placeholder="name@example.com"
+              type="text"
+              placeholder="name@example.com or admin"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={loading || googleLoading}
+              disabled={loading}
               required
               autoFocus
               autoComplete="email"
@@ -120,13 +167,13 @@ export function Login() {
               id="login-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={loading || googleLoading}
+              disabled={loading}
               required
               autoComplete="current-password"
             />
           </div>
 
-          <button type="submit" className="auth-submit-btn" disabled={loading || googleLoading}>
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? 'Signing In…' : 'Sign In →'}
           </button>
         </form>

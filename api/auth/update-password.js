@@ -1,10 +1,12 @@
 import { connectToDatabase, User } from '../_db.js';
+import bcrypt from 'bcryptjs';
 import {
   sanitizeEmail,
   sanitizeInput,
   sanitizeNoSql,
   getBearerToken,
   verifyAuthToken,
+  validatePasswordStrength,
   checkRateLimit,
 } from '../../services/security.js';
 
@@ -26,33 +28,35 @@ export default async function handler(req, res) {
   try {
     const rawBody = sanitizeNoSql(req.body || {});
     const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '127.0.0.1';
-    const rateCheck = await checkRateLimit(`profile:${clientIp}`, 15, 60);
+    const rateCheck = await checkRateLimit(`update_pw:${clientIp}`, 6, 60);
     res.setHeader('X-RateLimit-Remaining', rateCheck.remaining);
     if (!rateCheck.allowed) {
-      return res.status(429).json({ error: `Too many requests. Please wait ${rateCheck.resetIn} seconds.` });
+      return res.status(429).json({ error: `Too many password update requests. Please wait ${rateCheck.resetIn} seconds.` });
     }
 
-    const { email: rawEmail, name: rawName, avatar: rawAvatar, bio: rawBio, grade: rawGrade } = rawBody;
+    const { email: rawEmail, newPassword: rawPassword } = rawBody;
     const email = sanitizeEmail(rawEmail);
+    const newPassword = sanitizeInput(rawPassword, 128);
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: 'Email and new password are required' });
     }
 
-    // Mandatory Bearer token authorization verification (Prevents IDOR)
+    // Mandatory Bearer token verification (Prevents unauthorized password change)
     const token = getBearerToken(req);
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized: Authentication token is required.' });
     }
     const decoded = verifyAuthToken(token);
     if (!decoded || !decoded.email || decoded.email.toLowerCase() !== email.toLowerCase()) {
-      return res.status(403).json({ error: 'Forbidden: You can only update your own profile.' });
+      return res.status(403).json({ error: 'Forbidden: You can only change your own password.' });
     }
 
-    const name = sanitizeInput(rawName, 60);
-    const avatar = sanitizeInput(rawAvatar, 500);
-    const bio = sanitizeInput(rawBio, 500);
-    const grade = sanitizeInput(rawGrade, 50);
+    // Password Complexity Validation
+    const pwValidation = validatePasswordStrength(newPassword);
+    if (!pwValidation.valid) {
+      return res.status(400).json({ error: pwValidation.error });
+    }
 
     await connectToDatabase();
 
@@ -61,30 +65,18 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (name) user.name = name;
-    if (avatar) user.avatar = avatar;
-    if (typeof rawBio === 'string') user.bio = bio;
-    if (typeof rawGrade === 'string') user.grade = grade;
-
+    user.password = await bcrypt.hash(newPassword, 10);
+    if (user.provider === 'google' && !user.password) {
+      user.provider = 'both';
+    }
     await user.save();
 
     return res.status(200).json({
       success: true,
-      user: {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        bio: user.bio,
-        grade: user.grade,
-        provider: user.provider,
-        isVerified: true,
-        savedBooks: user.savedBooks || [],
-        joinedDate: user.createdAt ? user.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recently',
-      },
+      message: 'Password updated successfully!',
     });
   } catch (err) {
-    console.error('[Vercel Auth Update Profile Error]:', err);
-    return res.status(500).json({ error: 'Failed to update profile' });
+    console.error('[Vercel Auth Update Password Error]:', err);
+    return res.status(500).json({ error: 'Failed to update password' });
   }
 }

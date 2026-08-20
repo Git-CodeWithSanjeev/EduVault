@@ -1,12 +1,16 @@
 import https from 'https';
 import http from 'http';
+import { validateUrlForSsrf } from '../services/security.js';
+
+const MAX_PROXY_BYTES = 50 * 1024 * 1024; // 50MB max file limit
 
 export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // CORS & Security Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -21,17 +25,28 @@ export default async function handler(req, res) {
   let decoded;
   try {
     decoded = decodeURIComponent(url);
-    const parsed = new URL(decoded);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return res.status(400).json({ error: 'Only http and https protocols allowed' });
-    }
   } catch {
-    return res.status(400).json({ error: 'Invalid URL parameter' });
+    return res.status(400).json({ error: 'Invalid URL encoding' });
+  }
+
+  // Anti-SSRF Security Validation
+  const validation = validateUrlForSsrf(decoded);
+  if (!validation.valid) {
+    return res.status(403).json({ error: `Security check failed: ${validation.reason}` });
   }
 
   try {
     const fetchPDF = (targetUrl, attempt = 1) => {
       return new Promise((resolve, reject) => {
+        if (attempt > 5) {
+          return reject(new Error('Too many redirects (max 5)'));
+        }
+
+        const ssrfCheck = validateUrlForSsrf(targetUrl);
+        if (!ssrfCheck.valid) {
+          return reject(new Error(`Redirect destination blocked: ${ssrfCheck.reason}`));
+        }
+
         const isHttps = targetUrl.startsWith('https');
         const lib = isHttps ? https : http;
         const parsed = new URL(targetUrl);
@@ -42,9 +57,8 @@ export default async function handler(req, res) {
           path: parsed.pathname + parsed.search,
           method: 'GET',
           timeout: 20000,
-          agent: isHttps ? new https.Agent({ rejectUnauthorized: false, keepAlive: false }) : undefined,
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36 EduVault/1.0',
             'Accept': 'application/pdf,*/*;q=0.8',
             'Accept-Encoding': 'identity',
             'Connection': 'close',
@@ -58,7 +72,7 @@ export default async function handler(req, res) {
               ? upstreamRes.headers.location
               : `${parsed.origin}${upstreamRes.headers.location}`;
             upstreamRes.resume();
-            fetchPDF(redirectUrl, attempt).then(resolve).catch(reject);
+            fetchPDF(redirectUrl, attempt + 1).then(resolve).catch(reject);
             return;
           }
 
@@ -68,12 +82,23 @@ export default async function handler(req, res) {
             return;
           }
 
+          let totalBytes = 0;
           const chunks = [];
-          upstreamRes.on('data', (c) => chunks.push(c));
+          upstreamRes.on('data', (c) => {
+            totalBytes += c.length;
+            if (totalBytes > MAX_PROXY_BYTES) {
+              r.destroy();
+              reject(new Error(`Payload exceeds maximum size limit of 50MB`));
+              return;
+            }
+            chunks.push(c);
+          });
+
           upstreamRes.on('end', () => resolve({
             buffer: Buffer.concat(chunks),
             contentType: upstreamRes.headers['content-type'] || 'application/pdf',
           }));
+
           upstreamRes.on('error', reject);
         });
 
@@ -106,6 +131,6 @@ export default async function handler(req, res) {
     return res.status(200).send(buffer);
   } catch (err) {
     console.error(`[Vercel PDF Proxy Error] ${decoded}:`, err.message);
-    return res.status(502).json({ error: 'Failed to fetch PDF from upstream', details: err.message });
+    return res.status(502).json({ error: 'Failed to fetch document', details: err.message });
   }
 }
