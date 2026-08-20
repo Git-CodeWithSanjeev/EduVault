@@ -30,56 +30,74 @@ const REDIS_URL = (rawUrl.includes('upstash.io') && rawUrl.startsWith('redis://'
 
 let redisClient = null;
 let isRedisReady = false;
+let isConnecting = false;
 
-try {
-  const options = {
-    maxRetriesPerRequest: 2,
-    retryStrategy(times) {
-      if (times > 5) {
-        return null;
-      }
-      return Math.min(times * 500, 2000);
-    },
-    enableOfflineQueue: false,
-    connectTimeout: 5000,
-  };
+export function getRedisClient() {
+  if (redisClient) return redisClient;
+  if (isConnecting) return null;
 
-  if (REDIS_URL.startsWith('rediss://') || REDIS_URL.includes('upstash.io')) {
-    options.tls = {
-      rejectUnauthorized: false,
+  try {
+    const options = {
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+      retryStrategy(times) {
+        if (times > 3) {
+          return null;
+        }
+        return Math.min(times * 500, 2000);
+      },
+      enableOfflineQueue: false,
+      connectTimeout: 4000,
     };
+
+    if (REDIS_URL.startsWith('rediss://') || REDIS_URL.includes('upstash.io')) {
+      options.tls = {
+        rejectUnauthorized: false,
+      };
+    }
+
+    redisClient = new Redis(REDIS_URL, options);
+
+    redisClient.on('connect', () => {
+      isRedisReady = true;
+      isConnecting = false;
+      console.log(`🚀 [Redis] Connected successfully to Redis store: ${REDIS_URL.replace(/:[^:@]+@/, ':***@')}`);
+    });
+
+    redisClient.on('ready', () => {
+      isRedisReady = true;
+      isConnecting = false;
+    });
+
+    redisClient.on('error', (err) => {
+      isRedisReady = false;
+      isConnecting = false;
+      if (err.code !== 'ECONNREFUSED') {
+        console.warn(`⚠️  [Redis Info] ${err.message}`);
+      }
+    });
+
+    isConnecting = true;
+    redisClient.connect().catch(() => {
+      isRedisReady = false;
+      isConnecting = false;
+    });
+  } catch (e) {
+    isRedisReady = false;
+    isConnecting = false;
   }
 
-  redisClient = new Redis(REDIS_URL, options);
-
-  redisClient.on('connect', () => {
-    isRedisReady = true;
-    console.log(`🚀 [Redis] Connected successfully to Redis store: ${REDIS_URL.replace(/:[^:@]+@/, ':***@')}`);
-  });
-
-  redisClient.on('ready', () => {
-    isRedisReady = true;
-  });
-
-  redisClient.on('error', (err) => {
-    isRedisReady = false;
-    if (err.code === 'ECONNREFUSED') {
-      // Local redis not running
-    } else {
-      console.warn(`⚠️  [Redis Info] ${err.message}`);
-    }
-  });
-} catch (e) {
-  isRedisReady = false;
+  return redisClient;
 }
 
 /**
  * Get cached JSON/String data by key
  */
 export async function redisGet(key) {
-  if (!isRedisReady || !redisClient) return null;
+  const client = getRedisClient();
+  if (!isRedisReady || !client) return null;
   try {
-    const raw = await redisClient.get(key);
+    const raw = await client.get(key);
     if (!raw) return null;
     try {
       return JSON.parse(raw);
@@ -96,13 +114,14 @@ export async function redisGet(key) {
  * Default TTL = 3600 seconds (1 hour)
  */
 export async function redisSet(key, value, ttlSeconds = 3600) {
-  if (!isRedisReady || !redisClient) return false;
+  const client = getRedisClient();
+  if (!isRedisReady || !client) return false;
   try {
     const data = typeof value === 'object' ? JSON.stringify(value) : String(value);
     if (ttlSeconds > 0) {
-      await redisClient.set(key, data, 'EX', ttlSeconds);
+      await client.set(key, data, 'EX', ttlSeconds);
     } else {
-      await redisClient.set(key, data);
+      await client.set(key, data);
     }
     return true;
   } catch (e) {
@@ -114,9 +133,10 @@ export async function redisSet(key, value, ttlSeconds = 3600) {
  * Delete cached key
  */
 export async function redisDel(key) {
-  if (!isRedisReady || !redisClient) return false;
+  const client = getRedisClient();
+  if (!isRedisReady || !client) return false;
   try {
-    await redisClient.del(key);
+    await client.del(key);
     return true;
   } catch (e) {
     return false;
@@ -128,14 +148,15 @@ export async function redisDel(key) {
  * Returns { allowed: boolean, current: number, remaining: number }
  */
 export async function redisRateLimit(ipKey, limit = 60, windowSeconds = 60) {
-  if (!isRedisReady || !redisClient) {
+  const client = getRedisClient();
+  if (!isRedisReady || !client) {
     return { allowed: true, current: 1, remaining: limit - 1 };
   }
   try {
     const key = `ratelimit:${ipKey}`;
-    const current = await redisClient.incr(key);
+    const current = await client.incr(key);
     if (current === 1) {
-      await redisClient.expire(key, windowSeconds);
+      await client.expire(key, windowSeconds);
     }
     const remaining = Math.max(0, limit - current);
     return {
@@ -155,4 +176,4 @@ export function getRedisStatus() {
   };
 }
 
-export default redisClient;
+export default { getRedisClient, redisGet, redisSet, redisDel, redisRateLimit, getRedisStatus };
