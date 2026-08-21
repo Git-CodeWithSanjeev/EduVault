@@ -2,81 +2,11 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ncertBooks } from '../data/ncertBooksData';
-import { educationalVideos } from '../data/educationalVideos';
 import { Cards } from '../components/ResourceGrid';
 import { BookCarousel } from '../components/BookCarousel';
 import { VideoGallery } from '../components/VideoGallery';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 import { useAuth } from '../context/AuthContext';
-import { useDragScroll } from '../hooks/useDragScroll';
-
-export function VideoCarousel({ title, videosList }) {
-  const { trackRef, dragProps } = useDragScroll();
-
-  if (!videosList || videosList.length === 0) return null;
-
-  return (
-    <div className="carousel-section" style={{ marginTop: '8px', marginBottom: '28px' }}>
-      <div className="carousel-header">
-        <h2>{title}</h2>
-        <Link to="/videos" className="pdf-btn secondary" style={{ fontSize: '11px', textDecoration: 'none' }}>
-          View All Videos →
-        </Link>
-      </div>
-      <div className="carousel-track-wrapper">
-        <div
-          className="carousel-track"
-          ref={trackRef}
-          style={{ cursor: 'grab' }}
-          {...dragProps}
-        >
-          {videosList.map((vid) => (
-            <div key={vid.id} className="carousel-item" style={{ minWidth: '280px', maxWidth: '320px' }}>
-              <div className="video-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Link to={'/video/' + vid.id} className="video-thumb-wrap" style={{ display: 'block', textDecoration: 'none' }}>
-                  <img
-                    src={vid.thumbnail}
-                    alt={vid.title}
-                    className="video-thumb-img"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://i.ytimg.com/vi/tVzUXW6siu0/hqdefault.jpg';
-                    }}
-                  />
-                  <div className="play-badge">▶</div>
-                </Link>
-                <div className="video-info" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <div className="video-meta">
-                    <span>{vid.category}</span>
-                    <span style={{ color: 'var(--muted)' }}>{vid.level}</span>
-                  </div>
-                  <h3 style={{ fontSize: '14px', lineHeight: 1.3, margin: '6px 0' }}>
-                    <Link to={'/video/' + vid.id} style={{ color: 'inherit', textDecoration: 'none' }}>
-                      {vid.title}
-                    </Link>
-                  </h3>
-                  <small style={{ color: 'var(--muted)', fontWeight: 700, marginBottom: '10px', marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="4" width="20" height="15" rx="2" />
-                      <polygon points="10 9 15 11.5 10 14 10 9" fill="currentColor" />
-                    </svg>
-                    <span>Channel: {vid.channel}</span>
-                  </small>
-                  <Link to={'/video/' + vid.id} className="hero-link" style={{ textAlign: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', padding: '8px 12px', minHeight: '40px' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                    <span>Start Video Course</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
   const { user, isLoggedIn } = useAuth();
@@ -86,7 +16,6 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
     [recentIds],
   );
 
-  const featuredVideos = useMemo(() => educationalVideos.slice(0, 8), []);
   const ncertFeatured = useMemo(() => ncertBooks.slice(0, 15), []);
   const openStaxFeatured = useMemo(() => items.filter((x) => x.source === 'OpenStax'), []);
   const techFeatured = useMemo(
@@ -194,11 +123,6 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
           showFilters={true}
           columns={3}
         />
-      </section>
-
-      {/* Featured Educational Videos Carousel */}
-      <section className="page" style={{ paddingTop: '0px', minHeight: 'auto' }}>
-        <VideoCarousel title="Featured Video Masterclasses & Playlists" videosList={featuredVideos} />
       </section>
 
       {recentItems.length > 0 && (

@@ -12,7 +12,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leph1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leph1cc.jpg"
   },
   {
     "id": "ncert-leph2",
@@ -25,7 +26,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leph2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leph2cc.jpg"
   },
   {
     "id": "ncert-lech1",
@@ -38,7 +40,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lech1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lech1cc.jpg"
   },
   {
     "id": "ncert-lech2",
@@ -51,7 +54,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lech2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lech2cc.jpg"
   },
   {
     "id": "ncert-lemh1",
@@ -64,7 +68,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lemh1cc.jpg"
   },
   {
     "id": "ncert-lemh2",
@@ -77,7 +82,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lemh2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lemh2cc.jpg"
   },
   {
     "id": "ncert-lebo1",
@@ -90,7 +96,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lebo1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lebo1cc.jpg"
   },
   {
     "id": "ncert-lhph1",
@@ -103,7 +110,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhph1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhph1cc.jpg"
   },
   {
     "id": "ncert-lhph2",
@@ -116,7 +124,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhph2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhph2cc.jpg"
   },
   {
     "id": "ncert-lhch1",
@@ -129,7 +138,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhch1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhch1cc.jpg"
   },
   {
     "id": "ncert-lhch2",
@@ -142,7 +152,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhch2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhch2cc.jpg"
   },
   {
     "id": "ncert-lhmh1",
@@ -155,7 +166,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhmh1cc.jpg"
   },
   {
     "id": "ncert-lhmh2",
@@ -168,7 +180,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhmh2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhmh2cc.jpg"
   },
   {
     "id": "ncert-lhbo1",
@@ -181,7 +194,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhbo1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhbo1cc.jpg"
   },
   {
     "id": "ncert-leac1",
@@ -194,7 +208,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leac1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leac1cc.jpg"
   },
   {
     "id": "ncert-leac2",
@@ -207,7 +222,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leac2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leac2cc.jpg"
   },
   {
     "id": "ncert-lebs1",
@@ -220,7 +236,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lebs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lebs1cc.jpg"
   },
   {
     "id": "ncert-lebs2",
@@ -233,7 +250,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lebs2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lebs2cc.jpg"
   },
   {
     "id": "ncert-leec2",
@@ -246,7 +264,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leec2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leec2cc.jpg"
   },
   {
     "id": "ncert-leec1",
@@ -259,7 +278,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leec1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leec1cc.jpg"
   },
   {
     "id": "ncert-lhac1",
@@ -272,7 +292,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhac1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhac1cc.jpg"
   },
   {
     "id": "ncert-lhac2",
@@ -285,7 +306,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhac2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhac2cc.jpg"
   },
   {
     "id": "ncert-lhbs1",
@@ -298,7 +320,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhbs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhbs1cc.jpg"
   },
   {
     "id": "ncert-lhbs2",
@@ -311,7 +334,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhbs2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhbs2cc.jpg"
   },
   {
     "id": "ncert-lhec2",
@@ -324,7 +348,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhec2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhec2cc.jpg"
   },
   {
     "id": "ncert-lhec1",
@@ -337,7 +362,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhec1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhec1cc.jpg"
   },
   {
     "id": "ncert-legy1",
@@ -350,7 +376,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/legy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/legy1cc.jpg"
   },
   {
     "id": "ncert-legy2",
@@ -363,7 +390,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/legy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/legy2cc.jpg"
   },
   {
     "id": "ncert-legy3",
@@ -376,7 +404,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/legy3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/legy3cc.jpg"
   },
   {
     "id": "ncert-lehs1",
@@ -389,7 +418,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lehs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lehs1cc.jpg"
   },
   {
     "id": "ncert-lehs2",
@@ -402,7 +432,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lehs2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lehs2cc.jpg"
   },
   {
     "id": "ncert-lehs3",
@@ -415,7 +446,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lehs3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lehs3cc.jpg"
   },
   {
     "id": "ncert-leps1",
@@ -428,7 +460,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leps1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leps1cc.jpg"
   },
   {
     "id": "ncert-leps2",
@@ -441,7 +474,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/leps2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/leps2cc.jpg"
   },
   {
     "id": "ncert-lepy1",
@@ -454,7 +488,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lepy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lepy1cc.jpg"
   },
   {
     "id": "ncert-lesy1",
@@ -467,7 +502,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lesy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lesy1cc.jpg"
   },
   {
     "id": "ncert-lesy2",
@@ -480,7 +516,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lesy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lesy2cc.jpg"
   },
   {
     "id": "ncert-lhgy2",
@@ -493,7 +530,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhgy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhgy2cc.jpg"
   },
   {
     "id": "ncert-lhgy3",
@@ -506,7 +544,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhgy3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhgy3cc.jpg"
   },
   {
     "id": "ncert-lhgy1",
@@ -519,7 +558,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhgy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhgy1cc.jpg"
   },
   {
     "id": "ncert-lhhs1",
@@ -532,7 +572,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhhs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhhs1cc.jpg"
   },
   {
     "id": "ncert-lhhs2",
@@ -545,7 +586,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhhs2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhhs2cc.jpg"
   },
   {
     "id": "ncert-lhhs3",
@@ -558,7 +600,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhhs3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhhs3cc.jpg"
   },
   {
     "id": "ncert-lhps1",
@@ -571,7 +614,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhps1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhps1cc.jpg"
   },
   {
     "id": "ncert-lhps2",
@@ -584,7 +628,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhps2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhps2cc.jpg"
   },
   {
     "id": "ncert-lhpy1",
@@ -597,7 +642,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhpy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhpy1cc.jpg"
   },
   {
     "id": "ncert-lhsy2",
@@ -610,7 +656,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhsy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhsy2cc.jpg"
   },
   {
     "id": "ncert-lhsy1",
@@ -623,7 +670,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhsy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhsy1cc.jpg"
   },
   {
     "id": "ncert-lhat1",
@@ -636,7 +684,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhat1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhat1cc.jpg"
   },
   {
     "id": "ncert-lhan1",
@@ -649,7 +698,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhan1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhan1cc.jpg"
   },
   {
     "id": "ncert-lhar1",
@@ -662,7 +712,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhar1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhar1cc.jpg"
   },
   {
     "id": "ncert-lhvt1",
@@ -675,7 +726,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/lhvt1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lhvt1cc.jpg"
   },
   {
     "id": "ncert-lefl1",
@@ -688,7 +740,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lefl1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lefl1cc.jpg"
   },
   {
     "id": "ncert-lekl1",
@@ -701,7 +754,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/lekl1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/lekl1cc.jpg"
   },
   {
     "id": "ncert-levt1",
@@ -714,7 +768,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/levt1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/levt1cc.jpg"
   },
   {
     "id": "ncert-keph1",
@@ -727,7 +782,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keph1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keph1cc.jpg"
   },
   {
     "id": "ncert-keph2",
@@ -740,7 +796,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keph2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keph2cc.jpg"
   },
   {
     "id": "ncert-kech1",
@@ -753,7 +810,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kech1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kech1cc.jpg"
   },
   {
     "id": "ncert-kech2",
@@ -766,7 +824,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kech2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kech2cc.jpg"
   },
   {
     "id": "ncert-kemh1",
@@ -779,7 +838,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kemh1cc.jpg"
   },
   {
     "id": "ncert-kebo1",
@@ -792,7 +852,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kebo1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kebo1cc.jpg"
   },
   {
     "id": "ncert-khph1",
@@ -805,7 +866,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khph1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khph1cc.jpg"
   },
   {
     "id": "ncert-khph2",
@@ -818,7 +880,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khph2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khph2cc.jpg"
   },
   {
     "id": "ncert-khch1",
@@ -831,7 +894,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khch1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khch1cc.jpg"
   },
   {
     "id": "ncert-khch2",
@@ -844,7 +908,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khch2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khch2cc.jpg"
   },
   {
     "id": "ncert-khmh1",
@@ -857,7 +922,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khmh1cc.jpg"
   },
   {
     "id": "ncert-khbo1",
@@ -870,7 +936,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khbo1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khbo1cc.jpg"
   },
   {
     "id": "ncert-keac1",
@@ -883,7 +950,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keac1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keac1cc.jpg"
   },
   {
     "id": "ncert-keac2",
@@ -896,7 +964,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keac2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keac2cc.jpg"
   },
   {
     "id": "ncert-kebs1",
@@ -909,7 +978,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kebs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kebs1cc.jpg"
   },
   {
     "id": "ncert-keec1",
@@ -922,7 +992,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keec1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keec1cc.jpg"
   },
   {
     "id": "ncert-khac1",
@@ -935,7 +1006,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khac1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khac1cc.jpg"
   },
   {
     "id": "ncert-khac2",
@@ -948,7 +1020,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khac2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khac2cc.jpg"
   },
   {
     "id": "ncert-khbs1",
@@ -961,7 +1034,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khbs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khbs1cc.jpg"
   },
   {
     "id": "ncert-khec1",
@@ -974,7 +1048,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khec1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khec1cc.jpg"
   },
   {
     "id": "ncert-kegy1",
@@ -987,7 +1062,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kegy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kegy1cc.jpg"
   },
   {
     "id": "ncert-kegy2",
@@ -1000,7 +1076,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kegy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kegy2cc.jpg"
   },
   {
     "id": "ncert-kegy3",
@@ -1013,7 +1090,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kegy3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kegy3cc.jpg"
   },
   {
     "id": "ncert-kehs1",
@@ -1026,7 +1104,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kehs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kehs1cc.jpg"
   },
   {
     "id": "ncert-keps2",
@@ -1039,7 +1118,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keps2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keps2cc.jpg"
   },
   {
     "id": "ncert-keps1",
@@ -1052,7 +1132,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keps1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keps1cc.jpg"
   },
   {
     "id": "ncert-kepy1",
@@ -1065,7 +1146,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kepy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kepy1cc.jpg"
   },
   {
     "id": "ncert-kesy1",
@@ -1078,7 +1160,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kesy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kesy1cc.jpg"
   },
   {
     "id": "ncert-kesy2",
@@ -1091,7 +1174,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kesy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kesy2cc.jpg"
   },
   {
     "id": "ncert-khgy1",
@@ -1104,7 +1188,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khgy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khgy1cc.jpg"
   },
   {
     "id": "ncert-khgy2",
@@ -1117,7 +1202,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khgy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khgy2cc.jpg"
   },
   {
     "id": "ncert-khgy3",
@@ -1130,7 +1216,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khgy3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khgy3cc.jpg"
   },
   {
     "id": "ncert-khhs1",
@@ -1143,7 +1230,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khhs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khhs1cc.jpg"
   },
   {
     "id": "ncert-khps2",
@@ -1156,7 +1244,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khps2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khps2cc.jpg"
   },
   {
     "id": "ncert-khps1",
@@ -1169,7 +1258,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khps1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khps1cc.jpg"
   },
   {
     "id": "ncert-khpy1",
@@ -1182,7 +1272,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khpy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khpy1cc.jpg"
   },
   {
     "id": "ncert-khsy1",
@@ -1195,7 +1286,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khsy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khsy1cc.jpg"
   },
   {
     "id": "ncert-khsy2",
@@ -1208,7 +1300,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khsy2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khsy2cc.jpg"
   },
   {
     "id": "ncert-khat1",
@@ -1221,7 +1314,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khat1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khat1cc.jpg"
   },
   {
     "id": "ncert-khan1",
@@ -1234,7 +1328,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khan1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khan1cc.jpg"
   },
   {
     "id": "ncert-khar1",
@@ -1247,7 +1342,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khar1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khar1cc.jpg"
   },
   {
     "id": "ncert-khvt1",
@@ -1260,7 +1356,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/khvt1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/khvt1cc.jpg"
   },
   {
     "id": "ncert-kehb1",
@@ -1273,7 +1370,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kehb1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kehb1cc.jpg"
   },
   {
     "id": "ncert-kesp1",
@@ -1286,7 +1384,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/kesp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/kesp1cc.jpg"
   },
   {
     "id": "ncert-keww1",
@@ -1299,7 +1398,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/keww1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/keww1cc.jpg"
   },
   {
     "id": "ncert-jesc1",
@@ -1312,7 +1412,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jesc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jesc1cc.jpg"
   },
   {
     "id": "ncert-jhsc1",
@@ -1325,7 +1426,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhsc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhsc1cc.jpg"
   },
   {
     "id": "ncert-jemh1",
@@ -1338,7 +1440,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jemh1cc.jpg"
   },
   {
     "id": "ncert-jhmh1",
@@ -1351,7 +1454,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhmh1cc.jpg"
   },
   {
     "id": "ncert-jess1",
@@ -1364,7 +1468,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jess1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jess1cc.jpg"
   },
   {
     "id": "ncert-jess3",
@@ -1377,7 +1482,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jess3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jess3cc.jpg"
   },
   {
     "id": "ncert-jess2",
@@ -1390,7 +1496,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jess2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jess2cc.jpg"
   },
   {
     "id": "ncert-jess4",
@@ -1403,7 +1510,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jess4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jess4cc.jpg"
   },
   {
     "id": "ncert-jhss3",
@@ -1416,7 +1524,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhss3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhss3cc.jpg"
   },
   {
     "id": "ncert-jhss2",
@@ -1429,7 +1538,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhss2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhss2cc.jpg"
   },
   {
     "id": "ncert-jhss1",
@@ -1442,7 +1552,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhss1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhss1cc.jpg"
   },
   {
     "id": "ncert-jhss4",
@@ -1455,7 +1566,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhss4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhss4cc.jpg"
   },
   {
     "id": "ncert-jhkr1",
@@ -1468,7 +1580,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhkr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhkr1cc.jpg"
   },
   {
     "id": "ncert-jhks1",
@@ -1481,7 +1594,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhks1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhks1cc.jpg"
   },
   {
     "id": "ncert-jhsy1",
@@ -1494,7 +1608,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhsy1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhsy1cc.jpg"
   },
   {
     "id": "ncert-jhsp1",
@@ -1507,7 +1622,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/jhsp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jhsp1cc.jpg"
   },
   {
     "id": "ncert-jeff1",
@@ -1520,7 +1636,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jeff1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jeff1cc.jpg"
   },
   {
     "id": "ncert-jefp1",
@@ -1533,7 +1650,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/jefp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/jefp1cc.jpg"
   },
   {
     "id": "ncert-iesc1",
@@ -1546,7 +1664,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iesc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iesc1cc.jpg"
   },
   {
     "id": "ncert-ihsc1",
@@ -1559,7 +1678,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihsc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihsc1cc.jpg"
   },
   {
     "id": "ncert-iemh1",
@@ -1572,7 +1692,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iemh1cc.jpg"
   },
   {
     "id": "ncert-ihmh1",
@@ -1585,7 +1706,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihmh1cc.jpg"
   },
   {
     "id": "ncert-iess1",
@@ -1598,7 +1720,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iess1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iess1cc.jpg"
   },
   {
     "id": "ncert-iess3",
@@ -1611,7 +1734,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iess3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iess3cc.jpg"
   },
   {
     "id": "ncert-iess2",
@@ -1624,7 +1748,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iess2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iess2cc.jpg"
   },
   {
     "id": "ncert-iess4",
@@ -1637,7 +1762,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iess4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iess4cc.jpg"
   },
   {
     "id": "ncert-ihss3",
@@ -1650,7 +1776,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihss3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihss3cc.jpg"
   },
   {
     "id": "ncert-ihss2",
@@ -1663,7 +1790,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihss2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihss2cc.jpg"
   },
   {
     "id": "ncert-ihss1",
@@ -1676,7 +1804,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihss1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihss1cc.jpg"
   },
   {
     "id": "ncert-ihss4",
@@ -1689,7 +1818,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihss4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihss4cc.jpg"
   },
   {
     "id": "ncert-ihkr1",
@@ -1702,7 +1832,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihkr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihkr1cc.jpg"
   },
   {
     "id": "ncert-ihks1",
@@ -1715,7 +1846,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihks1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihks1cc.jpg"
   },
   {
     "id": "ncert-ihsa1",
@@ -1728,7 +1860,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihsa1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihsa1cc.jpg"
   },
   {
     "id": "ncert-ihsp1",
@@ -1741,7 +1874,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ihsp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ihsp1cc.jpg"
   },
   {
     "id": "ncert-iebe1",
@@ -1754,7 +1888,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iebe1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iebe1cc.jpg"
   },
   {
     "id": "ncert-iemo1",
@@ -1767,7 +1902,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iemo1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iemo1cc.jpg"
   },
   {
     "id": "ncert-iewe1",
@@ -1780,7 +1916,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/iewe1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/iewe1cc.jpg"
   },
   {
     "id": "ncert-hesc1",
@@ -1793,7 +1930,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hesc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hesc1cc.jpg"
   },
   {
     "id": "ncert-hhsc1",
@@ -1806,7 +1944,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhsc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhsc1cc.jpg"
   },
   {
     "id": "ncert-hemh1",
@@ -1819,7 +1958,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hemh1cc.jpg"
   },
   {
     "id": "ncert-hhmh1",
@@ -1832,7 +1972,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhmh1cc.jpg"
   },
   {
     "id": "ncert-hees1",
@@ -1845,7 +1986,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hees1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hees1cc.jpg"
   },
   {
     "id": "ncert-hess2",
@@ -1858,7 +2000,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hess2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hess2cc.jpg"
   },
   {
     "id": "ncert-hess3",
@@ -1871,7 +2014,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hess3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hess3cc.jpg"
   },
   {
     "id": "ncert-hess4",
@@ -1884,7 +2028,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hess4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hess4cc.jpg"
   },
   {
     "id": "ncert-hhss1",
@@ -1897,7 +2042,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhss1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhss1cc.jpg"
   },
   {
     "id": "ncert-hhss2",
@@ -1910,7 +2056,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhss2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhss2cc.jpg"
   },
   {
     "id": "ncert-hhss3",
@@ -1923,7 +2070,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhss3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhss3cc.jpg"
   },
   {
     "id": "ncert-hhss4",
@@ -1936,7 +2084,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhss4dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhss4cc.jpg"
   },
   {
     "id": "ncert-hhbk1",
@@ -1949,7 +2098,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhbk1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhbk1cc.jpg"
   },
   {
     "id": "ncert-hhdv1",
@@ -1962,7 +2112,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhdv1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhdv1cc.jpg"
   },
   {
     "id": "ncert-hhvs1",
@@ -1975,7 +2126,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/hhvs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hhvs1cc.jpg"
   },
   {
     "id": "ncert-hehd1",
@@ -1988,7 +2140,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/hehd1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/hehd1cc.jpg"
   },
   {
     "id": "ncert-heih1",
@@ -2001,7 +2154,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/heih1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/heih1cc.jpg"
   },
   {
     "id": "ncert-gesc1",
@@ -2014,7 +2168,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gesc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gesc1cc.jpg"
   },
   {
     "id": "ncert-ghsc1",
@@ -2027,7 +2182,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghsc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghsc1cc.jpg"
   },
   {
     "id": "ncert-gemh1",
@@ -2040,7 +2196,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gemh1cc.jpg"
   },
   {
     "id": "ncert-ghmh1",
@@ -2053,7 +2210,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghmh1cc.jpg"
   },
   {
     "id": "ncert-gees1",
@@ -2066,7 +2224,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gees1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gees1cc.jpg"
   },
   {
     "id": "ncert-gess3",
@@ -2079,7 +2238,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gess3dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gess3cc.jpg"
   },
   {
     "id": "ncert-gess2",
@@ -2092,7 +2252,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gess2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gess2cc.jpg"
   },
   {
     "id": "ncert-ghss1",
@@ -2105,7 +2266,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghss1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghss1cc.jpg"
   },
   {
     "id": "ncert-ghss2",
@@ -2118,7 +2280,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghss2dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghss2cc.jpg"
   },
   {
     "id": "ncert-ghes1",
@@ -2131,7 +2294,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghes1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghes1cc.jpg"
   },
   {
     "id": "ncert-ghdv1",
@@ -2144,7 +2308,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghdv1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghdv1cc.jpg"
   },
   {
     "id": "ncert-ghmb1",
@@ -2157,7 +2322,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghmb1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghmb1cc.jpg"
   },
   {
     "id": "ncert-ghvs1",
@@ -2170,7 +2336,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ghvs1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ghvs1cc.jpg"
   },
   {
     "id": "ncert-gehc1",
@@ -2183,7 +2350,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/gehc1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/gehc1cc.jpg"
   },
   {
     "id": "ncert-geah1",
@@ -2196,7 +2364,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/geah1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/geah1cc.jpg"
   },
   {
     "id": "ncert-fecu1",
@@ -2209,7 +2378,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/fecu1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fecu1cc.jpg"
   },
   {
     "id": "ncert-fhcu1",
@@ -2222,7 +2392,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/fhcu1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fhcu1cc.jpg"
   },
   {
     "id": "ncert-fegp1",
@@ -2235,7 +2406,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/fegp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fegp1cc.jpg"
   },
   {
     "id": "ncert-fhgp1",
@@ -2248,7 +2420,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/fhgp1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fhgp1cc.jpg"
   },
   {
     "id": "ncert-fees1",
@@ -2261,7 +2434,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/fees1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fees1cc.jpg"
   },
   {
     "id": "ncert-fhes1",
@@ -2274,7 +2448,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/fhes1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fhes1cc.jpg"
   },
   {
     "id": "ncert-fhml1",
@@ -2287,7 +2462,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/fhml1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fhml1cc.jpg"
   },
   {
     "id": "ncert-fepr1",
@@ -2300,7 +2476,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/fepr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/fepr1cc.jpg"
   },
   {
     "id": "ncert-eemh1",
@@ -2313,7 +2490,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/eemh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/eemh1cc.jpg"
   },
   {
     "id": "ncert-ehmh1",
@@ -2326,7 +2504,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ehmh1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ehmh1cc.jpg"
   },
   {
     "id": "ncert-eeap1",
@@ -2339,7 +2518,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/eeap1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/eeap1cc.jpg"
   },
   {
     "id": "ncert-ehap1",
@@ -2352,7 +2532,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ehap1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ehap1cc.jpg"
   },
   {
     "id": "ncert-ehhn1",
@@ -2365,7 +2546,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ehhn1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ehhn1cc.jpg"
   },
   {
     "id": "ncert-eeen1",
@@ -2378,7 +2560,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/eeen1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/eeen1cc.jpg"
   },
   {
     "id": "ncert-dhve1",
@@ -2391,7 +2574,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/dhve1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/dhve1cc.jpg"
   },
   {
     "id": "ncert-desa1",
@@ -2404,7 +2588,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/desa1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/desa1cc.jpg"
   },
   {
     "id": "ncert-demm1",
@@ -2417,7 +2602,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/demm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/demm1cc.jpg"
   },
   {
     "id": "ncert-dhmm1",
@@ -2430,7 +2616,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/dhmm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/dhmm1cc.jpg"
   },
   {
     "id": "ncert-cemm1",
@@ -2443,7 +2630,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/cemm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/cemm1cc.jpg"
   },
   {
     "id": "ncert-chmm1",
@@ -2456,7 +2644,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/chmm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/chmm1cc.jpg"
   },
   {
     "id": "ncert-cesa1",
@@ -2469,7 +2658,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/cesa1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/cesa1cc.jpg"
   },
   {
     "id": "ncert-ceww1",
@@ -2482,7 +2672,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/ceww1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ceww1cc.jpg"
   },
   {
     "id": "ncert-ceky1",
@@ -2495,7 +2686,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ceky1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ceky1cc.jpg"
   },
   {
     "id": "ncert-chve1",
@@ -2508,7 +2700,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/chve1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/chve1cc.jpg"
   },
   {
     "id": "ncert-bejm1",
@@ -2521,7 +2714,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/bejm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/bejm1cc.jpg"
   },
   {
     "id": "ncert-bhjm1",
@@ -2534,7 +2728,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/bhjm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/bhjm1cc.jpg"
   },
   {
     "id": "ncert-bhsr1",
@@ -2547,7 +2742,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/bhsr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/bhsr1cc.jpg"
   },
   {
     "id": "ncert-bemr1",
@@ -2560,7 +2756,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/bemr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/bemr1cc.jpg"
   },
   {
     "id": "ncert-aemr1",
@@ -2573,7 +2770,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/aemr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/aemr1cc.jpg"
   },
   {
     "id": "ncert-aejm1",
@@ -2586,7 +2784,8 @@ export const ncertBooks = [
     "medium": "English",
     "url": "https://ncert.nic.in/textbook/pdf/aejm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (English medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/aejm1cc.jpg"
   },
   {
     "id": "ncert-ahjm1",
@@ -2599,7 +2798,8 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ahjm1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ahjm1cc.jpg"
   },
   {
     "id": "ncert-ahsr1",
@@ -2612,6 +2812,7 @@ export const ncertBooks = [
     "medium": "Hindi",
     "url": "https://ncert.nic.in/textbook/pdf/ahsr1dd.zip",
     "catalog": "https://ncert.nic.in/textbook.php/textbook/textbook/pdf/index.php?ln=en",
-    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in."
+    "description": "Official NCERT textbook (Hindi medium). Download complete book from ncert.nic.in.",
+    "coverUrl": "https://ncert.nic.in/textbook/pdf/ahsr1cc.jpg"
   }
 ];

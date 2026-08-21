@@ -305,6 +305,8 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
                 isMobile={isMobile}
                 viewMode={effectiveMode}
                 onApiReady={handleApiReady}
+                readUrl={b?.readUrl}
+                sourceUrl={b?.url}
               />
             </div>
           );

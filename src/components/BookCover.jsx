@@ -84,6 +84,14 @@ export function BookCover({ item }) {
     return (
       <div className={`cover cover-with-image ${colorClass}`}>
         <div className="cover-image-wrapper">
+          {/* Ambient blurred backdrop that matches the exact colors of the book cover */}
+          <img
+            src={item.coverUrl}
+            alt=""
+            aria-hidden="true"
+            className="cover-img-bg"
+          />
+          <div className="cover-img-overlay" />
           <img
             src={item.coverUrl}
             alt={item.title}

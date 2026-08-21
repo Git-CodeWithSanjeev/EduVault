@@ -388,17 +388,16 @@ export const otherItems = [
 export function hasAccessiblePdf(item) {
   if (!item) return false;
   if (item.source === 'NCERT' && item.url && item.url.includes('dd.zip')) return true;
-  if (item.source === 'OpenStax' && (item.pdfUrl || item.url)) return true;
-  if (item.source === 'Open Library' && (item.pdfUrl || item.readUrl || item.url)) return true;
-  if (item.pdfUrl || (item.url && item.url.toLowerCase().includes('.pdf'))) return true;
+  if (item.source === 'OpenStax' && item.pdfUrl && item.pdfUrl.endsWith('.pdf')) return true;
+  if (item.source === 'Open Library' && item.pdfUrl && item.pdfUrl.endsWith('.pdf')) return true;
+  if (item.pdfUrl && item.pdfUrl.toLowerCase().includes('.pdf')) return true;
   return false;
 }
 
 export const items = [
   ...ncertBooks.filter(hasAccessiblePdf),
-  ...openstaxBooks,
-  ...openlibraryBooks,
-  ...otherItems,
+  ...openstaxBooks.filter(hasAccessiblePdf),
+  ...openlibraryBooks.filter(hasAccessiblePdf),
 ];
 
 
