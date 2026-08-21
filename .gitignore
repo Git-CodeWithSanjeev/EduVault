@@ -18,6 +18,9 @@ npm-debug.log*
 # IDE / System
 .vscode
 .idea
+.cursor
+.cursorrules
+.agents
 .DS_Store
 Thumbs.db
 
