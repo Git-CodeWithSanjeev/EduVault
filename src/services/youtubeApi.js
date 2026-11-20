@@ -191,9 +191,12 @@ export async function fetchYouTubePlaylistItems(playlistId, apiKey = getStoredYo
     }
   }
 
-  // Step 2: Fallback to YouTube RSS Feed XML parsing
+  // Step 2: Fallback to YouTube RSS Feed XML parsing (routed through proxy to prevent browser CORS block)
   try {
-    const rssEndpoint = `https://www.youtube.com/feeds/videos.xml?playlist_id=${encodeURIComponent(playlistId)}`;
+    const rawRssEndpoint = `https://www.youtube.com/feeds/videos.xml?playlist_id=${encodeURIComponent(playlistId)}`;
+    const rssEndpoint = typeof window !== 'undefined'
+      ? `/api/proxy?url=${encodeURIComponent(rawRssEndpoint)}`
+      : rawRssEndpoint;
     const rssResponse = await fetch(rssEndpoint);
 
     if (rssResponse.ok) {

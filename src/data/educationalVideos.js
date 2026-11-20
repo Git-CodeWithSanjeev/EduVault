@@ -738,7 +738,7 @@ export const educationalVideos = [
     "level": "Class 10",
     "subject": "Biology",
     "videoId": "bIQw5kopSj0",
-    "playlistId": "PL3pMTXpu2k4DMD-4pQUwACLADUFy5gT8o",
+    "playlistId": "PL1dy1fsZRUTgYzXz-3KlF68gOkeQYzSsc",
     "thumbnail": "https://img.youtube.com/vi/bIQw5kopSj0/hqdefault.jpg",
     "description": "Comprehensive NCERT Class 10 Biology chapter-by-chapter playlist from JKBOSE Wallah 9th & 10th .",
     "videoCount": 5
@@ -1088,7 +1088,7 @@ export const educationalVideos = [
     "level": "B.Tech / UG",
     "subject": "Programming Languages",
     "videoId": "7wnove7K-ZQ",
-    "playlistId": "PLu0W_9lII9ax3J50428HalxGE444066i",
+    "playlistId": "PLu0W_9lII9agwh1XjRt242xIpHhPT2llg",
     "thumbnail": "https://img.youtube.com/vi/7wnove7K-ZQ/hqdefault.jpg",
     "description": "Complete Python programming covering fundamentals, OOP, file handling, modules, and project building.",
     "videoCount": 100
@@ -1186,7 +1186,7 @@ export const educationalVideos = [
     "level": "B.Tech / UG",
     "subject": "Web & Full-Stack Development",
     "videoId": "EH3vGeqeIAo",
-    "playlistId": "PLu71SKxNbfoBGh_8p_HQ8nkg2K33v_3K2",
+    "playlistId": "PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW",
     "thumbnail": "https://img.youtube.com/vi/EH3vGeqeIAo/hqdefault.jpg",
     "description": "Professional backend architecture series covering JWT auth, aggregation pipelines, Multer, and REST APIs.",
     "videoCount": 24
@@ -1270,7 +1270,7 @@ export const educationalVideos = [
     "level": "B.Tech / UG",
     "subject": "Data Science, AI & Machine Learning",
     "videoId": "Gv9_4yMHFhI",
-    "playlistId": "PLZoTAELRMXVPBTrWtJkn3wTQxRHA2GwXV",
+    "playlistId": "PLblh5JKOoLUICTaGLRoHQDuF_7q2GfuJF",
     "thumbnail": "https://img.youtube.com/vi/Gv9_4yMHFhI/hqdefault.jpg",
     "description": "Regression, classification, random forests, feature engineering, and neural network foundations.",
     "videoCount": 85
@@ -1298,7 +1298,7 @@ export const educationalVideos = [
     "level": "B.Tech / UG",
     "subject": "Data Science, AI & Machine Learning",
     "videoId": "7wnove7K-ZQ",
-    "playlistId": "PLu0W_9lII9ax3J50428HalxGE444066i",
+    "playlistId": "PLu0W_9lII9agwh1XjRt242xIpHhPT2llg",
     "thumbnail": "https://img.youtube.com/vi/7wnove7K-ZQ/hqdefault.jpg",
     "description": "Practical data analysis with Pandas, exploratory data analysis (EDA), Seaborn, and statistical modeling.",
     "videoCount": 60
@@ -1368,7 +1368,7 @@ export const educationalVideos = [
     "level": "B.Tech / UG",
     "subject": "Mobile, Cloud & DevOps Engineering",
     "videoId": "sscX432bMZo",
-    "playlistId": "PLu71SKxNbfoBuX3f4EOACle2yC541Q45O",
+    "playlistId": "PLu71SKxNbfoBuX3f4EOACle2y-tRC5Q37",
     "thumbnail": "https://img.youtube.com/vi/sscX432bMZo/hqdefault.jpg",
     "description": "Under the hood JavaScript V8 engine mechanics, call stack, heap memory, and asynchronous event loop.",
     "videoCount": 52

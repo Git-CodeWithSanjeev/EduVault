@@ -16,8 +16,9 @@ const httpsAgent = new https.Agent({
 export default async function handler(req, res) {
   // CORS & Security Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Range, Accept-Ranges, Content-Type, Accept, Authorization');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Accept-Ranges');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const fetchPDF = (targetUrl, attempt = 1) => {
+    const streamPDF = (targetUrl, attempt = 1) => {
       return new Promise((resolve, reject) => {
         if (attempt > 5) {
           return reject(new Error('Too many redirects (max 5)'));
@@ -60,61 +61,79 @@ export default async function handler(req, res) {
         const lib = isHttps ? https : http;
         const parsed = new URL(targetUrl);
 
+        const headers = {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': 'application/pdf,application/octet-stream,text/xml,application/xml,*/*;q=0.8',
+          'Accept-Encoding': 'identity',
+          'Referer': parsed.origin + '/',
+        };
+
+        if (req.headers.range) {
+          headers['Range'] = req.headers.range;
+        }
+
         const options = {
           hostname: parsed.hostname,
           port: parsed.port || (isHttps ? 443 : 80),
           path: parsed.pathname + parsed.search,
-          method: 'GET',
+          method: req.method === 'HEAD' ? 'HEAD' : 'GET',
           timeout: 25000,
           rejectUnauthorized: false,
           agent: isHttps ? httpsAgent : undefined,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36 EduVault/1.0',
-            'Accept': 'application/pdf,application/octet-stream,*/*;q=0.8',
-            'Accept-Encoding': 'identity',
-            'Connection': 'close',
-            'Referer': parsed.origin + '/',
-          },
+          headers,
         };
 
         const r = lib.request(options, (upstreamRes) => {
           if (upstreamRes.statusCode >= 300 && upstreamRes.statusCode < 400 && upstreamRes.headers.location) {
             const redirectUrl = new URL(upstreamRes.headers.location, targetUrl).toString();
             upstreamRes.resume();
-            fetchPDF(redirectUrl, attempt + 1).then(resolve).catch(reject);
+            streamPDF(redirectUrl, attempt + 1).then(resolve).catch(reject);
             return;
           }
 
-          if (upstreamRes.statusCode !== 200) {
+          if (upstreamRes.statusCode !== 200 && upstreamRes.statusCode !== 206) {
             upstreamRes.resume();
             reject(new Error(`Upstream returned HTTP ${upstreamRes.statusCode}`));
             return;
           }
 
-          let totalBytes = 0;
-          const chunks = [];
-          upstreamRes.on('data', (c) => {
-            totalBytes += c.length;
-            if (totalBytes > MAX_PROXY_BYTES) {
-              r.destroy();
-              reject(new Error(`Payload exceeds maximum size limit of 50MB`));
-              return;
-            }
-            chunks.push(c);
+          const responseHeaders = {
+            'Content-Type': upstreamRes.headers['content-type'] || 'application/pdf',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type, Accept',
+            'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
+            'Accept-Ranges': 'bytes',
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+          };
+
+          if (upstreamRes.headers['content-range']) {
+            responseHeaders['Content-Range'] = upstreamRes.headers['content-range'];
+          }
+          if (upstreamRes.headers['content-length']) {
+            responseHeaders['Content-Length'] = upstreamRes.headers['content-length'];
+          }
+
+          res.writeHead(upstreamRes.statusCode, responseHeaders);
+
+          if (req.method === 'HEAD') {
+            res.end();
+            return resolve();
+          }
+
+          upstreamRes.pipe(res);
+
+          upstreamRes.on('end', () => resolve());
+          upstreamRes.on('error', (err) => {
+            console.error('[Stream Error]:', err.message);
+            res.end();
+            resolve();
           });
-
-          upstreamRes.on('end', () => resolve({
-            buffer: Buffer.concat(chunks),
-            contentType: upstreamRes.headers['content-type'] || 'application/pdf',
-          }));
-
-          upstreamRes.on('error', reject);
         });
 
         r.on('timeout', () => {
           r.destroy();
           if (attempt < 3) {
-            fetchPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
+            streamPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
           } else {
             reject(new Error('Request to upstream timed out'));
           }
@@ -122,7 +141,7 @@ export default async function handler(req, res) {
 
         r.on('error', (err) => {
           if (attempt < 3) {
-            fetchPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
+            streamPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
           } else {
             reject(err);
           }
@@ -132,14 +151,11 @@ export default async function handler(req, res) {
       });
     };
 
-    const { buffer, contentType } = await fetchPDF(decoded);
-
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Length', buffer.length);
-    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
-    return res.status(200).send(buffer);
+    await streamPDF(decoded);
   } catch (err) {
     console.error(`[Vercel PDF Proxy Error] ${decoded}:`, err.message);
-    return res.status(502).json({ error: 'Failed to fetch document', details: err.message });
+    if (!res.headersSent) {
+      return res.status(502).json({ error: 'Failed to fetch document', details: err.message });
+    }
   }
 }

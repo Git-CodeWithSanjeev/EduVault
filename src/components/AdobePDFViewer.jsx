@@ -74,6 +74,7 @@ export function AdobePDFViewer({
 }) {
   const containerRef = useRef(null);
   const [loading, setLoading] = useState(!pdfBufferCache.has(proxyUrl(url)));
+  const [downloadProgress, setDownloadProgress] = useState(0);
   const [error, setError] = useState(null);
   const [viewFallbackEmbed, setViewFallbackEmbed] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -84,6 +85,7 @@ export function AdobePDFViewer({
   const handleRetry = () => {
     const targetUrl = proxyUrl(url);
     pdfBufferCache.delete(targetUrl);
+    setDownloadProgress(0);
     setError(null);
     setViewFallbackEmbed(false);
     setLoading(true);
@@ -101,12 +103,8 @@ export function AdobePDFViewer({
 
     const initAdobeViewer = async () => {
       try {
-        await loadAdobeScript();
-        if (isCancelled) return;
-
-        if (!window.AdobeDC || !window.AdobeDC.View) {
-          throw new Error('Adobe PDF View SDK failed to initialize');
-        }
+        // Run Adobe SDK script loader and PDF fetch in PARALLEL to reduce latency
+        const scriptPromise = loadAdobeScript();
 
         const LOCALHOST_KEY = '3f4a35af329a493a9562b7134b374e4e'; // EduVault Local Key
         const PROD_KEY = import.meta.env.VITE_ADOBE_CLIENT_ID_PROD || '77e2671a6d444f8a8709760aa2ca4e9d'; // EduVault Vercel Key
@@ -126,13 +124,18 @@ export function AdobePDFViewer({
         // Clear any previous child nodes if reusing
         targetElem.innerHTML = '';
 
-        // Fetch ArrayBuffer first to validate upstream HTTP status and prevent Adobe SDK internal dialog crashes on 503/502
+        // Fetch ArrayBuffer with streaming progress & timeout protection
         let contentPayload;
         if (pdfBufferCache.has(targetUrl)) {
           contentPayload = { promise: Promise.resolve(pdfBufferCache.get(targetUrl)) };
         } else {
           try {
-            const res = await fetch(targetUrl);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+            const res = await fetch(targetUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             if (!res.ok) {
               let detailMsg = `HTTP ${res.status} (${res.statusText || 'Error'})`;
               try {
@@ -141,13 +144,46 @@ export function AdobePDFViewer({
               } catch {}
               throw new Error(`Upstream server returned ${detailMsg}`);
             }
-            const buffer = await res.arrayBuffer();
-            pdfBufferCache.set(targetUrl, buffer);
-            contentPayload = { promise: Promise.resolve(buffer) };
+
+            const contentLength = +res.headers.get('Content-Length');
+            if (contentLength && res.body && typeof res.body.getReader === 'function') {
+              const reader = res.body.getReader();
+              const chunks = [];
+              let received = 0;
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                received += value.length;
+                if (!isCancelled && contentLength > 0) {
+                  setDownloadProgress(Math.round((received / contentLength) * 100));
+                }
+              }
+              const allChunks = new Uint8Array(received);
+              let position = 0;
+              for (const chunk of chunks) {
+                allChunks.set(chunk, position);
+                position += chunk.length;
+              }
+              const buffer = allChunks.buffer;
+              pdfBufferCache.set(targetUrl, buffer);
+              contentPayload = { promise: Promise.resolve(buffer) };
+            } else {
+              const buffer = await res.arrayBuffer();
+              pdfBufferCache.set(targetUrl, buffer);
+              contentPayload = { promise: Promise.resolve(buffer) };
+            }
           } catch (fetchErr) {
             if (isCancelled) return;
             throw new Error(fetchErr.message || 'Failed to fetch PDF file');
           }
+        }
+
+        await scriptPromise;
+        if (isCancelled) return;
+
+        if (!window.AdobeDC || !window.AdobeDC.View) {
+          throw new Error('Adobe PDF View SDK failed to initialize');
         }
 
         if (isCancelled || !document.getElementById(containerId)) return;
@@ -247,7 +283,11 @@ export function AdobePDFViewer({
       {loading && !error && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#ffffff', zIndex: 10 }}>
           <span className="pdf-spinner" style={{ width: '32px', height: '32px' }} />
-          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--p)' }}>Loading…</span>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--p, #0d9488)' }}>
+            {downloadProgress > 0 && downloadProgress < 100
+              ? `Loading document… ${downloadProgress}%`
+              : 'Loading document…'}
+          </span>
         </div>
       )}
 

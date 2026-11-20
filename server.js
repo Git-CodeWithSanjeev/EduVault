@@ -1004,8 +1004,8 @@ function fetchUrl(url, attempt = 1) {
   });
 }
 
-/* ── /pdf/proxy ──────────────────────────────────────────────────── */
-app.get('/pdf/proxy', async (req, res) => {
+/* ── /pdf/proxy & /api/proxy ─────────────────────────────────────── */
+app.get(['/pdf/proxy', '/api/proxy'], async (req, res) => {
   const { url } = req.query;
 
   if (!url || typeof url !== 'string') {
