@@ -200,406 +200,561 @@ export function Home({ saved = [], toggle = () => {} }) {
   }, []);
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, #F4F9F7 0%, #E8F7F2 50%, #F4F9F7 100%)', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* ─── 1. TWO-TONE HERO SECTION ─── */}
-      <section
-        style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          padding: '28px 20px 24px',
-        }}
-      >
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6 lg:gap-10 items-center"
+    <div style={{ background: '#EDF5F2', minHeight: '100vh', padding: '16px 12px 90px' }}>
+      <div style={{ maxWidth: '1440px', margin: '0 auto', background: '#ffffff', borderRadius: '28px', boxShadow: '0 8px 36px rgba(15, 94, 83, 0.06)', padding: '24px 20px 40px', overflow: 'hidden' }}>
+        {/* ─── 1. TWO-TONE HERO SECTION ─── */}
+        <section
+          style={{
+            background: 'linear-gradient(135deg, #E6F5F0 0%, #F4F9F7 50%, #E6F5F0 100%)',
+            borderRadius: '24px',
+            padding: '36px 32px 30px',
+            marginBottom: '24px',
+          }}
         >
-          {/* Left Hero Content */}
-          <div style={{ maxWidth: '560px' }}>
-            <h1
-              style={{
-                fontSize: 'clamp(28px, 4.2vw, 48px)',
-                lineHeight: 1.16,
-                fontWeight: 800,
-                color: '#0f172a',
-                margin: '0 0 16px',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              Your trusted library for <span style={{ color: '#0F5E53' }}>textbooks</span> &amp;{' '}
-              <span style={{ color: '#0F5E53' }}>video</span> masterclasses
-            </h1>
-
-            <p
-              style={{
-                fontSize: '15.5px',
-                color: '#475569',
-                lineHeight: 1.6,
-                margin: '0 0 24px',
-              }}
-            >
-              Access high-quality open textbooks, video courses, and study resources absolutely free.
-            </p>
-
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'nowrap', width: '100%', maxWidth: '440px' }}>
-              <Link
-                to="/library"
+          <div
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center"
+          >
+            {/* Left Hero Content */}
+            <div style={{ maxWidth: '580px' }}>
+              <h1
                 style={{
-                  background: '#0F5E53',
-                  color: '#ffffff',
-                  padding: '11px 18px',
-                  borderRadius: '12px',
-                  fontWeight: 700,
-                  fontSize: '13.5px',
-                  textDecoration: 'none',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
-                  transition: 'all 0.18s ease',
-                  display: 'inline-flex',
-                  alignItems: 'center',
+                  fontSize: 'clamp(28px, 4vw, 46px)',
+                  lineHeight: 1.15,
+                  fontWeight: 800,
+                  color: '#0f172a',
+                  margin: '0 0 16px',
+                  letterSpacing: '-0.025em',
+                }}
+              >
+                Your trusted library for <span style={{ color: '#0F5E53' }}>textbooks</span> &amp;{' '}
+                <span style={{ color: '#0F5E53' }}>video</span> masterclasses
+              </h1>
+
+              <p
+                style={{
+                  fontSize: '15px',
+                  color: '#475569',
+                  lineHeight: 1.6,
+                  margin: '0 0 24px',
+                }}
+              >
+                Access high-quality open textbooks, video courses, and study resources absolutely free.
+              </p>
+
+              {/* Search Pill + CTAs Row (matching mockup) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {/* Hero Search Pill */}
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
+                    className="hero-search-pill"
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '9999px',
+                      padding: '11px 18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      flex: 1,
+                      minWidth: '240px',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <span style={{ color: '#64748b', fontSize: '13px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      Search NCERT, OpenStax, or video courses...
+                    </span>
+                    <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
+                      Ctrl K
+                    </kbd>
+                  </button>
+
+                  {/* Explore Textbooks CTA */}
+                  <Link
+                    to="/library"
+                    style={{
+                      background: '#0F5E53',
+                      color: '#ffffff',
+                      padding: '11px 20px',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      fontSize: '13.5px',
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
+                      transition: 'all 0.18s ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                    </svg>
+                    <span>Explore Textbooks</span>
+                  </Link>
+
+                  {/* Watch Playlists CTA */}
+                  <Link
+                    to="/videos"
+                    style={{
+                      background: '#E5F2EE',
+                      color: '#0F5E53',
+                      padding: '11px 18px',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      fontSize: '13.5px',
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                    </svg>
+                    <span>Watch Playlists</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Hero: Seamless 3D Illustration & Trust Pill */}
+            <div
+              style={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  width: '100%',
+                  maxWidth: '520px',
+                  display: 'flex',
                   justifyContent: 'center',
                 }}
               >
-                Explore Textbooks
-              </Link>
+                <img
+                  src="/images/hero-students.png"
+                  alt="EduVault students studying with textbooks and video masterclasses"
+                  width="1376"
+                  height="768"
+                  loading="eager"
+                  fetchPriority="high"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '340px',
+                    objectFit: 'contain',
+                    mixBlendMode: 'multiply',
+                  }}
+                />
+              </div>
 
+              {/* Frosted-Glass Trust Pill matching mockup */}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 2,
+                  marginTop: '-12px',
+                  background: 'rgba(255, 255, 255, 0.88)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  borderRadius: '9999px',
+                  padding: '7px 20px',
+                  boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  color: '#0F5E53',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ color: '#eab308' }}>⭐</span>
+                <span>200+ Open Textbooks</span>
+                <span style={{ color: '#cbd5e1' }}>·</span>
+                <span>50+ Video Courses</span>
+                <span style={{ color: '#cbd5e1' }}>·</span>
+                <span>100% Free &amp; Ad-Free</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── 2. MIDDLE STRIP (FILTERS + CONTINUE LEARNING) ─── */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+          {/* Left: Filter Card */}
+          <div
+            className="filter-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
+              padding: '16px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}
+          >
+            {/* Row 1: SUBJECTS */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  color: '#64748b',
+                  letterSpacing: '0.6px',
+                  width: '74px',
+                  flexShrink: 0,
+                  userSelect: 'none',
+                }}
+              >
+                SUBJECTS:
+              </span>
+
+              <div
+                ref={pillsRef}
+                onScroll={checkScroll}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  flexWrap: 'nowrap',
+                  flex: 1,
+                  minWidth: 0,
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  padding: '2px 0',
+                }}
+              >
+                {subjects.map((sub) => {
+                  const isActive = selectedSubject === sub.id;
+                  return (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => setSelectedSubject(sub.id)}
+                      style={{
+                        background: isActive ? '#0F5E53' : '#E5F1EE',
+                        color: isActive ? '#ffffff' : '#334155',
+                        border: 'none',
+                        borderRadius: '9999px',
+                        padding: '6px 16px',
+                        minHeight: '34px',
+                        fontSize: '12.5px',
+                        fontWeight: isActive ? 700 : 500,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {sub.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Row 2: GRADE */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
+              <span
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  color: '#64748b',
+                  letterSpacing: '0.6px',
+                  width: '74px',
+                  flexShrink: 0,
+                  userSelect: 'none',
+                }}
+              >
+                GRADE:
+              </span>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  flexWrap: 'nowrap',
+                  flex: 1,
+                  minWidth: 0,
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  padding: '2px 0',
+                }}
+              >
+                {grades.map((gr) => {
+                  const isActive = selectedGrade === gr.id;
+                  return (
+                    <button
+                      key={gr.id}
+                      type="button"
+                      onClick={() => setSelectedGrade(gr.id)}
+                      style={{
+                        background: isActive ? '#0F5E53' : '#E5F1EE',
+                        color: isActive ? '#ffffff' : '#334155',
+                        border: 'none',
+                        borderRadius: '9999px',
+                        padding: '6px 16px',
+                        minHeight: '34px',
+                        fontSize: '12.5px',
+                        fontWeight: isActive ? 700 : 500,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {gr.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Continue Learning Banner */}
+          <div
+            style={{
+              background: '#E5F5EF',
+              borderRadius: '20px',
+              padding: '16px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '14px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  background: '#d1ebe2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  flexShrink: 0,
+                }}
+              >
+                💡
+              </div>
+              <span
+                style={{
+                  fontWeight: 800,
+                  fontSize: '13.5px',
+                  color: '#0F5E53',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                title={recentBook.title}
+              >
+                Continue Learning: {recentBook.title}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+              <div
+                style={{
+                  width: '70px',
+                  height: '8px',
+                  background: '#B8E2D7',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                }}
+                className="hidden sm:block"
+              >
+                <div style={{ width: '60%', height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
+              </div>
+
+              <Link
+                to={'/read/' + recentBook.id}
+                style={{
+                  background: '#0F5E53',
+                  color: '#ffffff',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'background 0.15s ease',
+                }}
+              >
+                <span>▶</span>
+                <span>Resume PDF</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── 3. SPLIT 2-PANEL CONTENT SECTION (VIDEOS ON LEFT, TEXTBOOKS ON RIGHT) ─── */}
+        <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Panel 1: Popular Video Playlists */}
+          <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    background: '#E5F2EE',
+                    color: '#0F5E53',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                  }}
+                >
+                  ▶
+                </span>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+                  Popular Video Playlists
+                </h2>
+              </div>
               <Link
                 to="/videos"
                 style={{
-                  background: '#E5F1EE',
                   color: '#0F5E53',
-                  padding: '11px 16px',
-                  borderRadius: '12px',
                   fontWeight: 700,
-                  fontSize: '13.5px',
+                  fontSize: '13px',
                   textDecoration: 'none',
-                  whiteSpace: 'nowrap',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  transition: 'all 0.18s ease',
+                  gap: '4px',
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
-                </svg>
-                <span>Watch Playlists</span>
+                View All →
               </Link>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+              {filteredVideos.slice(0, 3).map((vid, idx) => (
+                <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
+              ))}
+            </div>
           </div>
 
-          {/* Right Hero: Seamless 3D Illustration & Frosted Glass Trust Pill */}
-          <div
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-              margin: '0 auto',
-            }}
-          >
-            {/* Seamless 3D Illustration blended into background */}
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                width: '100%',
-                maxWidth: '540px',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <img
-                src="/images/hero-students.png"
-                alt="EduVault students studying with textbooks and video masterclasses"
-                width="1376"
-                height="768"
-                loading="eager"
-                fetchPriority="high"
+          {/* Panel 2: Featured Textbooks */}
+          <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)' }}>
+            {/* Top Filter Tabs: All, Textbooks, Videos matching mockup */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+              <button
+                type="button"
                 style={{
-                  width: '100%',
-                  height: 'auto',
-                  maxHeight: '340px',
-                  objectFit: 'contain',
-                  mixBlendMode: 'multiply',
+                  background: '#0F5E53',
+                  color: '#ffffff',
+                  borderRadius: '9999px',
+                  padding: '4px 14px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
-              />
+              >
+                All
+              </button>
+              <button
+                type="button"
+                style={{
+                  background: '#F1F5F4',
+                  color: '#64748b',
+                  borderRadius: '9999px',
+                  padding: '4px 14px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Textbooks
+              </button>
+              <button
+                type="button"
+                style={{
+                  background: '#F1F5F4',
+                  color: '#64748b',
+                  borderRadius: '9999px',
+                  padding: '4px 14px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Videos
+              </button>
             </div>
 
-            {/* Frosted-Glass Non-Overlapping Bottom Trust Pill */}
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 2,
-                marginTop: '-12px',
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                borderRadius: '9999px',
-                padding: '6px 18px',
-                boxShadow: '0 4px 16px rgba(15, 94, 83, 0.08)',
-                fontSize: '12px',
-                fontWeight: 700,
-                color: '#0f172a',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span style={{ color: '#0F5E53' }}>⭐ 200+ Open Books</span>
-              <span style={{ color: '#cbd5e1' }}>·</span>
-              <span style={{ color: '#0F5E53' }}>100% Free &amp; Verified</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 2. BORDERLESS ELEVATED FILTER BAR ─── */}
-      <section className="px-4 sm:px-6 mb-5" style={{ maxWidth: '1240px', margin: '0 auto' }}>
-        <div
-          className="bg-white rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3 relative shadow-sm"
-        >
-          {/* Row 1: SUBJECTS */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 800,
-                color: '#64748b',
-                letterSpacing: '0.6px',
-                width: '74px',
-                flexShrink: 0,
-                userSelect: 'none',
-              }}
-            >
-              SUBJECTS:
-            </span>
-
-            <div
-              ref={pillsRef}
-              onScroll={checkScroll}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                flexWrap: 'nowrap',
-                flex: 1,
-                minWidth: 0,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch',
-                padding: '2px 0',
-              }}
-            >
-              {subjects.map((sub) => {
-                const isActive = selectedSubject === sub.id;
-                return (
-                  <button
-                    key={sub.id}
-                    type="button"
-                    onClick={() => setSelectedSubject(sub.id)}
-                    style={{
-                      background: isActive ? '#0F5E53' : '#E5F1EE',
-                      color: isActive ? '#ffffff' : '#334155',
-                      border: 'none',
-                      borderRadius: '9999px',
-                      padding: '7px 16px',
-                      minHeight: '36px',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 700 : 500,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.15s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {sub.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Row 2: GRADE */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 800,
-                color: '#64748b',
-                letterSpacing: '0.6px',
-                width: '74px',
-                flexShrink: 0,
-                userSelect: 'none',
-              }}
-            >
-              GRADE:
-            </span>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                flexWrap: 'nowrap',
-                flex: 1,
-                minWidth: 0,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch',
-                padding: '2px 0',
-              }}
-            >
-              {grades.map((gr) => {
-                const isActive = selectedGrade === gr.id;
-                return (
-                  <button
-                    key={gr.id}
-                    type="button"
-                    onClick={() => setSelectedGrade(gr.id)}
-                    style={{
-                      background: isActive ? '#0F5E53' : '#E5F1EE',
-                      color: isActive ? '#ffffff' : '#334155',
-                      border: 'none',
-                      borderRadius: '9999px',
-                      padding: '7px 16px',
-                      minHeight: '36px',
-                      fontSize: '12.5px',
-                      fontWeight: isActive ? 700 : 500,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.15s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {gr.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 3. CONTINUE LEARNING STRIP ─── */}
-      <section className="px-4 sm:px-6 mb-6" style={{ maxWidth: '1240px', margin: '0 auto' }}>
-        <div
-          className="bg-[#D9EFEA] rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-xs"
-        >
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="font-extrabold text-[12.5px] sm:text-sm text-[#0F5E53] truncate" title={recentBook.title}>
-              Continue Learning: {recentBook.title}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-12 sm:w-16 h-2 bg-[#B8E0D7] rounded-full overflow-hidden hidden xs:block">
-              <div className="w-3/5 h-full bg-[#0F5E53] rounded-full" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ color: '#eab308', fontSize: '16px' }}>⭐</span>
+                <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+                  Featured Textbooks
+                </h2>
+              </div>
+              <Link
+                to="/library"
+                style={{
+                  color: '#0F5E53',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                View All →
+              </Link>
             </div>
 
-            <Link
-              to={'/read/' + recentBook.id}
-              style={{
-                background: '#0F5E53',
-                color: '#ffffff',
-                padding: '6px 14px',
-                borderRadius: '8px',
-                fontSize: '11.5px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
-                transition: 'background 0.15s ease',
-              }}
-            >
-              Resume PDF
-            </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+              {featuredBooks.slice(0, 3).map((b) => (
+                <BookCard
+                  key={b.id}
+                  item={b}
+                  isSaved={saved.includes(b.id)}
+                  onSaveToggle={toggle}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* ─── 4. POPULAR VIDEO PLAYLISTS (3-COLUMN 16:9 CARDS) ─── */}
-      <section
-        className="px-4 sm:px-6 mb-8"
-        style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          contentVisibility: 'auto',
-          containIntrinsicSize: '0 500px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '19px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
-            Popular Video Playlists
-          </h2>
-          <Link
-            to="/videos"
-            style={{
-              color: '#0F5E53',
-              fontWeight: 700,
-              fontSize: '13px',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            View All →
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-4 lg:gap-6">
-          {filteredVideos.map((vid, idx) => (
-            <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
-          ))}
-        </div>
-      </section>
-
-      {/* ─── 5. FEATURED TEXTBOOKS (4-COLUMN 3:4 CARDS) ─── */}
-      <section
-        className="px-4 sm:px-6 mb-6"
-        style={{
-          maxWidth: '1240px',
-          margin: '0 auto',
-          contentVisibility: 'auto',
-          containIntrinsicSize: '0 500px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '19px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
-            Featured Textbooks
-          </h2>
-          <Link
-            to="/library"
-            style={{
-              color: '#0F5E53',
-              fontWeight: 700,
-              fontSize: '13px',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            View All →
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
-          {featuredBooks.map((b) => (
-            <BookCard
-              key={b.id}
-              item={b}
-              isSaved={saved.includes(b.id)}
-              onSaveToggle={toggle}
-            />
-          ))}
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

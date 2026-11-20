@@ -72,7 +72,7 @@ export function BookCover({ item }) {
 
   if (s.includes('physic')) {
     gradient = 'linear-gradient(145deg, #1e1b4b 0%, #2e1065 40%, #4338ca 100%)';
-    badgeSource = item.coverBadge || `${item.source || 'NCERT'} · Class 12`;
+    badgeSource = item.coverBadge || 'Indigo Cover';
     watermarkSvg = (
       <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.85 }}>
         <defs>
@@ -96,7 +96,7 @@ export function BookCover({ item }) {
     );
   } else if (s.includes('chem')) {
     gradient = 'linear-gradient(145deg, #7c2d12 0%, #9a3412 40%, #ea580c 100%)';
-    badgeSource = item.coverBadge || `${item.source || 'NCERT'} · Class 11`;
+    badgeSource = item.coverBadge || 'Amber Cover';
     watermarkSvg = (
       <svg width="115" height="115" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.85 }}>
         <defs>
@@ -125,7 +125,7 @@ export function BookCover({ item }) {
     );
   } else if (s.includes('bio') || s.includes('medic') || s.includes('life')) {
     gradient = 'linear-gradient(145deg, #064e3b 0%, #065f46 40%, #047857 100%)';
-    badgeSource = item.coverBadge || `${item.source || 'OpenStax'} · Biology`;
+    badgeSource = item.coverBadge || 'Emerald Cover';
     watermarkSvg = (
       <svg width="115" height="115" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.75 }}>
         {/* Elegant Botanical Leaves */}

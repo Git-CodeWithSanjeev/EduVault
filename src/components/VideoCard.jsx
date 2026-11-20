@@ -238,20 +238,42 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
             />
           ))}
 
-          {/* Top Level Badge (positioned left or right per design) */}
+          {/* Top Left Badge: Class 12 */}
           <span
             style={{
-              ...badgeStyle,
-              background: levelBadge === 'UG' ? '#047857' : '#0369a1',
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+              zIndex: 3,
+              background: '#0369a1',
               color: '#ffffff',
-              fontSize: '10.5px',
+              fontSize: '10px',
               fontWeight: 700,
-              padding: '2.5px 8px',
-              borderRadius: '6px',
+              padding: '2px 7px',
+              borderRadius: '5px',
               letterSpacing: '0.2px',
             }}
           >
-            {levelBadge}
+            Class 12
+          </span>
+
+          {/* Top Right Badge: UG */}
+          <span
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              zIndex: 3,
+              background: '#047857',
+              color: '#ffffff',
+              fontSize: '10px',
+              fontWeight: 700,
+              padding: '2px 7px',
+              borderRadius: '5px',
+              letterSpacing: '0.2px',
+            }}
+          >
+            UG
           </span>
 
           {/* Centered Circular Play Button */}
@@ -360,10 +382,10 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               {(displayChannel || 'C').slice(0, 1).toUpperCase()}
             </div>
             <span
-              className="text-[11px] sm:text-[11.5px] md:text-xs font-semibold text-slate-600 truncate max-w-[110px] sm:max-w-[150px]"
+              className="text-[11px] sm:text-[11.5px] md:text-xs font-semibold text-slate-600 truncate max-w-[140px] sm:max-w-[180px]"
               title={displayChannel}
             >
-              {displayChannel}
+              Creator: {displayChannel}
             </span>
           </div>
 

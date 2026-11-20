@@ -66,43 +66,11 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           </Link>
         </h3>
 
-        {/* Source & Level Tonal Pills */}
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span
-              style={{
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                background: avatarBg,
-                color: '#ffffff',
-                fontSize: '10px',
-                fontWeight: 800,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {sourceName.slice(0, 1).toUpperCase()}
-            </span>
-            <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>
-              {sourceName}
-            </span>
-          </div>
-
-          <span
-            style={{
-              background: levelBg,
-              color: levelColor,
-              borderRadius: '6px',
-              padding: '2px 8px',
-              fontSize: '10.5px',
-              fontWeight: 700,
-              marginLeft: 'auto',
-            }}
-          >
-            {levelText}
+        {/* Author / Subject Row matching mockup */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '12px' }}>
+          <span style={{ fontSize: '11px', color: '#64748b' }}>👤</span>
+          <span style={{ fontSize: '11px', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            Author {sourceName} {item.subject ? `| ${item.subject}` : ''}
           </span>
         </div>
 

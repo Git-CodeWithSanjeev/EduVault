@@ -79,8 +79,13 @@ export function Shell({ children, welcomeMsg }) {
         setSearchModalOpen((prev) => !prev);
       }
     };
+    const handleCustomOpen = () => setSearchModalOpen(true);
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-search-modal', handleCustomOpen);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-search-modal', handleCustomOpen);
+    };
   }, []);
 
   const rawSearchResults = useMemo(() => {
@@ -172,72 +177,36 @@ export function Shell({ children, welcomeMsg }) {
           <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav>
+        {/* Desktop Navigation in soft floating pill container */}
+        <nav className="nav-pill-group">
           <NavLink to="/library" className={({ isActive }) => (isActive || location.pathname === '/' ? 'active' : '')}>
-            Library
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span>Library</span>
           </NavLink>
           <NavLink to="/categories">Categories</NavLink>
           <NavLink to="/videos">Videos</NavLink>
-          <NavLink to="/saved">My library</NavLink>
+          <NavLink to="/saved">My Library</NavLink>
         </nav>
 
-        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-          {/* Mobile Search Icon Button (< 768px) matching the mockup */}
+        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+          {/* Circular Search Icon Button (matching the mockup) */}
           <button
             type="button"
-            className="mobile-search-btn"
+            className="nav-search-circle-btn"
             onClick={() => setSearchModalOpen(true)}
             title="Search resources... (Ctrl+K)"
             aria-label="Search resources"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '38px',
-              height: '38px',
-              background: '#E6F4F1',
-              border: 'none',
-              borderRadius: '12px',
-              color: '#0F5E53',
-              cursor: 'pointer',
-              padding: 0,
-            }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </button>
 
-          {/* Tablet & Desktop Tonal Search Pill (>= 768px) */}
-          <button
-            type="button"
-            className="desktop-search-pill nav-search-pill"
-            onClick={() => setSearchModalOpen(true)}
-            title="Search resources... (Ctrl+K)"
-            style={{
-              alignItems: 'center',
-              gap: '8px',
-              background: '#E6F4F1',
-              border: 'none',
-              borderRadius: '9999px',
-              padding: '7px 16px',
-              color: '#475569',
-              fontSize: '13px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.18s ease',
-            }}
-          >
-            <span>Search resources...</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-
-          {/* Tablet & Desktop Auth Actions */}
+          {/* Desktop & Tablet Auth Actions */}
           <div className="desktop-auth-group">
             {loading ? (
               <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
@@ -320,34 +289,11 @@ export function Shell({ children, welcomeMsg }) {
                 )}
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Link
-                  to="/login"
-                  style={{
-                    color: '#334155',
-                    fontWeight: 600,
-                    fontSize: '13.5px',
-                    textDecoration: 'none',
-                    padding: '6px 10px',
-                    transition: 'color 0.15s ease',
-                  }}
-                >
-                  Log In
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <Link to="/login" className="nav-login-link">
+                  Log in
                 </Link>
-                <Link
-                  to="/register"
-                  style={{
-                    background: '#0F5E53',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    textDecoration: 'none',
-                    padding: '8px 18px',
-                    borderRadius: '10px',
-                    boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
+                <Link to="/register" className="nav-signup-btn">
                   Sign Up
                 </Link>
               </div>
