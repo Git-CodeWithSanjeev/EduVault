@@ -155,14 +155,14 @@ header {
   top: 0;
   z-index: 50;
   height: 68px;
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(15, 94, 83, 0.06);
+  border-bottom: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 16px 32px 12px;
   transition: all 0.2s ease;
   width: 100%;
 }

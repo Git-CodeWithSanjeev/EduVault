@@ -104,12 +104,12 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           <Link
             to={'/resource/' + item.id}
             style={{
-              background: '#F1F5F4',
-              color: '#475569',
+              background: '#E8F4F0',
+              color: '#0F5E53',
               borderRadius: '8px',
               padding: '7px 6px',
               fontSize: '11px',
-              fontWeight: 600,
+              fontWeight: 700,
               textAlign: 'center',
               textDecoration: 'none',
               whiteSpace: 'nowrap',
