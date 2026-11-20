@@ -2,7 +2,16 @@ import https from 'https';
 import http from 'http';
 import { validateUrlForSsrf } from '../services/security.js';
 
+// Relax TLS certificate verification for educational & government endpoints
+// (e.g. ncert.nic.in) whose intermediate certificates are missing from default CA stores
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const MAX_PROXY_BYTES = 50 * 1024 * 1024; // 50MB max file limit
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false,
+  keepAlive: false,
+});
 
 export default async function handler(req, res) {
   // CORS & Security Headers
@@ -56,10 +65,12 @@ export default async function handler(req, res) {
           port: parsed.port || (isHttps ? 443 : 80),
           path: parsed.pathname + parsed.search,
           method: 'GET',
-          timeout: 20000,
+          timeout: 25000,
+          rejectUnauthorized: false,
+          agent: isHttps ? httpsAgent : undefined,
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36 EduVault/1.0',
-            'Accept': 'application/pdf,*/*;q=0.8',
+            'Accept': 'application/pdf,application/octet-stream,*/*;q=0.8',
             'Accept-Encoding': 'identity',
             'Connection': 'close',
             'Referer': parsed.origin + '/',
@@ -68,9 +79,7 @@ export default async function handler(req, res) {
 
         const r = lib.request(options, (upstreamRes) => {
           if (upstreamRes.statusCode >= 300 && upstreamRes.statusCode < 400 && upstreamRes.headers.location) {
-            const redirectUrl = upstreamRes.headers.location.startsWith('http')
-              ? upstreamRes.headers.location
-              : `${parsed.origin}${upstreamRes.headers.location}`;
+            const redirectUrl = new URL(upstreamRes.headers.location, targetUrl).toString();
             upstreamRes.resume();
             fetchPDF(redirectUrl, attempt + 1).then(resolve).catch(reject);
             return;
@@ -104,7 +113,7 @@ export default async function handler(req, res) {
 
         r.on('timeout', () => {
           r.destroy();
-          if (attempt < 2) {
+          if (attempt < 3) {
             fetchPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
           } else {
             reject(new Error('Request to upstream timed out'));
@@ -112,7 +121,7 @@ export default async function handler(req, res) {
         });
 
         r.on('error', (err) => {
-          if (attempt < 2) {
+          if (attempt < 3) {
             fetchPDF(targetUrl, attempt + 1).then(resolve).catch(reject);
           } else {
             reject(err);

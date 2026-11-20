@@ -44,6 +44,7 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       port: parsed.port || (isHttps ? 443 : 80),
       path: parsed.pathname + parsed.search,
       method: 'GET',
+      rejectUnauthorized: false,
       agent: isHttps ? httpsAgent : undefined,
       headers: headers,
     };
@@ -51,9 +52,7 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
     const proxyReq = lib.request(options, (proxyRes) => {
       // Follow 30x redirects server-side
       if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) {
-        const redirect = proxyRes.headers.location.startsWith('http')
-          ? proxyRes.headers.location
-          : `${parsed.origin}${proxyRes.headers.location}`;
+        const redirect = new URL(proxyRes.headers.location, targetUrl).toString();
         proxyRes.resume();
         return fetchPdfStream(redirect, req, res, attempt + 1);
       }

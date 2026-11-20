@@ -939,6 +939,7 @@ function fetchUrl(url, attempt = 1) {
       path:     parsed.pathname + parsed.search,
       method:   'GET',
       timeout:  25000,
+      rejectUnauthorized: false,
       agent:    url.startsWith('https') ? new https.Agent({ rejectUnauthorized: false, keepAlive: false }) : new http.Agent({ keepAlive: false }),
       headers: {
         'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
@@ -952,9 +953,7 @@ function fetchUrl(url, attempt = 1) {
     const req = lib.request(options, (res) => {
       // Follow redirects
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        const redirectUrl = res.headers.location.startsWith('http')
-          ? res.headers.location
-          : `${parsed.origin}${res.headers.location}`;
+        const redirectUrl = new URL(res.headers.location, url).toString();
         res.resume();
         fetchUrl(redirectUrl, attempt).then(resolve).catch(reject);
         return;
