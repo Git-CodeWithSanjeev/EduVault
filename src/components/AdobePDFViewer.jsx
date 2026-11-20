@@ -107,7 +107,7 @@ export function AdobePDFViewer({
       if (!isCancelled) {
         setShowTimeoutFallback(true);
       }
-    }, 7000);
+    }, 4000);
 
     const initAdobeViewer = async () => {
       try {
@@ -283,8 +283,8 @@ export function AdobePDFViewer({
     <div style={{
       position: 'relative',
       width: '100%',
-      height: isMobile ? mobileHeight : '100%',
-      minHeight: isMobile ? '400px' : '600px',
+      height: '100%',
+      minHeight: '100%',
       background: 'var(--bg, #F4F9F8)',
       borderRadius: 0,
       overflow: 'hidden',

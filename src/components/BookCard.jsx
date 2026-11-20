@@ -76,6 +76,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
 
         {/* Action Buttons: Solid Teal Read PDF + Tonal Details */}
         <div
+          className="book-card-actions"
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -85,6 +86,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
         >
           <Link
             to={'/read/' + item.id}
+            className="book-card-btn-read"
             style={{
               background: '#0F5E53',
               color: '#ffffff',
@@ -103,6 +105,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           </Link>
           <Link
             to={'/resource/' + item.id}
+            className="book-card-btn-details"
             style={{
               background: '#E8F4F0',
               color: '#0F5E53',

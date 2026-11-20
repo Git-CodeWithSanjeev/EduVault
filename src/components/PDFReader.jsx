@@ -256,7 +256,10 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
       {isMobile && (
         <div className="mobile-reader-header">
           <a href="/library" onClick={handleBack} className="mobile-back-btn">
-            ‹ Library
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            <span>Library</span>
           </a>
 
           <div className="mobile-book-info">
@@ -268,7 +271,8 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
             className="mobile-chapter-menu-btn"
             onClick={() => setIsChapterDrawerOpen(true)}
           >
-            📖 Chapters ({chapterPdfs.length})
+            <span>📖</span>
+            <span>Chapters ({chapterPdfs.length})</span>
           </button>
         </div>
       )}
