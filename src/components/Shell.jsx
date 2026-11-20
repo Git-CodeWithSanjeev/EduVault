@@ -182,11 +182,11 @@ export function Shell({ children, welcomeMsg }) {
           <NavLink to="/saved">My library</NavLink>
         </nav>
 
-        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
-          {/* Mobile Search Icon Button (< 768px) matching the attached mockup */}
+        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+          {/* Mobile Search Icon Button (< 768px) matching the mockup */}
           <button
             type="button"
-            className="mobile-search-btn md:hidden"
+            className="mobile-search-btn"
             onClick={() => setSearchModalOpen(true)}
             title="Search resources... (Ctrl+K)"
             aria-label="Search resources"
@@ -201,7 +201,7 @@ export function Shell({ children, welcomeMsg }) {
               borderRadius: '12px',
               color: '#0F5E53',
               cursor: 'pointer',
-              transition: 'all 0.18s ease',
+              padding: 0,
             }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -213,7 +213,7 @@ export function Shell({ children, welcomeMsg }) {
           {/* Tablet & Desktop Tonal Search Pill (>= 768px) */}
           <button
             type="button"
-            className="nav-search-pill hidden md:flex"
+            className="desktop-search-pill nav-search-pill"
             onClick={() => setSearchModalOpen(true)}
             title="Search resources... (Ctrl+K)"
             style={{
@@ -237,124 +237,127 @@ export function Shell({ children, welcomeMsg }) {
             </svg>
           </button>
 
-          {loading ? (
-            <div className="auth-nav-skeleton hidden md:block" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
-          ) : isLoggedIn ? (
-            <div className="user-menu-wrap hidden md:block" ref={userMenuRef} style={{ position: 'relative' }}>
-              <button
-                className="user-profile-btn"
-                onClick={() => setMenuOpen(!menuOpen)}
-                aria-label="User Profile Menu"
-              >
-                {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="user-avatar-img"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <span className="user-avatar-icon">{user.avatar || '🎓'}</span>
-                )}
-                <strong className="user-name-label">{user.name}</strong>
-                <svg className="user-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
+          {/* Tablet & Desktop Auth Actions */}
+          <div className="desktop-auth-group">
+            {loading ? (
+              <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
+            ) : isLoggedIn ? (
+              <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
+                <button
+                  className="user-profile-btn"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  aria-label="User Profile Menu"
+                >
+                  {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="user-avatar-img"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="user-avatar-icon">{user.avatar || '🎓'}</span>
+                  )}
+                  <strong className="user-name-label">{user.name}</strong>
+                  <svg className="user-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
 
-              {menuOpen && (
-                <>
-                  <div
-                    className="user-dropdown-backdrop"
-                    onClick={() => setMenuOpen(false)}
-                    style={{
-                      position: 'fixed',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      zIndex: 290,
-                      cursor: 'default',
-                      background: 'transparent',
-                    }}
-                  />
-                  <div className="user-dropdown" onClick={() => setMenuOpen(false)} style={{ zIndex: 300 }}>
-                    <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
-                      {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="user-avatar-img"
-                          style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
-                      )}
-                      <div style={{ textAlign: 'center', width: '100%' }}>
-                        <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
-                        <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
+                {menuOpen && (
+                  <>
+                    <div
+                      className="user-dropdown-backdrop"
+                      onClick={() => setMenuOpen(false)}
+                      style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 290,
+                        cursor: 'default',
+                        background: 'transparent',
+                      }}
+                    />
+                    <div className="user-dropdown" onClick={() => setMenuOpen(false)} style={{ zIndex: 300 }}>
+                      <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
+                        {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="user-avatar-img"
+                            style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
+                        )}
+                        <div style={{ textAlign: 'center', width: '100%' }}>
+                          <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
+                          <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
+                        </div>
+                      </div>
+                      <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
+                        <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                          Account &amp; Profile
+                        </Link>
+                        <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                          Saved Wishlist
+                        </Link>
+                        <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                          Contribute Books
+                        </Link>
+                        <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
+                          🛡️ Admin Console
+                        </Link>
+                        <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                          Sign Out
+                        </button>
                       </div>
                     </div>
-                    <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
-                      <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                        Account &amp; Profile
-                      </Link>
-                      <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                        Saved Wishlist
-                      </Link>
-                      <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                        Contribute Books
-                      </Link>
-                      <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
-                        🛡️ Admin Console
-                      </Link>
-                      <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="hidden md:flex" style={{ alignItems: 'center', gap: '10px' }}>
-              <Link
-                to="/login"
-                style={{
-                  color: '#334155',
-                  fontWeight: 600,
-                  fontSize: '13.5px',
-                  textDecoration: 'none',
-                  padding: '6px 10px',
-                  transition: 'color 0.15s ease',
-                }}
-              >
-                Log In
-              </Link>
-              <Link
-                to="/register"
-                style={{
-                  background: '#0F5E53',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '13px',
-                  textDecoration: 'none',
-                  padding: '8px 18px',
-                  borderRadius: '10px',
-                  boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
-                  transition: 'all 0.18s ease',
-                }}
-              >
-                Sign Up
-              </Link>
-            </div>
-          )}
+                  </>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Link
+                  to="/login"
+                  style={{
+                    color: '#334155',
+                    fontWeight: 600,
+                    fontSize: '13.5px',
+                    textDecoration: 'none',
+                    padding: '6px 10px',
+                    transition: 'color 0.15s ease',
+                  }}
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/register"
+                  style={{
+                    background: '#0F5E53',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    textDecoration: 'none',
+                    padding: '8px 18px',
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
+                    transition: 'all 0.18s ease',
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Hamburger Menu Toggle Button for Mobile & Tablet (<1024px) */}
           <button
             type="button"
-            className="mobile-nav-toggle lg:hidden"
+            className="mobile-nav-toggle"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open Mobile Navigation Menu"
             style={{

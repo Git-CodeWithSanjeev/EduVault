@@ -3667,28 +3667,71 @@ nav a.active {
     transition: all 0.2s ease;
 }
 
-@media (min-width: 1024px) {
+/* ── Header Responsive Action Visibility ── */
+@media (max-width: 767px) {
+    .desktop-search-pill,
+    .nav-search-pill,
+    .desktop-auth-group,
+    header nav {
+        display: none !important;
+    }
 
-    .mobile-nav-toggle,
+    .mobile-search-btn {
+        display: flex !important;
+    }
+
+    .mobile-nav-toggle {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
     .mobile-search-btn {
         display: none !important;
     }
+
+    .desktop-search-pill,
+    .nav-search-pill {
+        display: inline-flex !important;
+    }
+
+    .desktop-auth-group {
+        display: flex !important;
+    }
+
+    .mobile-nav-toggle {
+        display: flex !important;
+    }
+
+    header nav {
+        display: none !important;
+    }
+
+    .mobile-bottom-nav {
+        display: none !important;
+    }
 }
 
 @media (min-width: 1024px) {
-    .mobile-nav-toggle {
-        display: none !important;
-    }
-
+    .mobile-search-btn,
+    .mobile-nav-toggle,
     .mobile-drawer-overlay,
-    .mobile-drawer {
-        display: none !important;
-    }
-}
-
-@media (min-width: 768px) {
+    .mobile-drawer,
     .mobile-bottom-nav {
         display: none !important;
+    }
+
+    .desktop-search-pill,
+    .nav-search-pill {
+        display: inline-flex !important;
+    }
+
+    .desktop-auth-group {
+        display: flex !important;
+    }
+
+    header nav {
+        display: flex !important;
     }
 }
 

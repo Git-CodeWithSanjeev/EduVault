@@ -239,18 +239,19 @@ export function Home({ saved = [], toggle = () => {} }) {
               Access high-quality open textbooks, video courses, and study resources absolutely free.
             </p>
 
-            <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'nowrap', width: '100%', maxWidth: '440px' }}>
               <Link
                 to="/library"
                 style={{
                   background: '#0F5E53',
                   color: '#ffffff',
-                  padding: '13px 26px',
+                  padding: '11px 18px',
                   borderRadius: '12px',
                   fontWeight: 700,
-                  fontSize: '14px',
+                  fontSize: '13.5px',
                   textDecoration: 'none',
-                  boxShadow: '0 4px 14px rgba(15, 94, 83, 0.25)',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
                   transition: 'all 0.18s ease',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -263,20 +264,21 @@ export function Home({ saved = [], toggle = () => {} }) {
               <Link
                 to="/videos"
                 style={{
-                  background: 'transparent',
+                  background: '#E5F1EE',
                   color: '#0F5E53',
-                  padding: '13px 20px',
+                  padding: '11px 16px',
                   borderRadius: '12px',
                   fontWeight: 700,
-                  fontSize: '14px',
+                  fontSize: '13.5px',
                   textDecoration: 'none',
+                  whiteSpace: 'nowrap',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   transition: 'all 0.18s ease',
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
                   <circle cx="12" cy="12" r="10" />
                   <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
                 </svg>
@@ -293,32 +295,19 @@ export function Home({ saved = [], toggle = () => {} }) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '10px 0',
               width: '100%',
+              margin: '0 auto',
             }}
           >
-            {/* Soft Ambient Glow */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: '-10px -20px 20px',
-                background: 'radial-gradient(ellipse at 50% 50%, #d8f1e9 0%, #e8f7f2 60%, transparent 85%)',
-                borderRadius: '48px',
-                zIndex: 0,
-              }}
-            />
-
-            {/* Seamless Masked 3D Illustration */}
+            {/* Seamless 3D Illustration blended into background */}
             <div
               style={{
                 position: 'relative',
                 zIndex: 1,
                 width: '100%',
-                maxWidth: '580px',
+                maxWidth: '540px',
                 display: 'flex',
                 justifyContent: 'center',
-                WebkitMaskImage: 'radial-gradient(ellipse at center, black 72%, transparent 100%)',
-                maskImage: 'radial-gradient(ellipse at center, black 72%, transparent 100%)',
               }}
             >
               <img
@@ -331,9 +320,9 @@ export function Home({ saved = [], toggle = () => {} }) {
                 style={{
                   width: '100%',
                   height: 'auto',
-                  maxHeight: '380px',
+                  maxHeight: '340px',
                   objectFit: 'contain',
-                  filter: 'drop-shadow(0 12px 32px rgba(15, 94, 83, 0.10))',
+                  mixBlendMode: 'multiply',
                 }}
               />
             </div>
@@ -343,19 +332,20 @@ export function Home({ saved = [], toggle = () => {} }) {
               style={{
                 position: 'relative',
                 zIndex: 2,
-                marginTop: '16px',
-                background: 'rgba(255, 255, 255, 0.78)',
+                marginTop: '-12px',
+                background: 'rgba(255, 255, 255, 0.85)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
                 borderRadius: '9999px',
-                padding: '8px 24px',
-                boxShadow: '0 4px 20px rgba(15, 94, 83, 0.08)',
-                fontSize: '12.5px',
+                padding: '6px 18px',
+                boxShadow: '0 4px 16px rgba(15, 94, 83, 0.08)',
+                fontSize: '12px',
                 fontWeight: 700,
                 color: '#0f172a',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
+                whiteSpace: 'nowrap',
               }}
             >
               <span style={{ color: '#0F5E53' }}>⭐ 200+ Open Books</span>
@@ -372,7 +362,7 @@ export function Home({ saved = [], toggle = () => {} }) {
           className="bg-white rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3 relative shadow-sm"
         >
           {/* Row 1: SUBJECTS */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
             <span
               style={{
                 fontSize: '11px',
@@ -381,6 +371,7 @@ export function Home({ saved = [], toggle = () => {} }) {
                 letterSpacing: '0.6px',
                 width: '74px',
                 flexShrink: 0,
+                userSelect: 'none',
               }}
             >
               SUBJECTS:
@@ -389,7 +380,19 @@ export function Home({ saved = [], toggle = () => {} }) {
             <div
               ref={pillsRef}
               onScroll={checkScroll}
-              className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] touch-pan-x py-0.5"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                overflowX: 'auto',
+                flexWrap: 'nowrap',
+                flex: 1,
+                minWidth: 0,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch',
+                padding: '2px 0',
+              }}
             >
               {subjects.map((sub) => {
                 const isActive = selectedSubject === sub.id;
@@ -421,7 +424,7 @@ export function Home({ saved = [], toggle = () => {} }) {
           </div>
 
           {/* Row 2: GRADE */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
             <span
               style={{
                 fontSize: '11px',
@@ -430,13 +433,26 @@ export function Home({ saved = [], toggle = () => {} }) {
                 letterSpacing: '0.6px',
                 width: '74px',
                 flexShrink: 0,
+                userSelect: 'none',
               }}
             >
               GRADE:
             </span>
 
             <div
-              className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] touch-pan-x py-0.5"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                overflowX: 'auto',
+                flexWrap: 'nowrap',
+                flex: 1,
+                minWidth: 0,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch',
+                padding: '2px 0',
+              }}
             >
               {grades.map((gr) => {
                 const isActive = selectedGrade === gr.id;
@@ -470,28 +486,19 @@ export function Home({ saved = [], toggle = () => {} }) {
       </section>
 
       {/* ─── 3. CONTINUE LEARNING STRIP ─── */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 32px' }}>
+      <section className="px-4 sm:px-6 mb-6" style={{ maxWidth: '1240px', margin: '0 auto' }}>
         <div
-          style={{
-            background: '#D9EFEA',
-            borderRadius: '16px',
-            padding: '14px 22px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '14px',
-          }}
+          className="bg-[#D9EFEA] rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-xs"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontWeight: 800, fontSize: '14px', color: '#0F5E53' }}>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="font-extrabold text-[12.5px] sm:text-sm text-[#0F5E53] truncate" title={recentBook.title}>
               Continue Learning: {recentBook.title}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '64px', height: '8px', background: '#B8E0D7', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: '60%', height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="w-12 sm:w-16 h-2 bg-[#B8E0D7] rounded-full overflow-hidden hidden xs:block">
+              <div className="w-3/5 h-full bg-[#0F5E53] rounded-full" />
             </div>
 
             <Link
@@ -499,11 +506,12 @@ export function Home({ saved = [], toggle = () => {} }) {
               style={{
                 background: '#0F5E53',
                 color: '#ffffff',
-                padding: '7px 18px',
+                padding: '6px 14px',
                 borderRadius: '8px',
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: 700,
                 textDecoration: 'none',
+                whiteSpace: 'nowrap',
                 boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
                 transition: 'background 0.15s ease',
               }}
@@ -516,16 +524,16 @@ export function Home({ saved = [], toggle = () => {} }) {
 
       {/* ─── 4. POPULAR VIDEO PLAYLISTS (3-COLUMN 16:9 CARDS) ─── */}
       <section
+        className="px-4 sm:px-6 mb-8"
         style={{
           maxWidth: '1240px',
           margin: '0 auto',
-          padding: '0 24px 36px',
           contentVisibility: 'auto',
           containIntrinsicSize: '0 500px',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '19px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
             Popular Video Playlists
           </h2>
           <Link
@@ -533,7 +541,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             style={{
               color: '#0F5E53',
               fontWeight: 700,
-              fontSize: '13.5px',
+              fontSize: '13px',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
@@ -553,16 +561,16 @@ export function Home({ saved = [], toggle = () => {} }) {
 
       {/* ─── 5. FEATURED TEXTBOOKS (4-COLUMN 3:4 CARDS) ─── */}
       <section
+        className="px-4 sm:px-6 mb-6"
         style={{
           maxWidth: '1240px',
           margin: '0 auto',
-          padding: '0 24px 20px',
           contentVisibility: 'auto',
           containIntrinsicSize: '0 500px',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '19px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
             Featured Textbooks
           </h2>
           <Link
@@ -570,7 +578,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             style={{
               color: '#0F5E53',
               fontWeight: 700,
-              fontSize: '13.5px',
+              fontSize: '13px',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
