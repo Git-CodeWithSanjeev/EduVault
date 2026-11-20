@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { AdobePDFViewer, DownloadPDFButton } from './AdobePDFViewer';
+import { PdfJsViewer } from './PdfJsViewer';
 import { getChapterPdfUrls } from '../utils/pdfHelpers';
 
 export { getChapterPdfUrls };
@@ -93,116 +94,41 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
     }
   }, []);
 
-  const handlePrevPage = async () => {
+  const handlePrevPage = () => {
     if (currentPage > 1) {
-      const nextP = currentPage - 1;
-      setCurrentPage(nextP);
-      if (apisRef.current?.gotoLocation) {
-        try {
-          await apisRef.current.gotoLocation(nextP);
-        } catch (e) {
-          console.warn('Adobe gotoLocation error:', e);
-        }
-      }
+      setCurrentPage((prev) => Math.max(prev - 1, 1));
     }
   };
 
-  const handleNextPage = async () => {
+  const handleNextPage = () => {
     if (currentPage < totalPages) {
-      const nextP = currentPage + 1;
-      setCurrentPage(nextP);
-      if (apisRef.current?.gotoLocation) {
-        try {
-          await apisRef.current.gotoLocation(nextP);
-        } catch (e) {
-          console.warn('Adobe gotoLocation error:', e);
-        }
-      }
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
     }
   };
 
-  const handlePageInputChange = async (e) => {
+  const handlePageInputChange = (e) => {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val) && val >= 1 && val <= totalPages) {
       setCurrentPage(val);
-      if (apisRef.current?.gotoLocation) {
-        try {
-          await apisRef.current.gotoLocation(val);
-        } catch (e) {
-          console.warn('Adobe gotoLocation error:', e);
-        }
-      }
     }
   };
 
-  const handleZoomIn = async () => {
-    try {
-      if (apisRef.current?.getZoomAPIs) {
-        const zoomAPIs = await apisRef.current.getZoomAPIs();
-        if (zoomAPIs?.zoomIn) {
-          await zoomAPIs.zoomIn();
-          return;
-        }
-      }
-      if (apisRef.current?.setZoomLevel) {
-        await apisRef.current.setZoomLevel(zoomLevel + 0.25);
-        setZoomLevel(prev => prev + 0.25);
-      }
-    } catch (e) {
-      console.warn('Adobe Zoom In notice:', e);
-    }
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(Number((prev + 0.2).toFixed(2)), 3.0));
   };
 
-  const handleZoomOut = async () => {
-    try {
-      if (apisRef.current?.getZoomAPIs) {
-        const zoomAPIs = await apisRef.current.getZoomAPIs();
-        if (zoomAPIs?.zoomOut) {
-          await zoomAPIs.zoomOut();
-          return;
-        }
-      }
-      if (apisRef.current?.setZoomLevel) {
-        const nextZ = Math.max(zoomLevel - 0.25, 0.5);
-        await apisRef.current.setZoomLevel(nextZ);
-        setZoomLevel(nextZ);
-      }
-    } catch (e) {
-      console.warn('Adobe Zoom Out notice:', e);
-    }
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(Number((prev - 0.2).toFixed(2)), 0.5));
   };
 
-  const handleFitWidth = async () => {
+  const handleFitWidth = () => {
     setFitMode('fit-width');
-    try {
-      if (apisRef.current?.getZoomAPIs) {
-        const zoomAPIs = await apisRef.current.getZoomAPIs();
-        if (zoomAPIs?.zoomToFitWidth) {
-          await zoomAPIs.zoomToFitWidth();
-          return;
-        }
-      }
-      if (apisRef.current?.setZoomLevel) {
-        await apisRef.current.setZoomLevel(1.0);
-      }
-    } catch (e) {
-      console.warn('Adobe Fit Width notice:', e);
-    }
+    setZoomLevel(1.0);
   };
 
-  const handleFitPage = async () => {
+  const handleFitPage = () => {
     setFitMode('fit-page');
-    try {
-      if (apisRef.current?.getZoomAPIs) {
-        const zoomAPIs = await apisRef.current.getZoomAPIs();
-        if (zoomAPIs?.zoomToFitPage) {
-          await zoomAPIs.zoomToFitPage();
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn('Adobe Fit Page notice:', e);
-    }
+    setZoomLevel(1.0);
   };
 
   const handleToggleTwoPage = () => {
@@ -436,28 +362,25 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
 
       {/* ─── 3. MAIN READER BODY ─── */}
       <div className="reader-body-layout">
-        {/* Stage Viewport with Adobe PDF Embed API Reader */}
-        {(() => {
-          const effectiveMode = pageViewMode === 'two-page'
-            ? (isContinuousScroll ? 'TWO_COLUMN' : 'TWO_COLUMN_FIT_PAGE')
-            : (fitMode === 'fit-page' || !isContinuousScroll ? 'FIT_PAGE' : 'FIT_WIDTH');
-
-          return (
-            <div className="reader-stage-container">
-              <AdobePDFViewer
-                key={`${activeChapter.pdfUrl}-${effectiveMode}`}
-                url={activeChapter.pdfUrl}
-                cloudUrl={activeChapter.cloudUrl}
-                title={`${b.title} - ${activeChapter.name}`}
-                isMobile={isMobile}
-                viewMode={effectiveMode}
-                onApiReady={handleApiReady}
-                readUrl={b?.readUrl}
-                sourceUrl={b?.url}
-              />
-            </div>
-          );
-        })()}
+        {/* Stage Viewport with High-Performance Streaming PDF.js Reader */}
+        <div className="reader-stage-container">
+          <PdfJsViewer
+            key={`${activeChapter.pdfUrl}-${activeChapter.cloudUrl || ''}`}
+            url={activeChapter.pdfUrl}
+            cloudUrl={activeChapter.cloudUrl}
+            title={`${b.title} - ${activeChapter.name}`}
+            currentPage={currentPage}
+            onTotalPagesChange={(total) => setTotalPages(total)}
+            onPageRendered={(page) => setCurrentPage(page)}
+            zoomLevel={zoomLevel}
+            viewMode={pageViewMode}
+            fitMode={fitMode}
+            isMobile={isMobile}
+            onPrevPage={handlePrevPage}
+            onNextPage={handleNextPage}
+            nextChapterUrl={chapterPdfs[activeChapIdx + 1]?.cloudUrl || chapterPdfs[activeChapIdx + 1]?.pdfUrl}
+          />
+        </div>
 
         {/* Desktop Chapter Sidebar */}
         {!isMobile && (

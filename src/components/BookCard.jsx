@@ -4,7 +4,7 @@ import { BookCover } from './BookCover';
 
 export function BookCard({ item, isSaved, onSaveToggle, style }) {
   const sourceName = item.author || item.source || 'NCERT';
-  const levelText = item.level || (item.classNum ? `Class ${item.classNum}` : 'Class 12');
+  const levelText = item.level || (item.classNum ? `Class ${item.classNum}` : (item.grade ? `Class ${item.grade}` : (item.tier || 'NCERT')));
 
   // Specific level badge styles matching the mockup
   let levelBg = '#e0f2fe';

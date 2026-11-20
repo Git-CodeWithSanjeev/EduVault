@@ -17,6 +17,7 @@
     "ioredis": "^6.0.0",
     "mongoose": "^9.9.2",
     "nodemailer": "^9.0.5",
+    "pdfjs-dist": "^4.10.38",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "latest",

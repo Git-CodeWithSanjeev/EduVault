@@ -2,7 +2,10 @@
  * PDF Chapter & URL Generator Utilities
  */
 
+import { NCERT_FULL_CHAPTER_NAMES, NCERT_FULL_CHAPTER_COUNTS } from '../data/ncertCatalogData.js';
+
 export const NCERT_CHAPTER_COUNTS = {
+  ...NCERT_FULL_CHAPTER_COUNTS,
   aemr1: 9, // Class 1 English Mridang
   lech1: 5, // Class 12 Chemistry Part 1
   lech2: 5, // Class 12 Chemistry Part 2
@@ -22,6 +25,7 @@ export const NCERT_CHAPTER_COUNTS = {
 };
 
 export const NCERT_CHAPTER_NAMES = {
+  ...NCERT_FULL_CHAPTER_NAMES,
   aemr1: [
     'Two Little Hands',
     'Greetings',
@@ -144,19 +148,32 @@ export function getChapterPdfUrls(book) {
 
   const R2_BASE = (import.meta.env.VITE_R2_PUBLIC_URL || '').replace(/\/+$/, '');
 
-  if (book.source === 'NCERT' && book.url) {
-    const match = book.url.match(/\/pdf\/([a-z0-9]+)dd\.zip/i);
-    const code = match ? match[1].toLowerCase() : null;
+  // 1. If book already has real structured chapters
+  if (Array.isArray(book.chapters) && book.chapters.length > 0) {
+    return book.chapters.map((ch) => ({
+      ...ch,
+      cloudUrl: ch.cloudUrl || (R2_BASE && ch.pdfUrl ? `${R2_BASE}/ncert/${book.code || ''}/${ch.pdfUrl.split('/').pop()}` : null),
+      proxyUrl: proxyUrl(ch.pdfUrl),
+    }));
+  }
+
+  // 2. Otherwise derive from NCERT zip or code
+  if (book.source === 'NCERT' && (book.url || book.code)) {
+    const match = book.url ? book.url.match(/\/pdf\/([a-z0-9]+)dd\.zip/i) : null;
+    const code = match ? match[1].toLowerCase() : (book.code ? book.code.toLowerCase() : null);
 
     if (code) {
-      const count = NCERT_CHAPTER_COUNTS[code] || 6;
-      const namesList = NCERT_CHAPTER_NAMES[code] || [];
+      const allCounts = { ...NCERT_CHAPTER_COUNTS, ...NCERT_FULL_CHAPTER_COUNTS };
+      const allNames = { ...NCERT_CHAPTER_NAMES, ...NCERT_FULL_CHAPTER_NAMES };
+      const count = allCounts[code] || (allNames[code]?.length) || 6;
+      const namesList = allNames[code] || [];
       const list = [
         {
           id: 'ps',
           name: '0. Prelims & Index',
           pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}ps.pdf`,
           cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}ps.pdf` : null,
+          proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}ps.pdf`),
         },
       ];
 
@@ -168,6 +185,7 @@ export function getChapterPdfUrls(book) {
           name: chapterTitle,
           pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`,
           cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}${numStr}.pdf` : null,
+          proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`),
         });
       }
 
@@ -176,6 +194,7 @@ export function getChapterPdfUrls(book) {
         name: `${count + 1}. Answers & Solutions`,
         pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}an.pdf`,
         cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}an.pdf` : null,
+        proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}an.pdf`),
       });
 
       return list;
@@ -187,11 +206,17 @@ export function getChapterPdfUrls(book) {
   ];
 }
 
-const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/proxy';
+const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/pdf';
 
 export function proxyUrl(originalUrl) {
   if (!originalUrl) return '';
-  if (originalUrl.startsWith('/api/proxy') || originalUrl.startsWith('/pdf/proxy')) return originalUrl;
+  if (
+    originalUrl.startsWith('/api/pdf') ||
+    originalUrl.startsWith('/api/proxy') ||
+    originalUrl.startsWith('/pdf/proxy')
+  ) {
+    return originalUrl;
+  }
   return `${PROXY_BASE}?url=${encodeURIComponent(originalUrl)}`;
 }
 

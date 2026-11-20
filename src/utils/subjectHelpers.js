@@ -8,13 +8,14 @@ export const NCERT_CLASSES = [
 ];
 
 export const SUBJECT_ICONS = {
-  Physics: '⚛️', Chemistry: '🧪', Mathematics: '📐', Biology: '🧬',
+  Physics: '⚛️', Chemistry: '🧪', Mathematics: '📐', Maths: '📐', Biology: '🧬',
   English: '📖', Hindi: '📜', History: '🏛️', Geography: '🌍',
   Economics: '📊', 'Political Science': '🗳️', Sociology: '👥',
-  Psychology: '🧠', 'Computer Science': '💻', 'Informatics Practices': '🖥️',
+  Psychology: '🧠', 'Computer Science': '💻', 'Informatics Practices': '🖥️', 'Computer Science / IP': '💻',
   Accountancy: '🧾', 'Business Studies': '💼', Sanskrit: '🕉️',
-  'Physical Education': '🏃', 'Fine Arts': '🎨', Music: '🎵',
+  'Physical Education': '🏃', PE: '🏃', 'Fine Arts': '🎨', Music: '🎵',
   Science: '🔬', 'Social Science': '🌐', 'Environmental Science': '🌿',
+  'Environmental Studies (EVS)': '🌱', EVS: '🌱',
   'Home Science': '🏠', Urdu: '✒️', Philosophy: '🤔', 'Literature & Classics': '📜',
   'Finance & Commerce': '💹', Medical: '🩺', Astronomy: '🌌', Law: '⚖️',
 };

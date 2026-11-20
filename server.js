@@ -1004,8 +1004,8 @@ function fetchUrl(url, attempt = 1) {
   });
 }
 
-/* ── /pdf/proxy & /api/proxy ─────────────────────────────────────── */
-app.get(['/pdf/proxy', '/api/proxy'], async (req, res) => {
+/* ── /pdf/proxy & /api/proxy & /api/pdf ─────────────────────────────────────── */
+app.get(['/pdf/proxy', '/api/proxy', '/api/pdf'], async (req, res) => {
   const { url } = req.query;
 
   if (!url || typeof url !== 'string') {
@@ -1033,8 +1033,22 @@ app.get(['/pdf/proxy', '/api/proxy'], async (req, res) => {
 
     res.setHeader('Content-Type',   contentType);
     res.setHeader('Content-Length', buffer.length);
-    res.setHeader('Cache-Control',  'public, max-age=86400');
+    res.setHeader('Accept-Ranges',  'bytes');
+    res.setHeader('Cache-Control',  'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
     res.setHeader('X-Proxy-Cache',  'HIT');
+
+    const range = req.headers.range;
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : buffer.length - 1;
+      const chunksize = (end - start) + 1;
+      res.status(206);
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${buffer.length}`);
+      res.setHeader('Content-Length', chunksize);
+      return res.send(buffer.subarray(start, end + 1));
+    }
+
     return res.send(buffer);
   }
 
@@ -1049,8 +1063,22 @@ app.get(['/pdf/proxy', '/api/proxy'], async (req, res) => {
 
     res.setHeader('Content-Type',   contentType);
     res.setHeader('Content-Length', buffer.length);
-    res.setHeader('Cache-Control',  'public, max-age=86400');
+    res.setHeader('Accept-Ranges',  'bytes');
+    res.setHeader('Cache-Control',  'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400');
     res.setHeader('X-Proxy-Cache',  'MISS');
+
+    const range = req.headers.range;
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : buffer.length - 1;
+      const chunksize = (end - start) + 1;
+      res.status(206);
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${buffer.length}`);
+      res.setHeader('Content-Length', chunksize);
+      return res.send(buffer.subarray(start, end + 1));
+    }
+
     res.send(buffer);
   } catch (err) {
     console.error(`[Proxy] ❌ Failed: ${decoded}\n  → ${err.message}`);

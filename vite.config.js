@@ -66,10 +66,10 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       const responseHeaders = {
         'Content-Type': proxyRes.headers['content-type'] || 'application/pdf',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type',
+        'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type, Accept, Authorization',
         'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
         'Accept-Ranges': 'bytes',
-        'Cache-Control': 'public, max-age=86400, immutable',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
       };
 
       if (proxyRes.headers['content-length']) {
@@ -122,7 +122,7 @@ function authAndPdfDevPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         // Handle PDF Proxy
-        if (req.url.startsWith('/api/proxy') || req.url.startsWith('/pdf/proxy')) {
+        if (req.url.startsWith('/api/proxy') || req.url.startsWith('/pdf/proxy') || req.url.startsWith('/api/pdf')) {
           const rawUrl = req.url.split('?')[1] || '';
           const urlParams = new URLSearchParams(rawUrl);
           const targetUrl = urlParams.get('url');

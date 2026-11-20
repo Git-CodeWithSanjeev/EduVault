@@ -1,6 +1,6 @@
-import { NCERT_INDEX, ncertBooks } from './ncertBooksData';
-import { openstaxBooks } from './openstaxBooksData';
-import { openlibraryBooks, OPENLIBRARY_INDEX } from './openlibraryBooksData';
+import { NCERT_INDEX, ncertBooks } from './ncertBooksData.js';
+import { openstaxBooks } from './openstaxBooksData.js';
+import { openlibraryBooks, OPENLIBRARY_INDEX } from './openlibraryBooksData.js';
 
 export { openlibraryBooks, OPENLIBRARY_INDEX };
 
@@ -387,7 +387,7 @@ export const otherItems = [
 
 export function hasAccessiblePdf(item) {
   if (!item) return false;
-  if (item.source === 'NCERT' && item.url && item.url.includes('dd.zip')) return true;
+  if (item.source === 'NCERT' && (item.chapters?.length || item.code || (item.url && item.url.includes('dd.zip')))) return true;
   if (item.source === 'OpenStax' && item.pdfUrl && item.pdfUrl.endsWith('.pdf')) return true;
   if (item.source === 'Open Library' && item.pdfUrl && item.pdfUrl.endsWith('.pdf')) return true;
   if (item.pdfUrl && item.pdfUrl.toLowerCase().includes('.pdf')) return true;
