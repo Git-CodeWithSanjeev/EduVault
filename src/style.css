@@ -15,10 +15,10 @@
     --p-dark: #0a433b;
     --p-gradient: linear-gradient(135deg, #0F5E53 0%, #0a433b 100%);
     --p-glow: rgba(15, 94, 83, 0.2);
-    --bg: #F4F9F8;
-    --bg2: #E6F4F1;
-    --tonal: #E6F4F1;
-    --tonal-hover: #d8ede8;
+    --bg: #EAF3F2;
+    --bg2: #E5F1EE;
+    --tonal: #E5F1EE;
+    --tonal-hover: #d5eee7;
     --card: #ffffff;
     --ink: #0f172a;
     --ink2: #1e293b;
@@ -3668,6 +3668,7 @@ nav a.active {
 }
 
 @media (min-width: 1024px) {
+
     .mobile-nav-toggle,
     .mobile-search-btn {
         display: none !important;
@@ -3678,6 +3679,7 @@ nav a.active {
     .mobile-nav-toggle {
         display: none !important;
     }
+
     .mobile-drawer-overlay,
     .mobile-drawer {
         display: none !important;
@@ -5580,6 +5582,7 @@ div[id^="adobe-pdf-view"] [class*="HeaderLeft"] {
 .wishlist-btn-float {
     transition: transform 0.15s ease, background 0.15s ease;
 }
+
 .wishlist-btn-float:hover {
     transform: scale(1.08);
 }

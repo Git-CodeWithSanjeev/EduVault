@@ -550,20 +550,30 @@ export function Shell({ children, welcomeMsg }) {
             </NavLink>
           </div>
 
-          <footer className="main-site-footer">
-            <div className="footer-brand-section">
-              <Link to="/" className="footer-logo-link" aria-label="EduVault Home">
-                <img src="/logo.png" alt="EduVault" className="footer-brand-logo" />
-              </Link>
-              <span className="footer-tagline">Learn openly. Share responsibly.</span>
+          <footer className="main-site-footer" style={{
+            maxWidth: '1240px',
+            margin: '0 auto',
+            padding: '24px 24px 32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px',
+            background: 'transparent',
+            borderTop: 'none',
+            boxSizing: 'border-box',
+          }}>
+            <div style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
+              <span style={{ fontWeight: 800, color: '#0f172a' }}>EduVault</span>
+              <span style={{ margin: '0 8px', color: '#94a3b8' }}>·</span>
+              <span>Learn openly. Share responsibly.</span>
             </div>
 
-            <div className="footer-links-group">
-              <Link to="/about" className="footer-nav-link">About</Link>
-              <Link to="/copyright" className="footer-nav-link">Copyright &amp; takedown</Link>
-              <Link to="/privacy" className="footer-nav-link">Privacy Policy</Link>
-              <Link to="/terms" className="footer-nav-link">Terms</Link>
-              <Link to="/contact" className="footer-nav-link">Contact</Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '22px', fontSize: '13px' }}>
+              <Link to="/about" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>About</Link>
+              <Link to="/privacy" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Privacy</Link>
+              <Link to="/terms" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Terms</Link>
+              <Link to="/contact" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Contact</Link>
             </div>
           </footer>
         </>

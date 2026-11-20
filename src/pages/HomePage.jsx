@@ -12,10 +12,10 @@ export function Home({ saved = [], toggle = () => {} }) {
 
   // Subjects configuration matching the design
   const subjects = [
-    { id: 'Mathematics', label: 'Mathematics', icon: 'π' },
-    { id: 'Physics', label: 'Physics', icon: '⚛' },
-    { id: 'Chemistry', label: 'Chemistry', icon: '🧪' },
-    { id: 'Computer Science', label: 'Computer Science', icon: '</>' },
+    { id: 'Mathematics', label: 'Mathematics' },
+    { id: 'Physics', label: 'Physics' },
+    { id: 'Chemistry', label: 'Chemistry' },
+    { id: 'Computer Science', label: 'Computer Science' },
   ];
 
   // Grade levels configuration matching the design
@@ -49,8 +49,52 @@ export function Home({ saved = [], toggle = () => {} }) {
     } catch (_) {}
   }, []);
 
-  // Filtered Video Playlists (Capped to 6 cards initially)
+  // Canonical 3 video playlists from the target design
+  const canonicalVideos = useMemo(() => [
+    {
+      id: 'class-12-quantum-mechanics',
+      videoId: 'quantum-mechanics',
+      title: 'Introduction to Quantum Mechanics',
+      description: 'Introduction to quantum mechanics covering video, particle duality and theoretical fundamentals.',
+      channel: 'Creator/Semenviraret',
+      tier: 'Class 12',
+      level: 'Class 12',
+      duration: '12 Hours · 24 Videos',
+      theme: 'quantum',
+      badgePosition: 'left',
+    },
+    {
+      id: 'ug-organic-chemistry',
+      videoId: 'organic-chemistry',
+      title: 'Organic Chemistry Masterclass',
+      description: 'Organic chemistry masterclass on reaction mechanisms, functional groups, and molecular synthesis.',
+      channel: 'Creator James Miller',
+      tier: 'Undergraduate (UG)',
+      level: 'UG',
+      duration: '12 Hours · 24 Videos',
+      theme: 'organic-chem',
+      badgePosition: 'right',
+    },
+    {
+      id: 'cs-masterclass',
+      videoId: 'cs-masterclass-vid',
+      title: 'Computer Science Masterclass',
+      description: 'Learn computational thinking, data structures, algorithms, and full-stack software development.',
+      channel: 'Creator/Earah Jankins',
+      tier: 'Class 12',
+      level: 'Class 12',
+      duration: '12 Hours · 24 Videos',
+      theme: 'cs-tech',
+      badgePosition: 'left',
+    },
+  ], []);
+
+  // Filtered Video Playlists (Curated 3 cards matching design by default)
   const filteredVideos = useMemo(() => {
+    if (selectedSubject === 'Mathematics' && selectedGrade === 'Class 10') {
+      return canonicalVideos;
+    }
+
     const sLower = selectedSubject.toLowerCase();
     const gLower = selectedGrade.toLowerCase();
 
@@ -74,25 +118,56 @@ export function Home({ saved = [], toggle = () => {} }) {
       return matchSubject || matchGrade;
     });
 
-    // Fallback: If strict combination yields fewer than 3, return popular curated masterclasses
     if (matches.length < 3) {
-      return educationalGalleryData.slice(0, 6);
+      return canonicalVideos;
     }
-    return matches.slice(0, 6);
-  }, [selectedSubject, selectedGrade]);
+    return matches.slice(0, 3);
+  }, [selectedSubject, selectedGrade, canonicalVideos]);
+
+  // Canonical 4 textbooks matching the target design
+  const canonicalBooks = useMemo(() => [
+    {
+      id: 'ncert-leph1',
+      title: 'Physics Part 1',
+      author: 'NCERT',
+      level: 'Class 12',
+      coverBadge: 'NCERT · Class 12',
+      subject: 'Physics',
+    },
+    {
+      id: 'ncert-kech1',
+      title: 'Comprehensive Chemistry',
+      author: 'NCERT',
+      level: 'Class 11',
+      coverBadge: 'NCERT · Class 11',
+      subject: 'Chemistry',
+    },
+    {
+      id: 'biology',
+      title: 'Biology: Life Sciences',
+      author: 'OpenStax',
+      level: 'Class 12',
+      coverBadge: 'OpenStax · Biology',
+      subject: 'Biology',
+    },
+    {
+      id: 'cs50-harvard',
+      title: 'CS50: Introduction to Computer Science',
+      author: 'David J. Malan',
+      level: 'Class 12',
+      coverBadge: 'Harvard · CS50',
+      subject: 'Computer Science',
+    },
+  ], []);
 
   // Featured Textbooks (4 items matching design)
   const featuredBooks = useMemo(() => {
-    const allBooks = [...ncertBooks, ...items];
-    const sLower = selectedSubject.toLowerCase();
-
-    // Default 4 canonical textbooks from design
-    const defaultIds = ['ncert-leph1', 'ncert-lech1', 'biology', 'cs50-harvard'];
-    const canonicalBooks = defaultIds.map((id) => allBooks.find((b) => b.id === id)).filter(Boolean);
-
     if (selectedSubject === 'Mathematics') {
       return canonicalBooks;
     }
+
+    const allBooks = [...ncertBooks, ...items];
+    const sLower = selectedSubject.toLowerCase();
 
     const matches = allBooks.filter((b) => {
       const bSub = (b.subject || b.category || '').toLowerCase();
@@ -104,7 +179,7 @@ export function Home({ saved = [], toggle = () => {} }) {
       return matches.slice(0, 4);
     }
     return canonicalBooks;
-  }, [selectedSubject, selectedGrade]);
+  }, [selectedSubject, canonicalBooks]);
 
   // Horizontal pill scroll chevrons
   const pillsRef = useRef(null);
@@ -118,13 +193,6 @@ export function Home({ saved = [], toggle = () => {} }) {
     setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 6);
   };
 
-  const scrollPills = (dir) => {
-    const el = pillsRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir === 'left' ? -220 : 220, behavior: 'smooth' });
-    setTimeout(checkScroll, 250);
-  };
-
   useEffect(() => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
@@ -132,28 +200,28 @@ export function Home({ saved = [], toggle = () => {} }) {
   }, []);
 
   return (
-    <div style={{ background: '#F4F9F8', minHeight: '100vh', paddingBottom: '60px' }}>
+    <div style={{ background: '#EAF3F2', minHeight: '100vh', paddingBottom: '60px' }}>
       {/* ─── 1. TWO-TONE HERO SECTION ─── */}
       <section
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1240px',
           margin: '0 auto',
-          padding: '40px 24px 32px',
+          padding: '36px 24px 28px',
         }}
       >
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '36px',
+            gap: '32px',
             alignItems: 'center',
           }}
         >
           {/* Left Hero Content */}
-          <div style={{ maxWidth: '580px' }}>
+          <div style={{ maxWidth: '560px' }}>
             <h1
               style={{
-                fontSize: 'clamp(32px, 4.2vw, 48px)',
+                fontSize: 'clamp(32px, 4.2vw, 46px)',
                 lineHeight: 1.18,
                 fontWeight: 800,
                 color: '#0f172a',
@@ -167,7 +235,7 @@ export function Home({ saved = [], toggle = () => {} }) {
 
             <p
               style={{
-                fontSize: '15.5px',
+                fontSize: '15px',
                 color: '#475569',
                 lineHeight: 1.6,
                 margin: '0 0 24px',
@@ -200,9 +268,9 @@ export function Home({ saved = [], toggle = () => {} }) {
               <Link
                 to="/videos"
                 style={{
-                  background: '#E6F4F1',
+                  background: 'transparent',
                   color: '#0F5E53',
-                  padding: '12px 22px',
+                  padding: '12px 18px',
                   borderRadius: '12px',
                   fontWeight: 700,
                   fontSize: '14px',
@@ -213,7 +281,7 @@ export function Home({ saved = [], toggle = () => {} }) {
                   transition: 'all 0.18s ease',
                 }}
               >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
                   <circle cx="12" cy="12" r="10" />
                   <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
                 </svg>
@@ -230,17 +298,17 @@ export function Home({ saved = [], toggle = () => {} }) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '20px',
-              minHeight: '280px',
+              padding: '16px',
+              minHeight: '270px',
             }}
           >
             {/* Soft Mint Wave Glow */}
             <div
               style={{
                 position: 'absolute',
-                inset: '10px 20px',
-                background: 'radial-gradient(circle at 55% 50%, #d8f3ec 0%, #e6f4f1 65%, transparent 85%)',
-                borderRadius: '36px',
+                inset: '0 10px',
+                background: 'radial-gradient(ellipse at 50% 50%, #d5eee7 0%, #def2ed 60%, transparent 85%)',
+                borderRadius: '40px',
                 zIndex: 0,
               }}
             />
@@ -256,7 +324,7 @@ export function Home({ saved = [], toggle = () => {} }) {
                 width: 'auto',
                 maxWidth: '100%',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 8px 24px rgba(15, 94, 83, 0.15))',
+                filter: 'drop-shadow(0 8px 24px rgba(15, 94, 83, 0.12))',
               }}
             />
 
@@ -268,17 +336,17 @@ export function Home({ saved = [], toggle = () => {} }) {
                 marginTop: '12px',
                 background: '#ffffff',
                 borderRadius: '9999px',
-                padding: '7px 18px',
-                boxShadow: '0 4px 16px rgba(15, 94, 83, 0.08)',
+                padding: '7px 20px',
+                boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
                 fontSize: '12px',
                 fontWeight: 700,
                 color: '#0f172a',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '10px',
               }}
             >
-              <span>⭐ 200+ Open Books</span>
+              <span style={{ color: '#0F5E53' }}>⭐ 200+ Open Books</span>
               <span style={{ color: '#cbd5e1' }}>·</span>
               <span style={{ color: '#0F5E53' }}>100% Free &amp; Verified</span>
             </div>
@@ -287,28 +355,28 @@ export function Home({ saved = [], toggle = () => {} }) {
       </section>
 
       {/* ─── 2. BORDERLESS ELEVATED FILTER BAR ─── */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 28px' }}>
+      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 18px' }}>
         <div
           style={{
             background: '#ffffff',
-            borderRadius: '16px',
-            boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
-            padding: '16px 20px',
+            borderRadius: '20px',
+            boxShadow: '0 4px 20px rgba(15, 94, 83, 0.05)',
+            padding: '18px 24px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
+            gap: '14px',
             position: 'relative',
           }}
         >
           {/* Row 1: SUBJECTS */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', overflow: 'hidden' }}>
             <span
               style={{
                 fontSize: '11px',
                 fontWeight: 800,
                 color: '#64748b',
                 letterSpacing: '0.6px',
-                width: '80px',
+                width: '84px',
                 flexShrink: 0,
               }}
             >
@@ -335,23 +403,19 @@ export function Home({ saved = [], toggle = () => {} }) {
                     type="button"
                     onClick={() => setSelectedSubject(sub.id)}
                     style={{
-                      background: isActive ? '#0F5E53' : '#E6F4F1',
-                      color: isActive ? '#ffffff' : '#0F5E53',
+                      background: isActive ? '#0F5E53' : '#E5F1EE',
+                      color: isActive ? '#ffffff' : '#334155',
                       border: 'none',
                       borderRadius: '9999px',
-                      padding: '7px 16px',
+                      padding: '7px 18px',
                       fontSize: '13px',
-                      fontWeight: isActive ? 700 : 600,
+                      fontWeight: isActive ? 700 : 500,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    <span>{sub.icon}</span>
-                    <span>{sub.label}</span>
+                    {sub.label}
                   </button>
                 );
               })}
@@ -359,14 +423,14 @@ export function Home({ saved = [], toggle = () => {} }) {
           </div>
 
           {/* Row 2: GRADE */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <span
               style={{
                 fontSize: '11px',
                 fontWeight: 800,
                 color: '#64748b',
                 letterSpacing: '0.6px',
-                width: '80px',
+                width: '84px',
                 flexShrink: 0,
               }}
             >
@@ -390,13 +454,13 @@ export function Home({ saved = [], toggle = () => {} }) {
                     type="button"
                     onClick={() => setSelectedGrade(gr.id)}
                     style={{
-                      background: isActive ? '#0F5E53' : '#E6F4F1',
-                      color: isActive ? '#ffffff' : '#0F5E53',
+                      background: isActive ? '#0F5E53' : '#E5F1EE',
+                      color: isActive ? '#ffffff' : '#334155',
                       border: 'none',
                       borderRadius: '9999px',
-                      padding: '7px 16px',
+                      padding: '7px 18px',
                       fontSize: '13px',
-                      fontWeight: isActive ? 700 : 600,
+                      fontWeight: isActive ? 700 : 500,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.15s ease',
@@ -411,54 +475,11 @@ export function Home({ saved = [], toggle = () => {} }) {
         </div>
       </section>
 
-      {/* ─── 3. POPULAR VIDEO PLAYLISTS (3-COLUMN 16:9 CARDS) ─── */}
-      <section
-        style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '0 24px 36px',
-          contentVisibility: 'auto',
-          containIntrinsicSize: '0 500px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
-            Popular Video Playlists
-          </h2>
-          <Link
-            to="/videos"
-            style={{
-              color: '#0F5E53',
-              fontWeight: 700,
-              fontSize: '13.5px',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            View All →
-          </Link>
-        </div>
-
+      {/* ─── 3. CONTINUE LEARNING STRIP ─── */}
+      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 32px' }}>
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: '24px',
-          }}
-        >
-          {filteredVideos.map((vid, idx) => (
-            <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
-          ))}
-        </div>
-      </section>
-
-      {/* ─── 4. CONTINUE LEARNING STRIP ─── */}
-      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px 32px' }}>
-        <div
-          style={{
-            background: '#E6F4F1',
+            background: '#D9EFEA',
             borderRadius: '16px',
             padding: '14px 22px',
             display: 'flex',
@@ -468,16 +489,15 @@ export function Home({ saved = [], toggle = () => {} }) {
             gap: '14px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '18px' }}>📖</span>
-            <span style={{ fontWeight: 700, fontSize: '14px', color: '#0F5E53' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: 800, fontSize: '14px', color: '#0F5E53' }}>
               Continue Learning: {recentBook.title}
             </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '80px', height: '8px', background: '#ccebe4', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: `${recentBook.progress}%`, height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
+            <div style={{ width: '64px', height: '8px', background: '#B8E0D7', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ width: '60%', height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
             </div>
 
             <Link
@@ -500,10 +520,53 @@ export function Home({ saved = [], toggle = () => {} }) {
         </div>
       </section>
 
+      {/* ─── 4. POPULAR VIDEO PLAYLISTS (3-COLUMN 16:9 CARDS) ─── */}
+      <section
+        style={{
+          maxWidth: '1240px',
+          margin: '0 auto',
+          padding: '0 24px 36px',
+          contentVisibility: 'auto',
+          containIntrinsicSize: '0 500px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+            Popular Video Playlists
+          </h2>
+          <Link
+            to="/videos"
+            style={{
+              color: '#0F5E53',
+              fontWeight: 700,
+              fontSize: '13.5px',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            View All →
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))',
+            gap: '24px',
+          }}
+        >
+          {filteredVideos.map((vid, idx) => (
+            <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
+          ))}
+        </div>
+      </section>
+
       {/* ─── 5. FEATURED TEXTBOOKS (4-COLUMN 3:4 CARDS) ─── */}
       <section
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1240px',
           margin: '0 auto',
           padding: '0 24px 20px',
           contentVisibility: 'auto',
@@ -511,7 +574,7 @@ export function Home({ saved = [], toggle = () => {} }) {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.3px' }}>
             Featured Textbooks
           </h2>
           <Link
@@ -533,7 +596,7 @@ export function Home({ saved = [], toggle = () => {} }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '20px',
           }}
         >

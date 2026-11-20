@@ -1,11 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookCover } from './BookCover';
-import { ExternalLink } from './ResourceGrid';
 
 export function BookCard({ item, isSaved, onSaveToggle, style }) {
-  const sourceName = item.source || (item.author ? item.author.split(',')[0] : 'Open Library');
-  const levelText = item.level || (item.classNum ? `Class ${item.classNum}` : 'Open');
+  const sourceName = item.author || item.source || 'NCERT';
+  const levelText = item.level || (item.classNum ? `Class ${item.classNum}` : 'Class 12');
+
+  // Specific level badge styles matching the mockup
+  let levelBg = '#e0f2fe';
+  let levelColor = '#0369a1';
+  let avatarBg = '#0284c7';
+
+  const sLower = ((item.title || '') + ' ' + (item.subject || '') + ' ' + sourceName).toLowerCase();
+
+  if (sLower.includes('chem') || levelText.includes('11')) {
+    levelBg = '#ffedd5';
+    levelColor = '#c2410c';
+    avatarBg = '#ea580c';
+  } else if (sLower.includes('bio') || sLower.includes('cs50') || sourceName.includes('David')) {
+    levelBg = '#dcfce7';
+    levelColor = '#15803d';
+    avatarBg = '#16a34a';
+  }
 
   return (
     <article
@@ -24,49 +40,6 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
       }}
     >
-      {/* Top-Right Floating Bookmark Save Button */}
-      <button
-        type="button"
-        className={`wishlist-btn-float ${isSaved ? 'saved' : ''}`}
-        onClick={(e) => {
-          e.preventDefault();
-          onSaveToggle(item.id);
-        }}
-        title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
-        aria-label={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
-        style={{
-          position: 'absolute',
-          top: '18px',
-          right: '18px',
-          zIndex: 6,
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          background: isSaved ? '#0F5E53' : 'rgba(255, 255, 255, 0.92)',
-          color: isSaved ? '#ffffff' : '#334155',
-          border: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.18)',
-          transition: 'all 0.15s ease',
-        }}
-      >
-        <svg
-          width="15"
-          height="15"
-          viewBox="0 0 24 24"
-          fill={isSaved ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-        </svg>
-      </button>
-
       {/* 3:4 Subject-Coded Book Cover */}
       <Link to={'/read/' + item.id} style={{ display: 'block', textDecoration: 'none' }}>
         <BookCover item={item} />
@@ -94,27 +67,39 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
         </h3>
 
         {/* Source & Level Tonal Pills */}
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span
+              style={{
+                width: '18px',
+                height: '18px',
+                borderRadius: '50%',
+                background: avatarBg,
+                color: '#ffffff',
+                fontSize: '10px',
+                fontWeight: 800,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {sourceName.slice(0, 1).toUpperCase()}
+            </span>
+            <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569' }}>
+              {sourceName}
+            </span>
+          </div>
+
           <span
             style={{
-              background: '#E6F4F1',
-              color: '#0F5E53',
+              background: levelBg,
+              color: levelColor,
               borderRadius: '6px',
               padding: '2px 8px',
-              fontSize: '11px',
+              fontSize: '10.5px',
               fontWeight: 700,
-            }}
-          >
-            {sourceName}
-          </span>
-          <span
-            style={{
-              background: '#f1f5f9',
-              color: '#475569',
-              borderRadius: '6px',
-              padding: '2px 8px',
-              fontSize: '11px',
-              fontWeight: 600,
+              marginLeft: 'auto',
             }}
           >
             {levelText}
@@ -139,11 +124,9 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
               padding: '8px 12px',
               fontSize: '12px',
               fontWeight: 700,
-              textDecoration: 'none',
               textAlign: 'center',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              textDecoration: 'none',
+              boxShadow: '0 2px 6px rgba(15, 94, 83, 0.2)',
               transition: 'background 0.15s ease',
             }}
           >
@@ -152,17 +135,14 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           <Link
             to={'/resource/' + item.id}
             style={{
-              background: '#f1f5f9',
-              color: '#334155',
+              background: '#F1F5F4',
+              color: '#475569',
               borderRadius: '8px',
               padding: '8px 12px',
               fontSize: '12px',
-              fontWeight: 700,
-              textDecoration: 'none',
+              fontWeight: 600,
               textAlign: 'center',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              textDecoration: 'none',
               transition: 'background 0.15s ease',
             }}
           >
