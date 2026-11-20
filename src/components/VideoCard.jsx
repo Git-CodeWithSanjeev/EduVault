@@ -232,43 +232,44 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
             />
           ))}
 
-          {/* Top Left Badge: Class 12 */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '8px',
-              left: '8px',
-              zIndex: 3,
-              background: '#0369a1',
-              color: '#ffffff',
-              fontSize: '10px',
-              fontWeight: 700,
-              padding: '2px 7px',
-              borderRadius: '5px',
-              letterSpacing: '0.2px',
-            }}
-          >
-            Class 12
-          </span>
-
-          {/* Top Right Badge: UG */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              zIndex: 3,
-              background: '#047857',
-              color: '#ffffff',
-              fontSize: '10px',
-              fontWeight: 700,
-              padding: '2px 7px',
-              borderRadius: '5px',
-              letterSpacing: '0.2px',
-            }}
-          >
-            UG
-          </span>
+          {/* Single Level Badge (UG on right, or Class on left) */}
+          {isRightBadge ? (
+            <span
+              style={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                zIndex: 3,
+                background: '#047857',
+                color: '#ffffff',
+                fontSize: '10px',
+                fontWeight: 700,
+                padding: '2px 7px',
+                borderRadius: '5px',
+                letterSpacing: '0.2px',
+              }}
+            >
+              {levelBadge}
+            </span>
+          ) : (
+            <span
+              style={{
+                position: 'absolute',
+                top: '8px',
+                left: '8px',
+                zIndex: 3,
+                background: '#0369a1',
+                color: '#ffffff',
+                fontSize: '10px',
+                fontWeight: 700,
+                padding: '2px 7px',
+                borderRadius: '5px',
+                letterSpacing: '0.2px',
+              }}
+            >
+              {levelBadge}
+            </span>
+          )}
 
           {/* Centered Circular Play Button */}
           <div

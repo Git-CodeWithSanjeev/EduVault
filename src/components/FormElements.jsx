@@ -48,9 +48,10 @@ export function PasswordInput({
 export function AuthAlert({ type = 'error', message }) {
   if (!message) return null;
   const isError = type === 'error';
+  const alertClass = isError ? 'auth-error' : (type === 'info' ? 'auth-info' : 'auth-success');
   return (
     <div
-      className={isError ? 'auth-error' : 'auth-success'}
+      className={alertClass}
       role={isError ? 'alert' : 'status'}
     >
       {message}
