@@ -79,8 +79,11 @@ function SubjectWatermark({ subject, category, title }) {
 export function BookCover({ item }) {
   const [imgError, setImgError] = React.useState(false);
   const colorClass = getSubjectColorClass(item.subject, item.category, item.title);
+  // ncert.nic.in image domains fail with SSL/timeout, causing empty grey boxes.
+  // We prioritize the clean subject-coded typography cover for NCERT items.
+  const hasValidExternalCover = item.coverUrl && !item.coverUrl.includes('ncert.nic.in') && !imgError;
 
-  if (item.coverUrl && !imgError) {
+  if (hasValidExternalCover) {
     return (
       <div className={`cover cover-with-image ${colorClass}`}>
         <div className="cover-image-wrapper">

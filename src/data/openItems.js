@@ -398,6 +398,7 @@ export const items = [
   ...ncertBooks.filter(hasAccessiblePdf),
   ...openstaxBooks.filter(hasAccessiblePdf),
   ...openlibraryBooks.filter(hasAccessiblePdf),
+  ...otherItems,
 ];
 
 

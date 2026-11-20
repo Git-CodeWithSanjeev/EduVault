@@ -26,3 +26,4 @@ export { AuthCallback as AuthCallbackPage, AuthCallback } from './AuthCallbackPa
 export { AdminPanel as AdminDashboardPage, AdminPanel } from './AdminDashboardPage';
 export { Form as ContributeReportPage, Form } from './ContributeReportPage';
 export { Outbound as OutboundGatewayPage, Outbound } from './OutboundGatewayPage';
+export { StaticInfoPage } from './StaticInfoPage';

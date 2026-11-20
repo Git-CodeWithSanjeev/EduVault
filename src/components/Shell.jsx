@@ -34,9 +34,9 @@ export function Shell({ children, welcomeMsg }) {
   const [recentSearches, setRecentSearches] = useState(() => {
     try {
       const saved = localStorage.getItem('eduvault_recent_searches');
-      return saved ? JSON.parse(saved) : ['Class 12 Physics', 'Chemistry NCERT', 'Python Programming', 'Calculus'];
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return ['Class 12 Physics', 'Chemistry NCERT', 'Python Programming', 'Calculus'];
+      return [];
     }
   });
 
@@ -72,6 +72,7 @@ export function Shell({ children, welcomeMsg }) {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setSearchModalOpen(false);
+        setDrawerOpen(false);
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -321,15 +322,21 @@ export function Shell({ children, welcomeMsg }) {
                 style={{
                   background: 'transparent',
                   border: 0,
-                  fontSize: '22px',
+                  fontSize: '18px',
                   cursor: 'pointer',
                   color: 'var(--ink)',
                   minHeight: '44px',
                   minWidth: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
                 aria-label="Close Mobile Navigation Menu"
               >
-                ✕
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
             <nav className="mobile-drawer-nav">
@@ -347,14 +354,14 @@ export function Shell({ children, welcomeMsg }) {
                   <line x1="9" y1="7" x2="15" y2="7" />
                   <line x1="9" y1="11" x2="13" y2="11" />
                 </svg>
-                <span>Textbook Library</span>
+                <span>Library</span>
               </NavLink>
               <NavLink to="/videos" onClick={closeDrawer}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="3" width="20" height="18" rx="4" />
                   <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
                 </svg>
-                <span>Video Courses</span>
+                <span>Videos</span>
               </NavLink>
               <NavLink to="/categories" onClick={closeDrawer}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -363,13 +370,13 @@ export function Shell({ children, welcomeMsg }) {
                   <rect x="14" y="14" width="7" height="7" rx="1.5" />
                   <rect x="3" y="14" width="7" height="7" rx="1.5" />
                 </svg>
-                <span>Categories &amp; Subjects</span>
+                <span>Categories</span>
               </NavLink>
               <NavLink to="/saved" onClick={closeDrawer}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                 </svg>
-                <span>My Saved List</span>
+                <span>My Library</span>
               </NavLink>
 
               {isLoggedIn ? (
@@ -518,13 +525,11 @@ export function Shell({ children, welcomeMsg }) {
             </div>
 
             <div className="footer-links-group">
+              <Link to="/about" className="footer-nav-link">About</Link>
               <Link to="/copyright" className="footer-nav-link">Copyright &amp; takedown</Link>
-              <Link to="/admin" className="footer-admin-btn" title="Open Admin Console">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                <span>Admin</span>
-              </Link>
+              <Link to="/privacy" className="footer-nav-link">Privacy Policy</Link>
+              <Link to="/terms" className="footer-nav-link">Terms</Link>
+              <Link to="/contact" className="footer-nav-link">Contact</Link>
             </div>
           </footer>
         </>
@@ -569,7 +574,10 @@ export function Shell({ children, welcomeMsg }) {
                 aria-label="Close Modal"
                 title="Close (Esc)"
               >
-                ✕
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 

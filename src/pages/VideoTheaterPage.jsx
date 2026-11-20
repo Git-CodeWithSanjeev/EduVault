@@ -404,7 +404,7 @@ export function VideoTheater() {
               className={`action-btn ${saved ? 'active' : ''}`}
               onClick={() => {
                 if (!isLoggedIn) {
-                  navigate('/login');
+                  navigate('/login', { state: { from: location, notice: 'Please sign in to save video lessons to your library.' } });
                   return;
                 }
                 toggleSave(vid.id || primaryVidId);
@@ -424,35 +424,6 @@ export function VideoTheater() {
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                   </svg>
                   <span>Save</span>
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              className={`action-btn ${bookmarked ? 'active' : ''}`}
-              onClick={() => {
-                if (!isLoggedIn) {
-                  navigate('/login');
-                  return;
-                }
-                toggleBookmark(vid.id || primaryVidId);
-                showToast(bookmarked ? 'Bookmark removed' : 'Bookmarked');
-              }}
-            >
-              {bookmarked ? (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', color: 'var(--p)' }}>
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                  </svg>
-                  <span>Bookmarked</span>
-                </>
-              ) : (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
-                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                  </svg>
-                  <span>Bookmark</span>
                 </>
               )}
             </button>
@@ -540,9 +511,15 @@ export function VideoTheater() {
               <span style={{ fontSize: '11px', fontStyle: 'normal', padding: '4px 10px', borderRadius: '6px', background: '#f1f5f9', color: 'var(--muted)', fontWeight: 700 }}>
                 🌐 {vid.language || 'English'}
               </span>
-              <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>
-                Duration: {activeLesson.duration || vid.duration || '18 min'}
-              </span>
+              {(() => {
+                const rawDur = activeLesson.duration || vid.duration;
+                if (!rawDur || rawDur === 'Video') return null;
+                return (
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700 }}>
+                    ⏱ Runtime: {rawDur}
+                  </span>
+                );
+              })()}
             </div>
 
             <h1 style={{ fontSize: '24px', fontWeight: 800, margin: '8px 0 12px', color: 'var(--ink)', lineHeight: 1.3, letterSpacing: 'normal', wordBreak: 'break-word' }}>

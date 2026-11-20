@@ -75,17 +75,17 @@ export function Detail({ saved = [], toggle = () => {} }) {
         <dd>{b.source === 'Open Library' ? 'Internet Archive & Open Library' : 'Official external source'}</dd>
       </dl>
       <div className="detail-actions">
-        <Link className="detail-button" style={{ background: 'var(--p-gradient)', textDecoration: 'none' }} to={'/read/' + b.id}>
+        <Link className="detail-button detail-primary-cta" to={'/read/' + b.id}>
           📖 Read PDF on EduVault
         </Link>
-        <button onClick={handleToggleSaved}>
-          {saved.includes(b.id) ? 'Remove from saved' : 'Save to my library'}
+        <button type="button" className="detail-button-secondary" onClick={handleToggleSaved}>
+          {saved.includes(b.id) ? '✓ In My Library' : '＋ Save to my library'}
         </button>
-        <ExternalLink item={b}>
+        <ExternalLink item={b} className="detail-button-secondary">
           {b.source === 'NCERT' ? 'Download from NCERT ↗' : (b.source === 'Open Library' ? 'Open on Open Library ↗' : 'Read at official source ↗')}
         </ExternalLink>
         {b.catalog && (
-          <Link to="/go/ncert-catalog">Browse NCERT catalog</Link>
+          <Link to="/go/ncert-catalog" className="detail-button-secondary">Browse NCERT catalog</Link>
         )}
       </div>
     </section>

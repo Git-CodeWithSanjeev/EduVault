@@ -20,6 +20,7 @@ import {
   ResetPasswordPage,
   AuthCallbackPage,
   AdminDashboardPage,
+  StaticInfoPage,
 } from './pages';
 
 const scrollPositionsMap = new Map();
@@ -146,6 +147,10 @@ export function App() {
         <Route path="/admin" element={<AdminDashboardPage />} />
         
         <Route path="/copyright" element={<ContributeReportPage report />} />
+        <Route path="/about" element={<StaticInfoPage />} />
+        <Route path="/privacy" element={<StaticInfoPage />} />
+        <Route path="/terms" element={<StaticInfoPage />} />
+        <Route path="/contact" element={<StaticInfoPage />} />
         <Route
           path="*"
           element={<HomePage saved={saved} toggle={toggle} recentIds={recentIds} />}

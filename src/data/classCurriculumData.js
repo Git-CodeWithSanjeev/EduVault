@@ -7,32 +7,32 @@ export const classCurriculumData = {
   1: {
     className: "Class 1",
     title: "Class 1 (Primary Foundation)",
-    subjects: ["Mathematics", "English", "EVS (Environmental Studies)", "Hindi"],
+    subjects: ["Mathematics", "Science", "English", "Hindi"],
     queries: {
       "Mathematics": "Class 1 Maths numbers addition subtraction Magnet Brains",
+      "Science": "Class 1 EVS environmental studies basic concepts Magnet Brains",
       "English": "Class 1 English stories phonics grammar Khan Academy Kids",
-      "EVS (Environmental Studies)": "Class 1 EVS environmental studies basic concepts Magnet Brains",
       "Hindi": "Class 1 Hindi rhyming stories varnamala Magnet Brains"
     }
   },
   2: {
     className: "Class 2",
     title: "Class 2 (Primary Foundation)",
-    subjects: ["Mathematics", "English", "EVS (Environmental Studies)", "Hindi"],
+    subjects: ["Mathematics", "Science", "English", "Hindi"],
     queries: {
       "Mathematics": "Class 2 Maths counting shapes addition subtraction Magnet Brains",
+      "Science": "Class 2 EVS my body environment habits Magnet Brains",
       "English": "Class 2 English grammar stories vocabulary Magnet Brains",
-      "EVS (Environmental Studies)": "Class 2 EVS my body environment habits Magnet Brains",
       "Hindi": "Class 2 Hindi matrayen stories reading Magnet Brains"
     }
   },
   3: {
     className: "Class 3",
     title: "Class 3 (Primary Foundation)",
-    subjects: ["Mathematics", "Science / EVS", "English", "Social Studies", "Hindi"],
+    subjects: ["Mathematics", "Science", "English", "Social Studies", "Hindi"],
     queries: {
       "Mathematics": "Class 3 Maths multiplication division fractions Magnet Brains",
-      "Science / EVS": "Class 3 Science plants animals environment Magnet Brains",
+      "Science": "Class 3 Science plants animals environment Magnet Brains",
       "English": "Class 3 English NCERT grammar Marigold Magnet Brains",
       "Social Studies": "Class 3 Social Science maps community family Magnet Brains",
       "Hindi": "Class 3 Hindi Rimjhim NCERT complete course Magnet Brains"
@@ -41,10 +41,10 @@ export const classCurriculumData = {
   4: {
     className: "Class 4",
     title: "Class 4 (Primary Foundation)",
-    subjects: ["Mathematics", "Science / EVS", "English", "Social Studies", "Hindi"],
+    subjects: ["Mathematics", "Science", "English", "Social Studies", "Hindi"],
     queries: {
       "Mathematics": "Class 4 Maths building with bricks long short tables Magnet Brains",
-      "Science / EVS": "Class 4 Science EVS living non living organs Magnet Brains",
+      "Science": "Class 4 Science EVS living non living organs Magnet Brains",
       "English": "Class 4 English NCERT Marigold grammar Magnet Brains",
       "Social Studies": "Class 4 Social Studies India history geography Magnet Brains",
       "Hindi": "Class 4 Hindi Rimjhim NCERT full playlist Magnet Brains"
@@ -53,10 +53,10 @@ export const classCurriculumData = {
   5: {
     className: "Class 5",
     title: "Class 5 (Primary Foundation)",
-    subjects: ["Mathematics", "Science / EVS", "English", "Social Studies", "Hindi"],
+    subjects: ["Mathematics", "Science", "English", "Social Studies", "Hindi"],
     queries: {
       "Mathematics": "Class 5 Maths shapes angles area perimeter Magnet Brains",
-      "Science / EVS": "Class 5 Science EVS seeds digest ecosystem Magnet Brains",
+      "Science": "Class 5 Science EVS seeds digest ecosystem Magnet Brains",
       "English": "Class 5 English NCERT grammar Marigold Magnet Brains",
       "Social Studies": "Class 5 Social Science continents globe maps Magnet Brains",
       "Hindi": "Class 5 Hindi Rimjhim NCERT complete playlist Magnet Brains"

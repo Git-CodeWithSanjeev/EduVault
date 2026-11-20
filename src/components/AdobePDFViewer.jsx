@@ -430,6 +430,30 @@ export function AdobePDFViewer({
                 </button>
               )}
 
+              {directReadingUrl && (
+                <a
+                  href={directReadingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: '9px 16px',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 8px rgba(13, 148, 136, 0.25)',
+                  }}
+                >
+                  🚀 Open Official PDF in New Tab ↗
+                </a>
+              )}
+
               <a
                 href={googleDocsViewerUrl}
                 target="_blank"
@@ -473,44 +497,6 @@ export function AdobePDFViewer({
           </div>
         );
       })()}
-
-      {/* 1. Rectangular EduVault Logo Cover */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          height: '38px',
-          padding: '0 14px 0 10px',
-          background: '#ffffff',
-          zIndex: 20,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          border: 'none',
-          boxShadow: 'none',
-          userSelect: 'none',
-        }}
-        title="EduVault Reader"
-      >
-        <img
-          src="/logo.png"
-          alt="EduVault"
-          style={{ height: '22px', width: '22px', objectFit: 'contain' }}
-        />
-        <span
-          style={{
-            fontSize: '13px',
-            fontWeight: 800,
-            color: 'var(--p-dark, #0f766e)',
-            letterSpacing: '-0.2px',
-            whiteSpace: 'nowrap',
-            fontFamily: 'inherit',
-          }}
-        >
-          EduVault
-        </span>
-      </div>
 
       {/* 2. Cover Top-Right 3-Dots Menu (keeps Search icon on the left of it active) */}
       <div

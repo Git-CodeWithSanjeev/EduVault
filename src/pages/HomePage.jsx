@@ -19,7 +19,7 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
   const ncertFeatured = useMemo(() => ncertBooks.slice(0, 15), []);
   const openStaxFeatured = useMemo(() => items.filter((x) => x.source === 'OpenStax'), []);
   const techFeatured = useMemo(
-    () => items.filter((x) => x.category === 'Computer Science & IT' || x.category === 'Engineering'),
+    () => items.filter((x) => (x.category === 'Computer Science & IT' || x.category === 'Engineering') && x.source !== 'OpenStax'),
     [],
   );
 

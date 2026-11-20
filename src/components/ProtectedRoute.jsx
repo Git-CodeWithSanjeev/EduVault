@@ -16,7 +16,11 @@ export function ProtectedRoute({ children }) {
   }
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const isLibrary = location.pathname.includes('saved') || location.pathname.includes('library');
+    const noticeMessage = isLibrary
+      ? 'Please sign in to access your saved library and personal bookmarks.'
+      : 'Please sign in to access this feature.';
+    return <Navigate to="/login" state={{ from: location, notice: noticeMessage }} replace />;
   }
 
   return children;

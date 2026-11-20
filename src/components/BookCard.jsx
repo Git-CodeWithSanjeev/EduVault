@@ -37,7 +37,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
               Details
             </Link>
             <ExternalLink item={item} className="detail external-btn">
-              {item.source === 'NCERT' ? 'Download' : 'Open'}
+              Open ↗
             </ExternalLink>
           </div>
         </div>

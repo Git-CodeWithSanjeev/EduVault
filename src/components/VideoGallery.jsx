@@ -216,6 +216,14 @@ export function VideoGallery({
   const [selectedClassNum, setSelectedClassNum] = useState(() => sessionStorage.getItem('eduvault_vg_class') || 'All');
   const [selectedSubject, setSelectedSubject] = useState(() => sessionStorage.getItem('eduvault_vg_subject') || 'All');
   const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('eduvault_vg_q') || '');
+  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleGroupCount, setVisibleGroupCount] = useState(4);
+
+  // Reset pagination counters whenever filters change
+  useEffect(() => {
+    setVisibleCount(9);
+    setVisibleGroupCount(4);
+  }, [selectedTier, selectedClassNum, selectedSubject, searchQuery]);
 
   useEffect(() => {
     sessionStorage.setItem('eduvault_vg_tier', selectedTier);
@@ -487,18 +495,21 @@ export function VideoGallery({
       {/* Tier 2: Subject-Wise Filter Pills & Live Search Bar */}
       {showFilters && (
         <div style={{ marginBottom: '28px' }}>
-          {/* Subject Pills Row */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              overflowX: 'auto',
-              paddingBottom: '8px',
-              marginBottom: '14px',
-              scrollbarWidth: 'none',
-            }}
-          >
+          {/* Subject Pills Row with right-edge scroll cue fade */}
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                overflowX: 'auto',
+                paddingBottom: '8px',
+                marginBottom: '14px',
+                scrollbarWidth: 'none',
+                maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+              }}
+            >
             <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', marginRight: '4px' }}>
               Subjects:
             </span>
@@ -533,6 +544,7 @@ export function VideoGallery({
                 </button>
               );
             })}
+          </div>
           </div>
 
           {/* Search Input Bar */}
@@ -629,9 +641,9 @@ export function VideoGallery({
           </button>
         </div>
       ) : groupedBySubject ? (
-        /* Render Grouped Subject-wise Sections */
+        /* Render Grouped Subject-wise Sections with Pagination */
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {groupedBySubject.map((group) => (
+          {groupedBySubject.slice(0, visibleGroupCount).map((group) => (
             <div key={group.subjectName} className="subject-section" style={{ borderTop: '1px solid var(--line)', paddingTop: '24px' }}>
               {/* Subject Section Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
@@ -731,6 +743,29 @@ export function VideoGallery({
               )}
             </div>
           ))}
+
+          {visibleGroupCount < groupedBySubject.length && (
+            <div style={{ textAlign: 'center', padding: '16px 0 24px' }}>
+              <button
+                type="button"
+                onClick={() => setVisibleGroupCount((prev) => prev + 4)}
+                style={{
+                  background: 'var(--card, #ffffff)',
+                  color: 'var(--p-dark, #0f766e)',
+                  border: '1.5px solid var(--p, #0d9488)',
+                  padding: '11px 26px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(13, 148, 136, 0.08)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Load More Courses ({groupedBySubject.length - visibleGroupCount} more subject categories) ↓
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         /* Direct Grid for Single Subject Filter or Search Results */
@@ -745,10 +780,33 @@ export function VideoGallery({
           )}
 
           <div className="video-gallery-grid" style={{ '--desktop-cols': columns, marginBottom: '20px' }}>
-            {filteredVideos.map((vid, idx) => (
+            {filteredVideos.slice(0, visibleCount).map((vid, idx) => (
               <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
             ))}
           </div>
+
+          {visibleCount < filteredVideos.length && (
+            <div style={{ textAlign: 'center', padding: '10px 0 24px' }}>
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 9)}
+                style={{
+                  background: 'var(--card, #ffffff)',
+                  color: 'var(--p-dark, #0f766e)',
+                  border: '1.5px solid var(--p, #0d9488)',
+                  padding: '11px 26px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(13, 148, 136, 0.08)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Load More Courses ({filteredVideos.length - visibleCount} remaining) ↓
+              </button>
+            </div>
+          )}
 
           {/* Related Books for this selected subject */}
           {getMatchingBooks(selectedSubject, selectedClassNum, selectedTier).length > 0 && (

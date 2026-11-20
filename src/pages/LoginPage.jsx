@@ -11,6 +11,7 @@ export function Login() {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+  const redirectNotice = location.state?.notice;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,32 +61,6 @@ export function Login() {
 
     setLoading(true);
 
-    // Support Master Admin ID login from the main login form
-    if (cleanInput === 'admin') {
-      try {
-        const adminRes = await fetch('/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: cleanInput, password: password.trim() }),
-        });
-        const adminData = await adminRes.json();
-        if (adminRes.ok && adminData.success) {
-          if (adminData.token) {
-            sessionStorage.setItem('eduvault_admin_token', adminData.token);
-          }
-          sessionStorage.setItem('eduvault_admin_auth', 'true');
-          navigate('/admin');
-          return;
-        } else {
-          setError(adminData.error || 'Invalid Admin ID or Password');
-          setLoading(false);
-          return;
-        }
-      } catch (adminErr) {
-        console.error('[Admin Login Attempt Error]:', adminErr);
-      }
-    }
-
     if (!isValidEmail(cleanInput)) {
       setError('Please enter a valid email address (e.g. name@example.com)');
       setLoading(false);
@@ -117,6 +92,7 @@ export function Login() {
           <p>Choose your preferred sign-in method to access your account.</p>
         </div>
 
+        {redirectNotice && <AuthAlert type="info" message={redirectNotice} />}
         <AuthAlert type="error" message={error} />
 
         {/* 1-Click Google OAuth Sign In */}
@@ -142,11 +118,11 @@ export function Login() {
             />
           </div>
           <div className="auth-field">
-            <label htmlFor="login-email">Email Address or Admin ID</label>
+            <label htmlFor="login-email">Email Address</label>
             <input
               id="login-email"
-              type="text"
-              placeholder="name@example.com or admin"
+              type="email"
+              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}

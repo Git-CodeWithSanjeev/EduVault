@@ -18,6 +18,112 @@ export const NCERT_CHAPTER_COUNTS = {
   kebo1: 19, // Class 11 Biology
 };
 
+export const NCERT_CHAPTER_NAMES = {
+  leph1: [
+    'Electric Charges and Fields',
+    'Electrostatic Potential and Capacitance',
+    'Current Electricity',
+    'Moving Charges and Magnetism',
+    'Magnetism and Matter',
+    'Electromagnetic Induction',
+    'Alternating Current',
+    'Electromagnetic Waves',
+  ],
+  leph2: [
+    'Ray Optics and Optical Instruments',
+    'Wave Optics',
+    'Dual Nature of Radiation and Matter',
+    'Atoms',
+    'Nuclei',
+    'Semiconductor Electronics: Materials, Devices and Simple Circuits',
+  ],
+  lech1: [
+    'Solutions',
+    'Electrochemistry',
+    'Chemical Kinetics',
+    'The d- and f-Block Elements',
+    'Coordination Compounds',
+  ],
+  lech2: [
+    'Haloalkanes and Haloarenes',
+    'Alcohols, Phenols and Ethers',
+    'Aldehydes, Ketones and Carboxylic Acids',
+    'Amines',
+    'Biomolecules',
+  ],
+  lemh1: [
+    'Relations and Functions',
+    'Inverse Trigonometric Functions',
+    'Matrices',
+    'Determinants',
+    'Continuity and Differentiability',
+    'Application of Derivatives',
+  ],
+  lemh2: [
+    'Integrals',
+    'Application of Integrals',
+    'Differential Equations',
+    'Vector Algebra',
+    'Three Dimensional Geometry',
+    'Linear Programming',
+    'Probability',
+  ],
+  kepy1: [
+    'Units and Measurements',
+    'Motion in a Straight Line',
+    'Motion in a Plane',
+    'Laws of Motion',
+    'Work, Energy and Power',
+    'System of Particles and Rotational Motion',
+    'Gravitation',
+  ],
+  kepy2: [
+    'Mechanical Properties of Solids',
+    'Mechanical Properties of Fluids',
+    'Thermal Properties of Matter',
+    'Thermodynamics',
+    'Kinetic Theory',
+    'Oscillations',
+    'Waves',
+  ],
+  kech1: [
+    'Some Basic Concepts of Chemistry',
+    'Structure of Atom',
+    'Classification of Elements and Periodicity in Properties',
+    'Chemical Bonding and Molecular Structure',
+    'Chemical Thermodynamics',
+    'Equilibrium',
+  ],
+  kech2: [
+    'Redox Reactions',
+    'Organic Chemistry: Some Basic Principles and Techniques',
+    'Hydrocarbons',
+  ],
+  kemh1: [
+    'Sets',
+    'Relations and Functions',
+    'Trigonometric Functions',
+    'Complex Numbers and Quadratic Equations',
+    'Linear Inequalities',
+    'Permutations and Combinations',
+    'Binomial Theorem',
+    'Sequences and Series',
+    'Straight Lines',
+    'Conic Sections',
+    'Introduction to Three Dimensional Geometry',
+    'Limits and Derivatives',
+    'Statistics',
+    'Probability',
+  ],
+  jebh1: [
+    'Sexual Reproduction in Flowering Plants',
+    'Human Reproduction',
+    'Reproductive Health',
+    'Principles of Inheritance and Variation',
+    'Molecular Basis of Inheritance',
+  ],
+};
+
 /** Generate the list of chapter PDF URLs for an NCERT book */
 export function getChapterPdfUrls(book) {
   if (!book) return [];
@@ -28,15 +134,17 @@ export function getChapterPdfUrls(book) {
 
     if (code) {
       const count = NCERT_CHAPTER_COUNTS[code] || 6;
+      const namesList = NCERT_CHAPTER_NAMES[code] || [];
       const list = [
         { id: 'ps', name: '0. Prelims & Index', pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}ps.pdf` },
       ];
 
       for (let i = 1; i <= count; i++) {
         const numStr = String(i).padStart(2, '0');
+        const chapterTitle = namesList[i - 1] ? `${i}. ${namesList[i - 1]}` : `${i}. Chapter ${i}`;
         list.push({
           id: numStr,
-          name: `${i}. Chapter ${i}`,
+          name: chapterTitle,
           pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`,
         });
       }
