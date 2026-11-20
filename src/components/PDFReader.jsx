@@ -7,7 +7,7 @@ import { getChapterPdfUrls } from '../utils/pdfHelpers';
 
 export { getChapterPdfUrls };
 
-export function PDFReader({ saved = [], toggle = () => {} }) {
+export function PDFReader({ saved = [], toggle = () => { } }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const normalizedId = id ? id.trim().replace(/\s+/g, '-') : '';
@@ -70,7 +70,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
             setTotalPages(meta.numPages);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
 
     if (adobeDCView && window.AdobeDC?.View?.Enum) {
@@ -90,7 +90,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
             ],
           }
         );
-      } catch (_) {}
+      } catch (_) { }
     }
   }, []);
 
@@ -138,9 +138,9 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
   const handleToggleFullscreen = () => {
     const stage = document.querySelector('.reader-stage-container') || document.documentElement;
     if (!document.fullscreenElement) {
-      stage.requestFullscreen().catch(() => {});
+      stage.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   };
 
@@ -158,7 +158,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
       const prev = JSON.parse(localStorage.getItem('eduvault-recent') || '[]');
       const updated = [b.id, ...prev.filter((x) => x !== b.id)].slice(0, 6);
       localStorage.setItem('eduvault-recent', JSON.stringify(updated));
-    } catch (_) {}
+    } catch (_) { }
   }, [b?.id]);
 
   if (!b) {

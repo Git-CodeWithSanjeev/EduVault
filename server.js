@@ -961,6 +961,14 @@ function fetchUrl(url, attempt = 1) {
 
       if (res.statusCode !== 200) {
         res.resume();
+        if (res.statusCode === 404 && url.includes('r2.dev/ncert/')) {
+          const filename = url.split('/').pop();
+          if (filename && filename.endsWith('.pdf')) {
+            const fallbackNcert = `https://ncert.nic.in/textbook/pdf/${filename}`;
+            console.log(`[Server PDF Proxy] R2 404 for ${filename}. Transparently falling back to NCERT: ${fallbackNcert}`);
+            return fetchUrl(fallbackNcert, attempt).then(resolve).catch(reject);
+          }
+        }
         reject(new Error(`Upstream returned ${res.statusCode}`));
         return;
       }

@@ -94,6 +94,16 @@ export default async function handler(req, res) {
 
           if (upstreamRes.statusCode !== 200 && upstreamRes.statusCode !== 206) {
             upstreamRes.resume();
+
+            // Automatic fallback: If R2 returns 404 because book chapter is not yet synced, stream official NCERT PDF
+            if (upstreamRes.statusCode === 404 && targetUrl.includes('r2.dev/ncert/')) {
+              const filename = targetUrl.split('/').pop();
+              if (filename && filename.endsWith('.pdf')) {
+                const fallbackNcert = `https://ncert.nic.in/textbook/pdf/${filename}`;
+                return streamPDF(fallbackNcert, attempt + 1).then(resolve).catch(reject);
+              }
+            }
+
             return reject(new Error(`Upstream returned HTTP ${upstreamRes.statusCode}`));
           }
 

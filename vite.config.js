@@ -59,6 +59,17 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
 
       if (proxyRes.statusCode !== 200 && proxyRes.statusCode !== 206) {
         proxyRes.resume();
+
+        // Automatic fallback: If R2 returns 404 because book chapter is not yet synced, fetch official NCERT PDF
+        if (proxyRes.statusCode === 404 && targetUrl.includes('r2.dev/ncert/')) {
+          const filename = targetUrl.split('/').pop();
+          if (filename && filename.endsWith('.pdf')) {
+            const fallbackNcert = `https://ncert.nic.in/textbook/pdf/${filename}`;
+            console.log(`[Vite PDF Proxy] R2 404 for ${filename}. Transparently falling back to official NCERT: ${fallbackNcert}`);
+            return fetchPdfStream(fallbackNcert, req, res, attempt + 1);
+          }
+        }
+
         res.statusCode = proxyRes.statusCode || 502;
         return res.end(JSON.stringify({ error: `Upstream HTTP ${proxyRes.statusCode}` }));
       }

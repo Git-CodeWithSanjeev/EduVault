@@ -391,21 +391,31 @@ export function PdfJsViewer({
         .catch((err) => {
           if (timerRef.current) clearTimeout(timerRef.current);
           console.warn('[PDF.js Loading Info]:', err.message);
-          // If Edge proxy failed, fallback to direct target URL
-          if (targetPdfUrl && primarySource !== targetPdfUrl) {
+
+          // If primary source (e.g. R2 Edge 404) failed, fallback to official NCERT source via Edge proxy!
+          const ncertFallback = url && primarySource !== `/api/pdf?url=${encodeURIComponent(url)}`
+            ? `/api/pdf?url=${encodeURIComponent(url)}`
+            : null;
+
+          if (ncertFallback) {
+            console.log('[PDF.js Fallback]: Loading official textbook stream via Edge proxy...', ncertFallback);
             const fallbackTask = pdfjsLib.getDocument({
-              url: targetPdfUrl,
+              url: ncertFallback,
               disableStream: false,
               disableAutoFetch: true,
+              cMapUrl: 'https://unpkg.com/pdfjs-dist@4.10.38/cmaps/',
+              cMapPacked: true,
             });
             fallbackTask.promise
               .then((doc) => {
                 setPdfDoc(doc);
                 setLoading(false);
                 setTimedOut(false);
+                setProgress(100);
                 if (onTotalPagesChange) onTotalPagesChange(doc.numPages);
               })
               .catch((fErr) => {
+                console.warn('[PDF.js Fallback Error]:', fErr.message);
                 setErrorMsg(fErr.message);
                 setLoading(false);
                 setTimedOut(true);

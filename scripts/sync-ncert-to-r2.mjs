@@ -16,6 +16,7 @@
 
 import { S3Client, PutObjectCommand, HeadObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { execFile } from 'child_process';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
@@ -96,63 +97,89 @@ async function uploadToR2(key, fileBufferOrPath, contentType = 'application/pdf'
   return `${R2_PUBLIC_URL}/${key}`;
 }
 
-/** Single chapter downloader with retry loop */
+/** Single chapter downloader with robust curl and https fallback */
 function downloadFileOnce(url, destPath) {
   return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destPath);
-    const req = https.get(url, {
-      rejectUnauthorized: false,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Referer': 'https://ncert.nic.in/textbook.php',
-        'Accept': 'application/pdf,*/*',
-        'Connection': 'keep-alive',
-      },
-    }, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        file.close();
-        try { fs.unlinkSync(destPath); } catch {}
-        return downloadFileOnce(res.headers.location, destPath).then(resolve).catch(reject);
-      }
-      if (res.statusCode === 404) {
-        file.close();
-        try { fs.unlinkSync(destPath); } catch {}
-        return reject(new Error('HTTP 404 Not Found'));
-      }
-      if (res.statusCode !== 200) {
-        file.close();
-        try { fs.unlinkSync(destPath); } catch {}
-        return reject(new Error(`HTTP ${res.statusCode}`));
-      }
-      res.pipe(file);
-      file.on('finish', () => {
-        file.close(() => {
-          const sz = fs.existsSync(destPath) ? fs.statSync(destPath).size : 0;
-          if (sz < 1000) {
-            try { fs.unlinkSync(destPath); } catch {}
-            return reject(new Error('Downloaded file too small / invalid'));
+    // 1. Try curl.exe which reliably negotiates TLS with ncert.nic.in without hanging
+    execFile('curl.exe', [
+      '-k', '-s', '-L',
+      '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      '-e', 'https://ncert.nic.in/textbook.php',
+      '--max-time', '45',
+      '-o', destPath,
+      url,
+    ], (curlErr) => {
+      if (!curlErr && fs.existsSync(destPath)) {
+        const sz = fs.statSync(destPath).size;
+        if (sz > 2000) {
+          return resolve(sz);
+        }
+        // Check if returned an HTML 404 page
+        try {
+          const content = fs.readFileSync(destPath, 'utf8').slice(0, 200);
+          if (content.includes('404') || content.includes('Not Found') || content.includes('<!DOCTYPE')) {
+            fs.unlinkSync(destPath);
+            return reject(new Error('HTTP 404 Not Found'));
           }
-          resolve(sz);
+        } catch (_) {}
+        try { fs.unlinkSync(destPath); } catch {}
+      }
+
+      // 2. Fallback to Node https stream
+      const file = fs.createWriteStream(destPath);
+      const req = https.get(url, {
+        rejectUnauthorized: false,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Referer': 'https://ncert.nic.in/textbook.php',
+          'Accept': 'application/pdf,*/*',
+        },
+      }, (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          file.close();
+          try { fs.unlinkSync(destPath); } catch {}
+          return downloadFileOnce(res.headers.location, destPath).then(resolve).catch(reject);
+        }
+        if (res.statusCode === 404) {
+          file.close();
+          try { fs.unlinkSync(destPath); } catch {}
+          return reject(new Error('HTTP 404 Not Found'));
+        }
+        if (res.statusCode !== 200) {
+          file.close();
+          try { fs.unlinkSync(destPath); } catch {}
+          return reject(new Error(`HTTP ${res.statusCode}`));
+        }
+        res.pipe(file);
+        file.on('finish', () => {
+          file.close(() => {
+            const sz = fs.existsSync(destPath) ? fs.statSync(destPath).size : 0;
+            if (sz < 2000) {
+              try { fs.unlinkSync(destPath); } catch {}
+              return reject(new Error('Downloaded file too small / invalid'));
+            }
+            resolve(sz);
+          });
+        });
+        file.on('error', (err) => {
+          file.close();
+          try { fs.unlinkSync(destPath); } catch {}
+          reject(err);
         });
       });
-      file.on('error', (err) => {
+
+      req.on('error', (err) => {
         file.close();
         try { fs.unlinkSync(destPath); } catch {}
         reject(err);
       });
-    });
 
-    req.on('error', (err) => {
-      file.close();
-      try { fs.unlinkSync(destPath); } catch {}
-      reject(err);
-    });
-
-    req.setTimeout(45000, () => {
-      req.destroy();
-      file.close();
-      try { fs.unlinkSync(destPath); } catch {}
-      reject(new Error('Connection timed out'));
+      req.setTimeout(40000, () => {
+        req.destroy();
+        file.close();
+        try { fs.unlinkSync(destPath); } catch {}
+        reject(new Error('Connection timed out'));
+      });
     });
   });
 }
