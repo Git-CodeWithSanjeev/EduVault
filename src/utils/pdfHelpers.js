@@ -128,6 +128,8 @@ export const NCERT_CHAPTER_NAMES = {
 export function getChapterPdfUrls(book) {
   if (!book) return [];
 
+  const R2_BASE = (import.meta.env.VITE_R2_PUBLIC_URL || '').replace(/\/+$/, '');
+
   if (book.source === 'NCERT' && book.url) {
     const match = book.url.match(/\/pdf\/([a-z0-9]+)dd\.zip/i);
     const code = match ? match[1].toLowerCase() : null;
@@ -136,7 +138,12 @@ export function getChapterPdfUrls(book) {
       const count = NCERT_CHAPTER_COUNTS[code] || 6;
       const namesList = NCERT_CHAPTER_NAMES[code] || [];
       const list = [
-        { id: 'ps', name: '0. Prelims & Index', pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}ps.pdf` },
+        {
+          id: 'ps',
+          name: '0. Prelims & Index',
+          pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}ps.pdf`,
+          cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}ps.pdf` : null,
+        },
       ];
 
       for (let i = 1; i <= count; i++) {
@@ -146,6 +153,7 @@ export function getChapterPdfUrls(book) {
           id: numStr,
           name: chapterTitle,
           pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`,
+          cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}${numStr}.pdf` : null,
         });
       }
 
@@ -153,6 +161,7 @@ export function getChapterPdfUrls(book) {
         id: 'an',
         name: `${count + 1}. Answers & Solutions`,
         pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}an.pdf`,
+        cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}an.pdf` : null,
       });
 
       return list;

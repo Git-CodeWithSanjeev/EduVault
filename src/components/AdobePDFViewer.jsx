@@ -65,6 +65,7 @@ const pdfBufferCache = new Map();
 
 export function AdobePDFViewer({
   url,
+  cloudUrl,
   title,
   isMobile = false,
   viewMode = 'FIT_WIDTH',
@@ -148,7 +149,22 @@ export function AdobePDFViewer({
               } catch (_) {}
             }, 60000);
 
-            const res = await fetch(targetUrl, { signal: controller.signal });
+            // 1. Try Cloudflare R2 CDN first if available (instant edge streaming)
+            let res = null;
+            if (cloudUrl) {
+              try {
+                const cloudRes = await fetch(cloudUrl, { signal: controller.signal });
+                if (cloudRes.ok && (cloudRes.headers.get('content-type')?.includes('pdf') || cloudRes.headers.get('content-type')?.includes('octet-stream'))) {
+                  res = cloudRes;
+                }
+              } catch (_) {}
+            }
+
+            // 2. Fall back to proxy if not yet in R2 cloud
+            if (!res) {
+              res = await fetch(targetUrl, { signal: controller.signal });
+            }
+
             if (timeoutId) {
               clearTimeout(timeoutId);
               timeoutId = null;
@@ -648,7 +664,7 @@ export function AdobePDFViewer({
 }
 
 /* ─── Download PDF Button Helper ───────────────────────────────────────────── */
-export function DownloadPDFButton({ url, filename, label, className = 'pdf-btn' }) {
+export function DownloadPDFButton({ url, cloudUrl, filename, label, className = 'pdf-btn' }) {
   const [phase, setPhase] = useState('idle');
 
   const handleDownload = async (e) => {
@@ -658,10 +674,18 @@ export function DownloadPDFButton({ url, filename, label, className = 'pdf-btn' 
 
     try {
       let res;
-      try {
-        res = await fetch(proxyUrl(url));
-      } catch {
-        res = await fetch(url);
+      if (cloudUrl) {
+        try {
+          const cRes = await fetch(cloudUrl);
+          if (cRes.ok) res = cRes;
+        } catch (_) {}
+      }
+      if (!res) {
+        try {
+          res = await fetch(proxyUrl(url));
+        } catch {
+          res = await fetch(url);
+        }
       }
       if (!res.ok) throw new Error('Download failed');
       const blob = await res.blob();

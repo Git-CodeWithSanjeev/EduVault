@@ -447,6 +447,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
               <AdobePDFViewer
                 key={`${activeChapter.pdfUrl}-${effectiveMode}`}
                 url={activeChapter.pdfUrl}
+                cloudUrl={activeChapter.cloudUrl}
                 title={`${b.title} - ${activeChapter.name}`}
                 isMobile={isMobile}
                 viewMode={effectiveMode}
@@ -483,6 +484,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
             <div className="sidebar-actions-panel" style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <DownloadPDFButton
                 url={activeChapter.pdfUrl}
+                cloudUrl={activeChapter.cloudUrl}
                 filename={`${b.title} - ${activeChapter.name}.pdf`}
               />
 
@@ -577,6 +579,7 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
           <div className="mobile-bottom-dl">
             <DownloadPDFButton
               url={activeChapter.pdfUrl}
+              cloudUrl={activeChapter.cloudUrl}
               filename={`${b.title} - ${activeChapter.name}.pdf`}
               className="pdf-btn"
             />
