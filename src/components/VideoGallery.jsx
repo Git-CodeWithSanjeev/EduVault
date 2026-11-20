@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { VideoCard } from './VideoCard';
 import { educationalGalleryData } from '../data/educationalGalleryData';
@@ -219,6 +219,26 @@ export function VideoGallery({
   const [visibleCount, setVisibleCount] = useState(9);
   const [visibleGroupCount, setVisibleGroupCount] = useState(4);
 
+  const pillsTrackRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkPillScroll = useCallback(() => {
+    const el = pillsTrackRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+  }, []);
+
+  const handlePillScroll = (dir) => {
+    const el = pillsTrackRef.current;
+    if (!el) return;
+    const distance = dir === 'left' ? -280 : 280;
+    el.scrollBy({ left: distance, behavior: 'smooth' });
+    setTimeout(checkPillScroll, 320);
+  };
+
   // Reset pagination counters whenever filters change
   useEffect(() => {
     setVisibleCount(9);
@@ -295,6 +315,13 @@ export function VideoGallery({
     const subjectSet = new Set(subset.map((v) => v.subject).filter(Boolean));
     return ['All', ...Array.from(subjectSet)];
   }, [normalizedVideos, selectedTier, selectedClassNum]);
+
+  useEffect(() => {
+    checkPillScroll();
+    const handleResize = () => checkPillScroll();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [availableSubjects, checkPillScroll]);
 
   // Filtered videos based on Tier, Class, Subject, and Search Query
   const filteredVideos = useMemo(() => {
@@ -495,56 +522,160 @@ export function VideoGallery({
       {/* Tier 2: Subject-Wise Filter Pills & Live Search Bar */}
       {showFilters && (
         <div style={{ marginBottom: '28px' }}>
-          {/* Subject Pills Row with right-edge scroll cue fade */}
-          <div style={{ position: 'relative' }}>
-            <div
+          {/* Pinned SUBJECTS: label on left + scrollable pill track with dynamic chevrons and edge fades */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '14px',
+              position: 'relative',
+            }}
+          >
+            {/* Pinned SUBJECTS: Label outside overflow scroll container */}
+            <span
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                paddingBottom: '8px',
-                marginBottom: '14px',
-                scrollbarWidth: 'none',
-                maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+                fontSize: '12px',
+                fontWeight: 800,
+                color: 'var(--muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.6px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                userSelect: 'none',
               }}
             >
-            <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', marginRight: '4px' }}>
               Subjects:
             </span>
-            {availableSubjects.map((sub) => {
-              const isActive = selectedSubject === sub;
-              const iconName = sub === 'All' ? 'all' : getSubjectIconName(sub);
-              return (
+
+            {/* Scrollable Container with Chevrons and Gradient Fades */}
+            <div
+              style={{
+                position: 'relative',
+                flex: 1,
+                minWidth: 0,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {/* Left Chevron Button (appears dynamically when content is scrolled) */}
+              {canScrollLeft && (
                 <button
-                  key={sub}
                   type="button"
-                  onClick={() => setSelectedSubject(sub)}
+                  onClick={() => handlePillScroll('left')}
                   style={{
-                    padding: '8px 14px',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: isActive ? 700 : 600,
-                    cursor: 'pointer',
-                    background: isActive ? 'var(--p-gradient)' : '#ffffff',
-                    color: isActive ? '#ffffff' : 'var(--ink)',
-                    border: isActive ? '1px solid transparent' : '1px solid var(--line)',
-                    boxShadow: isActive ? '0 3px 10px var(--p-glow)' : '0 1px 3px rgba(0,0,0,0.02)',
-                    transition: 'all 0.15s ease',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    display: 'inline-flex',
+                    position: 'absolute',
+                    left: '-4px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    background: '#ffffff',
+                    border: '1.5px solid var(--line)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--ink)',
+                    transition: 'all 0.18s ease',
                   }}
+                  aria-label="Scroll subjects left"
+                  title="Scroll left"
                 >
-                  <ThemeIcon name={iconName} size={14} color={isActive ? '#ffffff' : 'var(--p)'} />
-                  <span>{sub === 'All' ? `All ${selectedTier === 'All' ? 'Courses' : selectedTier} Subjects` : sub}</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
                 </button>
-              );
-            })}
-          </div>
+              )}
+
+              {/* Pills Scroll Track with dynamic edge fades */}
+              <div
+                ref={pillsTrackRef}
+                onScroll={checkPillScroll}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  overflowX: 'auto',
+                  paddingTop: '2px',
+                  paddingBottom: '4px',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  width: '100%',
+                  scrollBehavior: 'smooth',
+                  maskImage: `linear-gradient(to right, ${canScrollLeft ? 'transparent' : 'black'} 0%, black ${canScrollLeft ? '28px' : '0px'}, black ${canScrollRight ? 'calc(100% - 28px)' : '100%'}, ${canScrollRight ? 'transparent' : 'black'} 100%)`,
+                  WebkitMaskImage: `linear-gradient(to right, ${canScrollLeft ? 'transparent' : 'black'} 0%, black ${canScrollLeft ? '28px' : '0px'}, black ${canScrollRight ? 'calc(100% - 28px)' : '100%'}, ${canScrollRight ? 'transparent' : 'black'} 100%)`,
+                }}
+              >
+                {availableSubjects.map((sub) => {
+                  const isActive = selectedSubject === sub;
+                  const iconName = sub === 'All' ? 'all' : getSubjectIconName(sub);
+                  return (
+                    <button
+                      key={sub}
+                      type="button"
+                      onClick={() => setSelectedSubject(sub)}
+                      style={{
+                        padding: '8px 14px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: isActive ? 700 : 600,
+                        cursor: 'pointer',
+                        background: isActive ? 'var(--p-gradient)' : '#ffffff',
+                        color: isActive ? '#ffffff' : 'var(--ink)',
+                        border: isActive ? '1px solid transparent' : '1px solid var(--line)',
+                        boxShadow: isActive ? '0 3px 10px var(--p-glow)' : '0 1px 3px rgba(0,0,0,0.02)',
+                        transition: 'all 0.15s ease',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <ThemeIcon name={iconName} size={14} color={isActive ? '#ffffff' : 'var(--p)'} />
+                      <span>{sub === 'All' ? `All ${selectedTier === 'All' ? 'Courses' : selectedTier} Subjects` : sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right Chevron Button (appears dynamically when content overflows) */}
+              {canScrollRight && (
+                <button
+                  type="button"
+                  onClick={() => handlePillScroll('right')}
+                  style={{
+                    position: 'absolute',
+                    right: '-4px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    background: '#ffffff',
+                    border: '1.5px solid var(--line)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--ink)',
+                    transition: 'all 0.18s ease',
+                  }}
+                  aria-label="Scroll subjects right"
+                  title="Scroll right"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Search Input Bar */}

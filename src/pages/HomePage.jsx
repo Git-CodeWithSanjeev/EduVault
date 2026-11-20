@@ -53,9 +53,9 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
           </div>
 
           {/* Right Column: Animated Educational Hub Graphic */}
-          <div className="hero-graphic-wrap">
+          <div className="hero-graphic-wrap relative p-6 pb-12 flex items-center justify-center">
             {/* Top Left Floating Glass Card */}
-            <div className="hero-float-card hero-float-1">
+            <div className="hero-float-card hero-float-1 absolute -top-4 -left-4 z-10">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--p)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -67,7 +67,7 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
             </div>
 
             {/* Main Interactive Showcase Card */}
-            <div className="hero-main-card">
+            <div className="hero-main-card relative z-0 p-5 pb-8">
               <div className="hero-card-preview">
                 <img
                   src="https://img.youtube.com/vi/tVzUXW6siu0/hqdefault.jpg"
@@ -103,7 +103,7 @@ export function Home({ saved = [], toggle = () => {}, recentIds = [] }) {
             </div>
 
             {/* Bottom Right Floating Glass Card */}
-            <div className="hero-float-card hero-float-2">
+            <div className="hero-float-card hero-float-2 absolute -bottom-5 right-4 z-10">
               <div className="pulse-dot" />
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--ink)' }}>100% Free & Verified</div>

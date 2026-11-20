@@ -4098,10 +4098,11 @@ button:active,
 .hero-graphic-wrap {
     position: relative;
     width: 100%;
-    min-height: 360px;
+    min-height: 380px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 24px 20px 48px;
     will-change: transform, opacity;
     animation: heroSlideIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -4135,7 +4136,7 @@ button:active,
     background: var(--card);
     border: 1.5px solid rgba(13, 148, 136, 0.2);
     border-radius: 20px;
-    padding: 18px;
+    padding: 18px 18px 32px;
     box-shadow: 0 20px 48px rgba(13, 148, 136, 0.08);
     position: relative;
     z-index: 2;
@@ -4200,17 +4201,19 @@ button:active,
 }
 
 .hero-float-1 {
-    top: -24px;
-    left: -24px;
+    top: -16px;
+    left: -16px;
     animation: floatAnim1 4.5s ease-in-out infinite;
     opacity: 1;
+    z-index: 4;
 }
 
 .hero-float-2 {
-    bottom: -14px;
-    right: -16px;
+    bottom: -20px;
+    right: 16px;
     animation: floatAnim2 5.5s ease-in-out infinite;
     opacity: 1;
+    z-index: 4;
 }
 
 .hero-subject-chips {
@@ -4850,29 +4853,45 @@ button:active,
 
 .detail-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 25px;
     flex-wrap: wrap;
     align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.detail-actions a,
+.detail-actions button {
+    display: inline-flex;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+    vertical-align: middle;
+    line-height: 1;
 }
 
 .detail-actions a.detail-button,
 .detail-actions a.detail-primary-cta,
 .form-page form>button {
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1.5px solid transparent;
     background: var(--p-gradient);
     color: #ffffff;
-    padding: 11px 22px;
+    padding: 0 18px;
     border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
     box-shadow: 0 4px 14px var(--p-glow);
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     display: inline-flex;
+    height: 40px;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
     gap: 6px;
+    box-sizing: border-box;
 }
 
 .detail-actions a.detail-button:hover,
@@ -4890,15 +4909,16 @@ button:active,
     color: var(--p-dark, #0f766e);
     border: 1.5px solid var(--p, #0d9488);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    padding: 10px 18px;
+    padding: 0 16px;
     border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
+    height: 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
     gap: 6px;
+    cursor: pointer;
+    box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
@@ -4910,6 +4930,36 @@ button:active,
     color: var(--p-dark, #0f766e);
     transform: translateY(-1.5px);
     box-shadow: 0 4px 12px rgba(13, 148, 136, 0.12);
+}
+
+.detail-actions a.detail-button-ghost,
+.detail-actions .detail-button-ghost {
+    background: transparent;
+    color: var(--p-dark, #0f766e);
+    border: none;
+    box-shadow: none;
+    padding: 0 10px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.18s ease;
+}
+
+.detail-actions a.detail-button-ghost:hover,
+.detail-actions .detail-button-ghost:hover {
+    background: rgba(13, 148, 136, 0.08);
+    color: var(--p, #0d9488);
+    text-decoration: none;
+    border-radius: 8px;
+    transform: translateY(-1px);
 }
 
 .outbound {
