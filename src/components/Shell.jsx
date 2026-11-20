@@ -177,6 +177,17 @@ export function Shell({ children, welcomeMsg }) {
       ) : (
         <div className="app-canvas-wrap">
           <div className="app-viewport-card">
+            {/* Decorative floating mint dots matching the reference UI */}
+            <div className="deco-dots-wrapper" aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '120px', pointerEvents: 'none', zIndex: 0, overflow: 'visible' }}>
+              <svg width="200" height="120" viewBox="0 0 200 120" fill="none" style={{ position: 'absolute', top: 0, right: 0 }}>
+                <circle cx="160" cy="20" r="5" fill="#b8e4d6" opacity="0.7" />
+                <circle cx="140" cy="45" r="3.5" fill="#c4ebe0" opacity="0.55" />
+                <circle cx="180" cy="55" r="4" fill="#a7dece" opacity="0.65" />
+                <circle cx="120" cy="30" r="2.5" fill="#d1f0e6" opacity="0.5" />
+                <circle cx="170" cy="80" r="3" fill="#b8e4d6" opacity="0.45" />
+                <circle cx="150" cy="70" r="6" fill="#c4ebe0" opacity="0.35" />
+              </svg>
+            </div>
             {/* ─── 1. MAIN WEBSITE HEADER ─── */}
             <header>
               <Link className="logo" to="/" aria-label="EduVault Home">

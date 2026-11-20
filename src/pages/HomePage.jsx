@@ -29,7 +29,7 @@ export function Home({ saved = [], toggle = () => { } }) {
   // Continue Learning State backed by localStorage
   const [recentBook, setRecentBook] = useState({
     id: 'ncert-leph1',
-    title: 'Physics Part 1 — Class 12',
+    title: 'Physics Part 1 – Class 12',
     progress: 65,
   });
 
