@@ -213,15 +213,9 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
   const customArtwork = renderArtwork();
 
   return (
-    <div
-      className="video-card-container flex flex-row md:flex-col h-full bg-white rounded-2xl shadow-sm overflow-hidden p-2.5 sm:p-3 md:p-0 transition-all duration-200"
-      style={{
-        border: 'none',
-        boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
-      }}
-    >
-      {/* 16:9 Aspect Ratio Media Frame (Left horizontal side on mobile, top full width on tablet/desktop) */}
-      <div className="w-[44%] sm:w-[42%] md:w-full shrink-0 relative aspect-[16/9] bg-[#0f172a] rounded-xl md:rounded-none overflow-hidden">
+    <div className="video-card-container">
+      {/* 16:9 Aspect Ratio Media Frame */}
+      <div className="video-media-frame">
         <Link
           to={videoDetailsUrl}
           style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}
@@ -278,15 +272,17 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
           {/* Centered Circular Play Button */}
           <div
-            className="w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11"
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
               background: 'rgba(255, 255, 255, 0.28)',
               backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -295,7 +291,7 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               zIndex: 2,
             }}
           >
-            <svg viewBox="0 0 24 24" className="w-4 h-4 md:w-5 md:h-5" fill="currentColor">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
               <polygon points="8 5 19 12 8 19 8 5" />
             </svg>
           </div>
@@ -308,6 +304,7 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               left: '8px',
               background: 'rgba(15, 23, 42, 0.75)',
               backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
               color: '#ffffff',
               fontSize: '10px',
               fontWeight: 600,
@@ -317,20 +314,32 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               alignItems: 'center',
               gap: '4px',
               zIndex: 3,
+              whiteSpace: 'nowrap',
             }}
           >
             <span style={{ fontSize: '9px' }}>▶</span>
-            <span className="whitespace-nowrap">{durationText}</span>
+            <span>{durationText}</span>
           </div>
         </Link>
       </div>
 
-      {/* Card Body (Right side on mobile, bottom body on tablet/desktop) */}
-      <div className="flex-1 flex flex-col justify-between p-2 sm:p-2.5 md:p-4 min-w-0">
+      {/* Card Body */}
+      <div className="video-card-body">
         <div>
           {/* Title (2-line clamp) */}
           <h3
-            className="text-[13px] sm:text-[14px] md:text-[15px] font-extrabold text-[#0f172a] leading-snug line-clamp-2 mb-1 md:mb-1.5 min-h-0 md:min-h-[2.6rem]"
+            style={{
+              fontSize: '14px',
+              fontWeight: 800,
+              color: '#0f172a',
+              lineHeight: 1.35,
+              margin: '0 0 6px',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              minHeight: '38px',
+            }}
             title={displayTitle}
           >
             <Link to={videoDetailsUrl} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -338,9 +347,19 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
             </Link>
           </h3>
 
-          {/* Clean 2-Line Description (Old harsh OVERVIEW: box completely removed) */}
+          {/* Clean 2-Line Description */}
           <p
-            className="text-[11px] sm:text-[11.5px] md:text-[12.5px] text-[#64748b] leading-relaxed line-clamp-2 mb-2 md:mb-3.5"
+            style={{
+              fontSize: '11.5px',
+              color: '#64748b',
+              lineHeight: 1.5,
+              margin: '0 0 10px',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              minHeight: '34px',
+            }}
           >
             {initialObj.whyHighQuality || video.description || 'Structured academic masterclass covering core theory, proofs, and real-world problem sets.'}
           </p>
@@ -359,65 +378,48 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
           )}
         </div>
 
-        {/* Creator Footer with Avatar & Bookmark */}
+        {/* Creator Footer matching mockup */}
         <div
-          className="mt-auto pt-1.5 md:pt-2.5 border-t border-slate-100 flex items-center justify-between"
+          style={{
+            marginTop: 'auto',
+            paddingTop: '8px',
+            borderTop: '1px solid #f1f5f9',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            minWidth: 0,
+          }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div
-              style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: '#E6F4F1',
-                color: '#0F5E53',
-                fontSize: '10px',
-                fontWeight: 800,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {(displayChannel || 'C').slice(0, 1).toUpperCase()}
-            </div>
-            <span
-              className="text-[11px] sm:text-[11.5px] md:text-xs font-semibold text-slate-600 truncate max-w-[140px] sm:max-w-[180px]"
-              title={displayChannel}
-            >
-              Creator: {displayChannel}
-            </span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSaveClick}
-            title={saved ? 'Remove from Favorites' : 'Save to Favorites'}
+          <div
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: saved ? '#0F5E53' : '#94a3b8',
-              padding: '4px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: '#E6F4F1',
+              color: '#0F5E53',
+              fontSize: '10px',
+              fontWeight: 800,
               display: 'flex',
               alignItems: 'center',
-              transition: 'color 0.15s ease',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}
-            aria-label={saved ? 'Remove from Favorites' : 'Save to Favorites'}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill={saved ? 'currentColor' : 'none'}
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            </svg>
-          </button>
+            {(displayChannel || 'C').slice(0, 1).toUpperCase()}
+          </div>
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#475569',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={displayChannel}
+          >
+            Creator: {displayChannel}
+          </span>
         </div>
       </div>
     </div>

@@ -22,21 +22,6 @@ export function BookCover({ item }) {
       >
         <img
           src={item.coverUrl}
-          alt=""
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            filter: 'blur(16px)',
-            opacity: 0.5,
-            transform: 'scale(1.2)',
-          }}
-        />
-        <img
-          src={item.coverUrl}
           alt={item.title}
           loading="lazy"
           decoding="async"
@@ -65,105 +50,100 @@ export function BookCover({ item }) {
     );
   }
 
-  // Modern subject-coded gradient covers matching the attached UI design
-  let gradient = 'linear-gradient(145deg, #134e4a 0%, #0F5E53 40%, #115e59 100%)';
-  let badgeSource = `${item.source || 'NCERT'} · ${item.level || 'Class 12'}`;
-  let watermarkSvg = null;
+  // Exact cover layouts matching the target design
+  let gradient = 'linear-gradient(160deg, #1e1b4b 0%, #2e1065 50%, #312e81 100%)';
+  let badgeSource = item.coverBadge || 'Indigo Cover';
+  let levelPill = item.level || 'Class 12';
+  let artworkSvg = null;
 
   if (s.includes('physic')) {
-    gradient = 'linear-gradient(145deg, #1e1b4b 0%, #2e1065 40%, #4338ca 100%)';
+    gradient = 'linear-gradient(160deg, #261958 0%, #351c75 45%, #25124d 100%)';
     badgeSource = item.coverBadge || 'Indigo Cover';
-    watermarkSvg = (
-      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.85 }}>
+    levelPill = 'Class 12';
+    artworkSvg = (
+      <svg viewBox="0 0 200 120" style={{ width: '100%', height: '100%' }}>
         <defs>
-          <radialGradient id="physGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
-            <stop offset="60%" stopColor="#ea580c" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#ea580c" stopOpacity="0" />
+          <radialGradient id="physicSun" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="40%" stopColor="#f97316" />
+            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.8" />
           </radialGradient>
         </defs>
-        {/* Orbital Ellipses */}
-        <ellipse cx="60" cy="70" rx="50" ry="18" stroke="#818cf8" strokeWidth="1.6" strokeDasharray="4 2" transform="rotate(-25 60 70)" opacity="0.6" />
-        <ellipse cx="60" cy="70" rx="50" ry="18" stroke="#c084fc" strokeWidth="1.6" transform="rotate(35 60 70)" opacity="0.7" />
-        <ellipse cx="60" cy="70" rx="52" ry="16" stroke="#38bdf8" strokeWidth="1.8" transform="rotate(95 60 70)" opacity="0.8" />
-        {/* Wave lines */}
-        <path d="M10 85 Q35 65 60 85 T110 85" stroke="#a78bfa" strokeWidth="2" fill="none" opacity="0.5" />
-        <path d="M15 95 Q40 75 65 95 T115 95" stroke="#f472b6" strokeWidth="1.5" fill="none" opacity="0.4" />
-        {/* Glowing Center Orb */}
-        <circle cx="60" cy="70" r="14" fill="url(#physGlow)" />
-        <circle cx="60" cy="70" r="7" fill="#fbbf24" />
+        {/* Sinusoidal Glowing Wave Ribbons */}
+        <path d="M-10,90 Q40,40 100,85 T210,60" fill="none" stroke="#60a5fa" strokeWidth="2.5" opacity="0.8" />
+        <path d="M-10,80 Q45,110 110,65 T210,80" fill="none" stroke="#c084fc" strokeWidth="2" opacity="0.75" />
+        <path d="M-10,60 Q50,20 120,70 T210,50" fill="none" stroke="#38bdf8" strokeWidth="1.8" opacity="0.6" />
+        <path d="M-10,100 Q60,60 130,95 T210,75" fill="none" stroke="#f472b6" strokeWidth="1.5" opacity="0.55" />
+        {/* Glowing Orange Sun Core */}
+        <circle cx="115" cy="76" r="16" fill="url(#physicSun)" filter="drop-shadow(0 0 10px #f97316)" />
+        <circle cx="160" cy="85" r="4" fill="#a78bfa" opacity="0.8" />
+        <circle cx="70" cy="55" r="3" fill="#38bdf8" opacity="0.8" />
       </svg>
     );
   } else if (s.includes('chem')) {
-    gradient = 'linear-gradient(145deg, #7c2d12 0%, #9a3412 40%, #ea580c 100%)';
+    gradient = 'linear-gradient(160deg, #c2410c 0%, #ea580c 45%, #9a3412 100%)';
     badgeSource = item.coverBadge || 'Amber Cover';
-    watermarkSvg = (
-      <svg width="115" height="115" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.85 }}>
+    levelPill = 'Class 11';
+    artworkSvg = (
+      <svg viewBox="0 0 200 120" style={{ width: '100%', height: '100%' }}>
         <defs>
-          <radialGradient id="atomGlow1" cx="50%" cy="50%" r="50%">
+          <radialGradient id="chemBall1" cx="35%" cy="35%" r="65%">
             <stop offset="0%" stopColor="#fed7aa" />
-            <stop offset="70%" stopColor="#f97316" />
-            <stop offset="100%" stopColor="#c2410c" />
+            <stop offset="60%" stopColor="#f97316" />
+            <stop offset="100%" stopColor="#9a3412" />
           </radialGradient>
-          <radialGradient id="atomGlow2" cx="50%" cy="50%" r="50%">
+          <radialGradient id="chemBall2" cx="35%" cy="35%" r="65%">
             <stop offset="0%" stopColor="#fef08a" />
-            <stop offset="80%" stopColor="#eab308" />
-            <stop offset="100%" stopColor="#ca8a04" />
+            <stop offset="70%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#854d0e" />
+          </radialGradient>
+          <radialGradient id="chemBall3" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stopColor="#fca5a5" />
+            <stop offset="65%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="#7f1d1d" />
           </radialGradient>
         </defs>
-        {/* Bond Rods */}
-        <line x1="60" y1="42" x2="35" y2="78" stroke="#fdba74" strokeWidth="4" strokeLinecap="round" opacity="0.7" />
-        <line x1="60" y1="42" x2="85" y2="78" stroke="#fdba74" strokeWidth="4" strokeLinecap="round" opacity="0.7" />
-        <line x1="35" y1="78" x2="85" y2="78" stroke="#fdba74" strokeWidth="4" strokeLinecap="round" opacity="0.7" />
-        <line x1="85" y1="78" x2="105" y2="60" stroke="#fde047" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+        {/* Connecting Rods */}
+        <line x1="75" y1="85" x2="120" y2="70" stroke="#ffedd5" strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+        <line x1="120" y1="70" x2="155" y2="95" stroke="#ffedd5" strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+        <line x1="120" y1="70" x2="110" y2="35" stroke="#ffedd5" strokeWidth="5" strokeLinecap="round" opacity="0.8" />
+        <line x1="120" y1="70" x2="165" y2="55" stroke="#ffedd5" strokeWidth="5" strokeLinecap="round" opacity="0.8" />
         {/* 3D Atoms */}
-        <circle cx="60" cy="42" r="15" fill="url(#atomGlow1)" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))" />
-        <circle cx="35" cy="78" r="13" fill="url(#atomGlow2)" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))" />
-        <circle cx="85" cy="78" r="14" fill="url(#atomGlow1)" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.3))" />
-        <circle cx="105" cy="60" r="9" fill="url(#atomGlow2)" />
+        <circle cx="75" cy="85" r="13" fill="url(#chemBall2)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
+        <circle cx="110" cy="35" r="10" fill="url(#chemBall1)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.3))" />
+        <circle cx="165" cy="55" r="11" fill="url(#chemBall2)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.3))" />
+        <circle cx="155" cy="95" r="10" fill="url(#chemBall1)" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.3))" />
+        <circle cx="120" cy="70" r="18" fill="url(#chemBall3)" filter="drop-shadow(0 6px 10px rgba(0,0,0,0.35))" />
       </svg>
     );
-  } else if (s.includes('bio') || s.includes('medic') || s.includes('life')) {
-    gradient = 'linear-gradient(145deg, #064e3b 0%, #065f46 40%, #047857 100%)';
+  } else if (s.includes('bio') || s.includes('life')) {
+    gradient = 'linear-gradient(160deg, #064e3b 0%, #065f46 45%, #047857 100%)';
     badgeSource = item.coverBadge || 'Emerald Cover';
-    watermarkSvg = (
-      <svg width="115" height="115" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.75 }}>
-        {/* Elegant Botanical Leaves */}
-        <path d="M30 100 Q 55 70 85 40" stroke="#a7f3d0" strokeWidth="3" strokeLinecap="round" />
-        <path d="M85 40 C 95 30 100 20 100 15 C 95 15 85 20 75 30 C 65 40 75 45 85 40 Z" fill="#6ee7b7" opacity="0.8" />
-        <path d="M60 65 C 75 55 85 55 90 50 C 85 60 75 70 60 65 Z" fill="#34d399" opacity="0.85" />
-        <path d="M48 78 C 32 70 25 72 20 68 C 28 80 38 85 48 78 Z" fill="#10b981" opacity="0.9" />
-        <path d="M68 52 C 55 42 48 45 42 40 C 50 52 60 56 68 52 Z" fill="#6ee7b7" opacity="0.75" />
-      </svg>
-    );
-  } else if (s.includes('computer') || s.includes('tech') || s.includes('cs50') || s.includes('code')) {
-    gradient = 'linear-gradient(145deg, #0f172a 0%, #1e293b 40%, #334155 100%)';
-    badgeSource = item.coverBadge || `${item.source || 'Harvard'} · CS50`;
-    watermarkSvg = (
-      <svg width="115" height="115" viewBox="0 0 120 120" fill="none" style={{ opacity: 0.8 }}>
-        <g fontFamily="monospace" fontSize="12" fontWeight="700" letterSpacing="1.5">
-          <text x="35" y="45" fill="#38bdf8" opacity="0.6">10110 0</text>
-          <text x="20" y="65" fill="#4ade80" opacity="0.9">010010 010</text>
-          <text x="15" y="85" fill="#38bdf8" opacity="0.7">001010 1110</text>
-          <text x="40" y="105" fill="#facc15" opacity="0.8">0 10 1</text>
-        </g>
-      </svg>
-    );
-  } else if (s.includes('math') || s.includes('stat') || s.includes('algebra')) {
-    gradient = 'linear-gradient(145deg, #172554 0%, #1e40af 40%, #2563eb 100%)';
-    badgeSource = item.coverBadge || `${item.source || 'NCERT'} · Mathematics`;
-    watermarkSvg = (
-      <svg width="100" height="100" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ opacity: 0.45 }}>
-        <circle cx="50" cy="50" r="36" opacity="0.3" />
-        <polygon points="50,18 82,74 18,74" opacity="0.5" />
-        <line x1="16" y1="50" x2="84" y2="50" strokeDasharray="3 3" opacity="0.4" />
+    levelPill = 'Class 12';
+    artworkSvg = (
+      <svg viewBox="0 0 200 120" style={{ width: '100%', height: '100%' }}>
+        {/* Lush Botanical Leaves Artwork */}
+        <path d="M120,115 Q135,75 160,35" fill="none" stroke="#6ee7b7" strokeWidth="3" strokeLinecap="round" opacity="0.9" />
+        <path d="M160,35 C175,25 180,15 180,10 C170,10 160,18 150,28 C140,38 150,42 160,35 Z" fill="#34d399" opacity="0.9" />
+        <path d="M140,55 C160,45 170,45 175,40 C170,52 160,60 145,55 Z" fill="#6ee7b7" opacity="0.95" />
+        <path d="M130,70 C110,60 102,62 98,58 C108,70 120,75 130,70 Z" fill="#10b981" opacity="0.95" />
+        <path d="M148,45 C135,35 128,38 122,33 C130,45 140,49 148,45 Z" fill="#34d399" opacity="0.85" />
+        <path d="M136,88 C155,80 165,82 170,78 C164,90 152,95 136,88 Z" fill="#6ee7b7" opacity="0.9" />
+        <path d="M124,98 C108,90 100,92 96,88 C104,100 115,103 124,98 Z" fill="#34d399" opacity="0.85" />
       </svg>
     );
   } else {
-    watermarkSvg = (
-      <svg width="85" height="85" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.4 }}>
-        <path d="M20,35 Q50,25 80,35 L80,75 Q50,65 20,75 Z" opacity="0.35" />
-        <line x1="50" y1="27" x2="50" y2="72" opacity="0.45" />
+    gradient = 'linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #334155 100%)';
+    badgeSource = item.coverBadge || `${item.source || 'Harvard'} · CS50`;
+    levelPill = 'Class 12';
+    artworkSvg = (
+      <svg viewBox="0 0 200 120" style={{ width: '100%', height: '100%' }}>
+        <g fontFamily="monospace" fontSize="12" fontWeight="700" letterSpacing="2">
+          <text x="60" y="45" fill="#38bdf8" opacity="0.6">10110 0</text>
+          <text x="40" y="65" fill="#4ade80" opacity="0.9">010010 010</text>
+          <text x="35" y="85" fill="#38bdf8" opacity="0.7">001010 1110</text>
+          <text x="70" y="105" fill="#facc15" opacity="0.8">0 10 1</text>
+        </g>
       </svg>
     );
   }
@@ -180,7 +160,7 @@ export function BookCover({ item }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '16px 14px',
+        padding: '14px 14px 0',
         color: '#ffffff',
         boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
         userSelect: 'none',
@@ -200,69 +180,70 @@ export function BookCover({ item }) {
         }}
       />
 
-      {/* Top Source Badge */}
-      <div style={{ zIndex: 2 }}>
+      {/* Top Section: Badge, Title, Level Pill directly below title */}
+      <div style={{ zIndex: 2, display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <span
           style={{
             fontSize: '11px',
-            fontWeight: 700,
-            color: 'rgba(255, 255, 255, 0.85)',
-            letterSpacing: '0.4px',
-            textTransform: 'uppercase',
+            fontWeight: 600,
+            color: 'rgba(255, 255, 255, 0.82)',
+            letterSpacing: '0.2px',
           }}
         >
           {badgeSource}
         </span>
-      </div>
 
-      {/* Title Block */}
-      <div style={{ zIndex: 2, margin: 'auto 0' }}>
-        <div
+        <h4
           style={{
-            fontSize: '16px',
+            fontSize: '15.5px',
             fontWeight: 800,
-            lineHeight: 1.3,
+            lineHeight: 1.25,
             color: '#ffffff',
-            textShadow: '0 2px 6px rgba(0,0,0,0.3)',
+            margin: '2px 0 6px',
+            textShadow: '0 2px 4px rgba(0,0,0,0.25)',
             display: '-webkit-box',
-            WebkitLineClamp: 3,
+            WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
           }}
         >
           {item.title}
+        </h4>
+
+        {/* Level Pill directly below title (Class 12, Class 11) */}
+        <div>
+          <span
+            style={{
+              display: 'inline-block',
+              background: 'rgba(255, 255, 255, 0.22)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              color: '#ffffff',
+              fontSize: '10.5px',
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: '5px',
+              letterSpacing: '0.2px',
+            }}
+          >
+            {levelPill}
+          </span>
         </div>
       </div>
 
-      {/* Subject Watermark Graphic */}
+      {/* Bottom Section: Artwork takes up lower half */}
       <div
         style={{
-          position: 'absolute',
-          right: '-5px',
-          bottom: '15px',
+          position: 'relative',
+          width: '100%',
+          height: '52%',
           pointerEvents: 'none',
           zIndex: 1,
+          marginTop: 'auto',
+          overflow: 'hidden',
         }}
       >
-        {watermarkSvg}
-      </div>
-
-      {/* Bottom Level Pill inside cover */}
-      <div style={{ zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <span
-          style={{
-            background: 'rgba(255, 255, 255, 0.22)',
-            backdropFilter: 'blur(6px)',
-            color: '#ffffff',
-            fontSize: '11px',
-            fontWeight: 700,
-            padding: '3px 9px',
-            borderRadius: '6px',
-            letterSpacing: '0.2px',
-          }}
-        >
-          {item.level || 'Class 12'}
-        </span>
+        {artworkSvg}
       </div>
     </div>
   );

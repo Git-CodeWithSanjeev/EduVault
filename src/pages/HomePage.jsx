@@ -192,100 +192,43 @@ export function Home({ saved = [], toggle = () => { } }) {
   }, []);
 
   return (
-    <div className="home-content-container" style={{ padding: '0 32px 36px', boxSizing: 'border-box' }}>
+    <div className="home-content-container">
       {/* ─── 1. TWO-TONE HERO SECTION ─── */}
-      <section
-        style={{
-          background: 'linear-gradient(135deg, #EEF8F4 0%, #E2F2EC 50%, #F0F8F5 100%)',
-          borderRadius: '24px',
-          padding: '36px 32px 30px',
-          marginBottom: '24px',
-        }}
-      >
-        <div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center"
-        >
+      <section className="hero-card-section">
+        <div className="hero-grid-layout">
           {/* Left Hero Content */}
-          <div style={{ maxWidth: '580px' }}>
-            <h1
-              style={{
-                fontSize: 'clamp(28px, 4vw, 46px)',
-                lineHeight: 1.15,
-                fontWeight: 800,
-                color: '#0f172a',
-                margin: '0 0 16px',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              Your trusted library for <span style={{ color: '#0F5E53' }}>textbooks</span> &amp;{' '}
-              <span style={{ color: '#0F5E53' }}>video</span> masterclasses
+          <div className="hero-left-content">
+            <h1 className="hero-two-tone-title">
+              Your trusted library for <span className="accent">textbooks &amp; video</span> masterclasses
             </h1>
 
-            <p
-              style={{
-                fontSize: '15px',
-                color: '#475569',
-                lineHeight: 1.6,
-                margin: '0 0 24px',
-              }}
-            >
+            <p className="hero-subtitle">
               Access high-quality open textbooks, video courses, and study resources absolutely free.
             </p>
 
-            {/* Search Pill + Stacked CTAs Row (matching mockup) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-              {/* Hero Search Pill (hidden on mobile < 768px where header has search button) */}
+            {/* Search Pill + Stacked CTAs Row */}
+            <div className="hero-actions-row">
+              {/* Hero Search Pill */}
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
                 className="hero-search-pill"
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '9999px',
-                  padding: '12px 20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
-                  border: 'none',
-                  cursor: 'pointer',
-                  width: '100%',
-                  maxWidth: '360px',
-                  transition: 'all 0.18s ease',
-                }}
               >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <span style={{ color: '#64748b', fontSize: '13px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span style={{ color: '#64748b', fontSize: '12.5px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap' }}>
                   Search NCERT, OpenStax, or video courses...
                 </span>
-                <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
+                <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700, flexShrink: 0 }}>
                   Ctrl K
                 </kbd>
               </button>
 
               {/* Stacked CTAs */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <Link
-                  to="/library"
-                  style={{
-                    background: '#0F5E53',
-                    color: '#ffffff',
-                    padding: '10px 22px',
-                    borderRadius: '9999px',
-                    fontWeight: 700,
-                    fontSize: '13.5px',
-                    textDecoration: 'none',
-                    whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
-                    transition: 'all 0.18s ease',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                  }}
-                >
+              <div className="hero-cta-stack">
+                <Link to="/library" className="hero-cta-primary">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10" />
                     <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
@@ -293,23 +236,7 @@ export function Home({ saved = [], toggle = () => { } }) {
                   <span>Explore Textbooks</span>
                 </Link>
 
-                <Link
-                  to="/videos"
-                  style={{
-                    background: '#DCEDE7',
-                    color: '#0F5E53',
-                    padding: '10px 22px',
-                    borderRadius: '9999px',
-                    fontWeight: 700,
-                    fontSize: '13.5px',
-                    textDecoration: 'none',
-                    whiteSpace: 'nowrap',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    transition: 'all 0.18s ease',
-                  }}
-                >
+                <Link to="/videos" className="hero-cta-secondary">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
                     <circle cx="12" cy="12" r="10" />
                     <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
@@ -320,27 +247,9 @@ export function Home({ saved = [], toggle = () => { } }) {
             </div>
           </div>
 
-          {/* Right Hero: Seamless 3D Illustration & Trust Pill */}
-          <div
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '100%',
-            }}
-          >
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                width: '100%',
-                maxWidth: '520px',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
+          {/* Right Hero: 3D Students Illustration & Frosted Trust Pill */}
+          <div className="hero-right-visual">
+            <div className="hero-students-img-wrap">
               <img
                 src="/images/hero-students.png"
                 alt="EduVault students studying with textbooks and video masterclasses"
@@ -348,42 +257,17 @@ export function Home({ saved = [], toggle = () => { } }) {
                 height="768"
                 loading="eager"
                 fetchPriority="high"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  maxHeight: '340px',
-                  objectFit: 'contain',
-                  mixBlendMode: 'multiply',
-                }}
+                className="hero-students-img"
               />
             </div>
 
             {/* Frosted-Glass Trust Pill matching mockup */}
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 2,
-                marginTop: '-12px',
-                background: 'rgba(255, 255, 255, 0.88)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                borderRadius: '9999px',
-                padding: '7px 20px',
-                boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
-                fontSize: '12px',
-                fontWeight: 700,
-                color: '#0F5E53',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                whiteSpace: 'nowrap',
-              }}
-            >
+            <div className="hero-trust-pill">
               <span style={{ color: '#eab308' }}>⭐</span>
               <span>200+ Open Textbooks</span>
-              <span style={{ color: '#cbd5e1' }}>·</span>
+              <span style={{ color: '#cbd5e1' }}>•</span>
               <span>50+ Video Courses</span>
-              <span style={{ color: '#cbd5e1' }}>·</span>
+              <span style={{ color: '#cbd5e1' }}>•</span>
               <span>100% Free &amp; Ad-Free</span>
             </div>
           </div>
@@ -391,20 +275,9 @@ export function Home({ saved = [], toggle = () => { } }) {
       </section>
 
       {/* ─── 2. MIDDLE STRIP (FILTERS + CONTINUE LEARNING) ─── */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+      <section className="middle-strip-grid">
         {/* Left: Filter Card */}
-        <div
-          className="filter-card"
-          style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
-            padding: '16px 20px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-          }}
-        >
+        <div className="filter-card">
           {/* Row 1: SUBJECTS */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', minWidth: 0, flexWrap: 'nowrap' }}>
             <span
@@ -529,17 +402,7 @@ export function Home({ saved = [], toggle = () => { } }) {
         </div>
 
         {/* Right: Continue Learning Banner */}
-        <div
-          style={{
-            background: '#EBF7F2',
-            borderRadius: '20px',
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '14px',
-          }}
-        >
+        <div className="continue-learning-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.5 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
@@ -574,7 +437,6 @@ export function Home({ saved = [], toggle = () => { } }) {
                 borderRadius: '4px',
                 overflow: 'hidden',
               }}
-              className="hidden sm:block"
             >
               <div style={{ width: '65%', height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
             </div>
@@ -605,9 +467,9 @@ export function Home({ saved = [], toggle = () => { } }) {
       </section>
 
       {/* ─── 3. SPLIT 2-PANEL CONTENT SECTION (VIDEOS ON LEFT, TEXTBOOKS ON RIGHT) ─── */}
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <section className="split-panels-grid">
         {/* Panel 1: Popular Video Playlists */}
-        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)' }}>
+        <div className="panel-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span
@@ -645,7 +507,7 @@ export function Home({ saved = [], toggle = () => { } }) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+          <div className="cards-grid-3">
             {filteredVideos.slice(0, 3).map((vid, idx) => (
               <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
             ))}
@@ -653,8 +515,8 @@ export function Home({ saved = [], toggle = () => { } }) {
         </div>
 
         {/* Panel 2: Featured Textbooks */}
-        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)' }}>
-          {/* Top Filter Tabs: All, Textbooks, Videos matching mockup */}
+        <div className="panel-container">
+          {/* Top Filter Tabs: All, Textbooks, Videos */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
             <button
               type="button"
@@ -726,7 +588,7 @@ export function Home({ saved = [], toggle = () => { } }) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+          <div className="cards-grid-3">
             {featuredBooks.slice(0, 3).map((b) => (
               <BookCard
                 key={b.id}
