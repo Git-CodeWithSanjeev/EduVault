@@ -200,28 +200,23 @@ export function Home({ saved = [], toggle = () => {} }) {
   }, []);
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, #F4F9F7 0%, #E8F7F2 50%, #F4F9F7 100%)', minHeight: '100vh', paddingBottom: '60px' }}>
+    <div style={{ background: 'linear-gradient(135deg, #F4F9F7 0%, #E8F7F2 50%, #F4F9F7 100%)', minHeight: '100vh', paddingBottom: '90px' }}>
       {/* ─── 1. TWO-TONE HERO SECTION ─── */}
       <section
         style={{
           maxWidth: '1240px',
           margin: '0 auto',
-          padding: '36px 24px 28px',
+          padding: '28px 20px 24px',
         }}
       >
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-            gap: '40px',
-            alignItems: 'center',
-          }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6 lg:gap-10 items-center"
         >
           {/* Left Hero Content */}
           <div style={{ maxWidth: '560px' }}>
             <h1
               style={{
-                fontSize: 'clamp(32px, 4.2vw, 48px)',
+                fontSize: 'clamp(28px, 4.2vw, 48px)',
                 lineHeight: 1.16,
                 fontWeight: 800,
                 color: '#0f172a',
@@ -372,28 +367,19 @@ export function Home({ saved = [], toggle = () => {} }) {
       </section>
 
       {/* ─── 2. BORDERLESS ELEVATED FILTER BAR ─── */}
-      <section style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px 18px' }}>
+      <section className="px-4 sm:px-6 mb-5" style={{ maxWidth: '1240px', margin: '0 auto' }}>
         <div
-          style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            boxShadow: '0 4px 20px rgba(15, 94, 83, 0.05)',
-            padding: '18px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-            position: 'relative',
-          }}
+          className="bg-white rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3 relative shadow-sm"
         >
           {/* Row 1: SUBJECTS */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
             <span
               style={{
                 fontSize: '11px',
                 fontWeight: 800,
                 color: '#64748b',
                 letterSpacing: '0.6px',
-                width: '84px',
+                width: '74px',
                 flexShrink: 0,
               }}
             >
@@ -403,14 +389,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             <div
               ref={pillsRef}
               onScroll={checkScroll}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-              }}
+              className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] touch-pan-x py-0.5"
             >
               {subjects.map((sub) => {
                 const isActive = selectedSubject === sub.id;
@@ -424,12 +403,14 @@ export function Home({ saved = [], toggle = () => {} }) {
                       color: isActive ? '#ffffff' : '#334155',
                       border: 'none',
                       borderRadius: '9999px',
-                      padding: '7px 18px',
-                      fontSize: '13px',
+                      padding: '7px 16px',
+                      minHeight: '36px',
+                      fontSize: '12.5px',
                       fontWeight: isActive ? 700 : 500,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.15s ease',
+                      flexShrink: 0,
                     }}
                   >
                     {sub.label}
@@ -440,14 +421,14 @@ export function Home({ saved = [], toggle = () => {} }) {
           </div>
 
           {/* Row 2: GRADE */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
             <span
               style={{
                 fontSize: '11px',
                 fontWeight: 800,
                 color: '#64748b',
                 letterSpacing: '0.6px',
-                width: '84px',
+                width: '74px',
                 flexShrink: 0,
               }}
             >
@@ -455,13 +436,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             </span>
 
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                overflowX: 'auto',
-                scrollbarWidth: 'none',
-              }}
+              className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] touch-pan-x py-0.5"
             >
               {grades.map((gr) => {
                 const isActive = selectedGrade === gr.id;
@@ -475,12 +450,14 @@ export function Home({ saved = [], toggle = () => {} }) {
                       color: isActive ? '#ffffff' : '#334155',
                       border: 'none',
                       borderRadius: '9999px',
-                      padding: '7px 18px',
-                      fontSize: '13px',
+                      padding: '7px 16px',
+                      minHeight: '36px',
+                      fontSize: '12.5px',
                       fontWeight: isActive ? 700 : 500,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.15s ease',
+                      flexShrink: 0,
                     }}
                   >
                     {gr.label}
@@ -567,13 +544,7 @@ export function Home({ saved = [], toggle = () => {} }) {
           </Link>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))',
-            gap: '24px',
-          }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 md:gap-4 lg:gap-6">
           {filteredVideos.map((vid, idx) => (
             <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
           ))}
@@ -610,13 +581,7 @@ export function Home({ saved = [], toggle = () => {} }) {
           </Link>
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '20px',
-          }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5">
           {featuredBooks.map((b) => (
             <BookCard
               key={b.id}

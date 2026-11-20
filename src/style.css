@@ -3675,13 +3675,19 @@ nav a.active {
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
     .mobile-nav-toggle {
         display: none !important;
     }
 
     .mobile-drawer-overlay,
     .mobile-drawer {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-bottom-nav {
         display: none !important;
     }
 }
@@ -9983,7 +9989,6 @@ footer,
     .desktop-search-trigger,
     .user-name-label,
     .lib-class-rail,
-    .mobile-search-btn,
     header .user-profile-btn strong {
         display: none !important;
     }

@@ -182,15 +182,41 @@ export function Shell({ children, welcomeMsg }) {
           <NavLink to="/saved">My library</NavLink>
         </nav>
 
-        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: 'auto' }}>
-          {/* Borderless Tonal Search Pill (Search resources... 🔍) */}
+        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
+          {/* Mobile Search Icon Button (< 768px) matching the attached mockup */}
           <button
             type="button"
-            className="nav-search-pill"
+            className="mobile-search-btn md:hidden"
+            onClick={() => setSearchModalOpen(true)}
+            title="Search resources... (Ctrl+K)"
+            aria-label="Search resources"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '38px',
+              height: '38px',
+              background: '#E6F4F1',
+              border: 'none',
+              borderRadius: '12px',
+              color: '#0F5E53',
+              cursor: 'pointer',
+              transition: 'all 0.18s ease',
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+
+          {/* Tablet & Desktop Tonal Search Pill (>= 768px) */}
+          <button
+            type="button"
+            className="nav-search-pill hidden md:flex"
             onClick={() => setSearchModalOpen(true)}
             title="Search resources... (Ctrl+K)"
             style={{
-              display: 'flex',
               alignItems: 'center',
               gap: '8px',
               background: '#E6F4F1',
@@ -212,9 +238,9 @@ export function Shell({ children, welcomeMsg }) {
           </button>
 
           {loading ? (
-            <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
+            <div className="auth-nav-skeleton hidden md:block" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
           ) : isLoggedIn ? (
-            <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
+            <div className="user-menu-wrap hidden md:block" ref={userMenuRef} style={{ position: 'relative' }}>
               <button
                 className="user-profile-btn"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -292,7 +318,7 @@ export function Shell({ children, welcomeMsg }) {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="hidden md:flex" style={{ alignItems: 'center', gap: '10px' }}>
               <Link
                 to="/login"
                 style={{
@@ -325,17 +351,30 @@ export function Shell({ children, welcomeMsg }) {
             </div>
           )}
 
-          {/* Hamburger Menu Toggle Button for Mobile (<1024px only) */}
+          {/* Hamburger Menu Toggle Button for Mobile & Tablet (<1024px) */}
           <button
             type="button"
             className="mobile-nav-toggle lg:hidden"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open Mobile Navigation Menu"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '38px',
+              height: '38px',
+              background: '#E6F4F1',
+              border: 'none',
+              borderRadius: '12px',
+              color: '#0F5E53',
+              cursor: 'pointer',
+              padding: 0,
+            }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="7" x2="20" y2="7" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="17" x2="20" y2="17" />
             </svg>
           </button>
         </div>
@@ -533,20 +572,12 @@ export function Shell({ children, welcomeMsg }) {
             </NavLink>
             <NavLink to={isLoggedIn ? "/profile" : "/login"} className={`bottom-nav-item ${location.pathname === '/profile' || location.pathname === '/login' ? 'active' : ''}`}>
               <span className="nav-icon">
-                {isLoggedIn ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                    <polyline points="10 17 15 12 10 7" />
-                    <line x1="15" y1="12" x2="3" y2="12" />
-                  </svg>
-                )}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
               </span>
-              <span>{isLoggedIn ? 'Profile' : 'Sign In'}</span>
+              <span>Profile</span>
             </NavLink>
           </div>
 

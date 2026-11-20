@@ -214,21 +214,14 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
   return (
     <div
-      className="video-card-container flex flex-col h-full"
+      className="video-card-container flex flex-row md:flex-col h-full bg-white rounded-2xl shadow-sm overflow-hidden p-2.5 sm:p-3 md:p-0 transition-all duration-200"
       style={{
-        background: '#ffffff',
-        borderRadius: '16px',
-        boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
         border: 'none',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
       }}
     >
-      {/* 16:9 Aspect Ratio Media Frame */}
-      <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#0f172a', overflow: 'hidden' }}>
+      {/* 16:9 Aspect Ratio Media Frame (Left horizontal side on mobile, top full width on tablet/desktop) */}
+      <div className="w-[44%] sm:w-[42%] md:w-full shrink-0 relative aspect-[16/9] bg-[#0f172a] rounded-xl md:rounded-none overflow-hidden">
         <Link
           to={videoDetailsUrl}
           style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}
@@ -251,9 +244,9 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               ...badgeStyle,
               background: levelBadge === 'UG' ? '#047857' : '#0369a1',
               color: '#ffffff',
-              fontSize: '11px',
+              fontSize: '10.5px',
               fontWeight: 700,
-              padding: '3px 9px',
+              padding: '2.5px 8px',
               borderRadius: '6px',
               letterSpacing: '0.2px',
             }}
@@ -263,13 +256,12 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
           {/* Centered Circular Play Button */}
           <div
+            className="w-8 h-8 sm:w-9 sm:h-9 md:w-11 md:h-11"
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '44px',
-              height: '44px',
               borderRadius: '50%',
               background: 'rgba(255, 255, 255, 0.28)',
               backdropFilter: 'blur(6px)',
@@ -281,7 +273,7 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               zIndex: 2,
             }}
           >
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 md:w-5 md:h-5" fill="currentColor">
               <polygon points="8 5 19 12 8 19 8 5" />
             </svg>
           </div>
@@ -290,98 +282,74 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
           <div
             style={{
               position: 'absolute',
-              bottom: '10px',
-              left: '10px',
+              bottom: '8px',
+              left: '8px',
               background: 'rgba(15, 23, 42, 0.75)',
               backdropFilter: 'blur(4px)',
               color: '#ffffff',
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: 600,
-              padding: '3px 8px',
+              padding: '2px 7px',
               borderRadius: '5px',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '5px',
+              gap: '4px',
               zIndex: 3,
             }}
           >
-            <span style={{ fontSize: '10px' }}>▶</span>
-            <span>{durationText}</span>
+            <span style={{ fontSize: '9px' }}>▶</span>
+            <span className="whitespace-nowrap">{durationText}</span>
           </div>
         </Link>
       </div>
 
-      {/* Card Body */}
-      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        {/* Title (2-line clamp) */}
-        <h3
-          style={{
-            fontSize: '15px',
-            fontWeight: 800,
-            color: '#0f172a',
-            margin: '0 0 6px',
-            lineHeight: 1.35,
-            minHeight: '2.7rem',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          <Link to={videoDetailsUrl} style={{ color: 'inherit', textDecoration: 'none' }}>
-            {displayTitle}
-          </Link>
-        </h3>
+      {/* Card Body (Right side on mobile, bottom body on tablet/desktop) */}
+      <div className="flex-1 flex flex-col justify-between p-2 sm:p-2.5 md:p-4 min-w-0">
+        <div>
+          {/* Title (2-line clamp) */}
+          <h3
+            className="text-[13px] sm:text-[14px] md:text-[15px] font-extrabold text-[#0f172a] leading-snug line-clamp-2 mb-1 md:mb-1.5 min-h-0 md:min-h-[2.6rem]"
+            title={displayTitle}
+          >
+            <Link to={videoDetailsUrl} style={{ color: 'inherit', textDecoration: 'none' }}>
+              {displayTitle}
+            </Link>
+          </h3>
 
-        {/* Clean 2-Line Description (Old harsh OVERVIEW: box completely removed) */}
-        <p
-          style={{
-            fontSize: '12.5px',
-            color: '#64748b',
-            margin: '0 0 14px',
-            lineHeight: 1.5,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}
-        >
-          {initialObj.whyHighQuality || video.description || 'Structured academic masterclass covering core theory, proofs, and real-world problem sets.'}
-        </p>
+          {/* Clean 2-Line Description (Old harsh OVERVIEW: box completely removed) */}
+          <p
+            className="text-[11px] sm:text-[11.5px] md:text-[12.5px] text-[#64748b] leading-relaxed line-clamp-2 mb-2 md:mb-3.5"
+          >
+            {initialObj.whyHighQuality || video.description || 'Structured academic masterclass covering core theory, proofs, and real-world problem sets.'}
+          </p>
 
-        {/* Progress Bar (if course in progress) */}
-        {progressPercent > 0 && (
-          <div style={{ margin: '0 0 10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#0F5E53', fontWeight: 700, marginBottom: '3px' }}>
-              <span>Progress</span>
-              <span>{progressPercent}%</span>
+          {/* Progress Bar (if course in progress) */}
+          {progressPercent > 0 && (
+            <div style={{ margin: '0 0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10.5px', color: '#0F5E53', fontWeight: 700, marginBottom: '3px' }}>
+                <span>Progress</span>
+                <span>{progressPercent}%</span>
+              </div>
+              <div style={{ height: '4px', background: '#E6F4F1', borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${progressPercent}%`, height: '100%', background: '#0F5E53', transition: 'width 0.3s ease' }} />
+              </div>
             </div>
-            <div style={{ height: '5px', background: '#E6F4F1', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPercent}%`, height: '100%', background: '#0F5E53', transition: 'width 0.3s ease' }} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Creator Footer with Avatar & Bookmark */}
         <div
-          style={{
-            marginTop: 'auto',
-            paddingTop: '10px',
-            borderTop: '1px solid #f1f5f9',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
+          className="mt-auto pt-1.5 md:pt-2.5 border-t border-slate-100 flex items-center justify-between"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div
               style={{
-                width: '24px',
-                height: '24px',
+                width: '20px',
+                height: '20px',
                 borderRadius: '50%',
                 background: '#E6F4F1',
                 color: '#0F5E53',
-                fontSize: '11px',
+                fontSize: '10px',
                 fontWeight: 800,
                 display: 'flex',
                 alignItems: 'center',
@@ -392,15 +360,7 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
               {(displayChannel || 'C').slice(0, 1).toUpperCase()}
             </div>
             <span
-              style={{
-                fontSize: '12px',
-                color: '#64748b',
-                fontWeight: 600,
-                maxWidth: '160px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+              className="text-[11px] sm:text-[11.5px] md:text-xs font-semibold text-slate-600 truncate max-w-[110px] sm:max-w-[150px]"
               title={displayChannel}
             >
               {displayChannel}

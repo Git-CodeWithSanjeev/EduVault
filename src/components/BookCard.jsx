@@ -33,7 +33,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
         borderRadius: '16px',
         boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
         border: 'none',
-        padding: '12px',
+        padding: '10px',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -111,7 +111,7 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '8px',
+            gap: '6px',
             marginTop: 'auto',
           }}
         >
@@ -121,11 +121,12 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
               background: '#0F5E53',
               color: '#ffffff',
               borderRadius: '8px',
-              padding: '8px 12px',
-              fontSize: '12px',
+              padding: '7px 6px',
+              fontSize: '11px',
               fontWeight: 700,
               textAlign: 'center',
               textDecoration: 'none',
+              whiteSpace: 'nowrap',
               boxShadow: '0 2px 6px rgba(15, 94, 83, 0.2)',
               transition: 'background 0.15s ease',
             }}
@@ -138,11 +139,12 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
               background: '#F1F5F4',
               color: '#475569',
               borderRadius: '8px',
-              padding: '8px 12px',
-              fontSize: '12px',
+              padding: '7px 6px',
+              fontSize: '11px',
               fontWeight: 600,
               textAlign: 'center',
               textDecoration: 'none',
+              whiteSpace: 'nowrap',
               transition: 'background 0.15s ease',
             }}
           >
