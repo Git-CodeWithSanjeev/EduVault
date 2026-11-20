@@ -87,6 +87,12 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       proxyReq.destroy();
     });
 
+    req.on('close', () => {
+      if (!res.writableEnded) {
+        proxyReq.destroy();
+      }
+    });
+
     proxyReq.on('error', (err) => {
       console.error(`[Vite PDF Proxy Error] Attempt ${attempt}:`, err.message);
       if (!res.headersSent) {

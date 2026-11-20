@@ -95,6 +95,9 @@ export function AdobePDFViewer({
 
   useEffect(() => {
     let isCancelled = false;
+    let timeoutId = null;
+    let didTimeout = false;
+    const controller = new AbortController();
     const targetUrl = proxyUrl(url);
 
     if (!pdfBufferCache.has(targetUrl)) {
@@ -138,11 +141,18 @@ export function AdobePDFViewer({
           contentPayload = { promise: Promise.resolve(pdfBufferCache.get(targetUrl)) };
         } else {
           try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 35000);
+            timeoutId = setTimeout(() => {
+              didTimeout = true;
+              try {
+                controller.abort();
+              } catch (_) {}
+            }, 60000);
 
             const res = await fetch(targetUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+              timeoutId = null;
+            }
 
             if (!res.ok) {
               let detailMsg = `HTTP ${res.status} (${res.statusText || 'Error'})`;
@@ -159,6 +169,10 @@ export function AdobePDFViewer({
               const chunks = [];
               let received = 0;
               while (true) {
+                if (isCancelled) {
+                  try { reader.cancel(); } catch (_) {}
+                  return;
+                }
                 const { done, value } = await reader.read();
                 if (done) break;
                 chunks.push(value);
@@ -178,11 +192,18 @@ export function AdobePDFViewer({
               contentPayload = { promise: Promise.resolve(buffer) };
             } else {
               const buffer = await res.arrayBuffer();
+              if (isCancelled) return;
               pdfBufferCache.set(targetUrl, buffer);
               contentPayload = { promise: Promise.resolve(buffer) };
             }
           } catch (fetchErr) {
             if (isCancelled) return;
+            if (didTimeout) {
+              throw new Error('PDF download timed out. The upstream server (NCERT) is taking too long to respond. Please try again or open in new tab.');
+            }
+            if (fetchErr.name === 'AbortError' || fetchErr.message?.toLowerCase().includes('abort')) {
+              return;
+            }
             throw new Error(fetchErr.message || 'Failed to fetch PDF file');
           }
         }
@@ -249,6 +270,7 @@ export function AdobePDFViewer({
           })
           .catch((previewErr) => {
             if (isCancelled) return;
+            if (previewErr?.name === 'AbortError' || previewErr?.message?.toLowerCase().includes('abort')) return;
             console.error('Adobe DC View previewFile error:', previewErr);
             setError(previewErr?.message || 'Error rendering document in Adobe Viewer');
             setLoading(false);
@@ -259,6 +281,9 @@ export function AdobePDFViewer({
         }
       } catch (err) {
         if (isCancelled) return;
+        if (err.name === 'AbortError' || err.message?.toLowerCase().includes('abort')) {
+          return;
+        }
         console.error('Adobe PDF Embed error:', err);
         setError(err.message || 'Failed to render PDF using Adobe Reader');
         setLoading(false);
@@ -269,7 +294,11 @@ export function AdobePDFViewer({
 
     return () => {
       isCancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
       clearTimeout(timeoutTimer);
+      try {
+        controller.abort();
+      } catch (_) {}
       const el = document.getElementById(containerId);
       if (el) el.innerHTML = '';
     };
