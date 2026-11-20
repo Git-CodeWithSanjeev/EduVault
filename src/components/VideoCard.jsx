@@ -81,7 +81,7 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
     };
   }, [playlistId]);
 
-  const lessonsCount = dynamicLessons ? dynamicLessons.length : (initialObj.lessons?.length || 4);
+  const lessonsCount = dynamicLessons ? dynamicLessons.length : (initialObj.lessons?.length || 24);
   const progressPercent = getCourseProgress(targetId, lessonsCount);
 
   // Set initial thumbnail source
@@ -108,74 +108,126 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
   const saved = isSaved(targetId);
 
+  const levelBadge = (video.tier === 'Undergraduate (UG)' || String(video.level || '').toUpperCase().includes('UG'))
+    ? 'UG'
+    : (video.classNum ? `Class ${video.classNum}` : (video.level || 'Class 12'));
+
+  const durationText = playlistId ? `${lessonsCount} Videos` : (initialObj.duration || '12 Hours · 24 Videos');
+
   return (
-    <div className="video-card-container flex flex-col h-full" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Aspect Ratio Media Frame -> Navigates to Video Details Page */}
-      <div className="video-aspect-box">
+    <div
+      className="video-card-container flex flex-col h-full"
+      style={{
+        background: '#ffffff',
+        borderRadius: '16px',
+        boxShadow: '0 4px 18px rgba(15, 94, 83, 0.05)',
+        border: 'none',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+      }}
+    >
+      {/* 16:9 Aspect Ratio Media Frame */}
+      <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#0f172a', overflow: 'hidden' }}>
         <Link
           to={videoDetailsUrl}
-          className="video-thumbnail-wrapper"
+          style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}
           aria-label={`Open video course: ${displayTitle}`}
         >
           {thumbSrc && (
             <img
               src={thumbSrc}
               alt={displayTitle}
-              className="video-thumbnail-img"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               loading="lazy"
               decoding="async"
               onError={handleImageError}
             />
           )}
-          <div className="video-thumbnail-overlay">
-            <div className="video-play-btn" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
 
-            {/* Playlist/Duration Badge */}
-            <span className="video-duration-badge" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {playlistId ? `📑 Playlist (${lessonsCount})` : (initialObj.duration || 'Video')}
-            </span>
+          {/* Exactly ONE Top-Left Level Badge */}
+          <span
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              background: 'rgba(15, 23, 42, 0.78)',
+              backdropFilter: 'blur(6px)',
+              color: '#ffffff',
+              fontSize: '11px',
+              fontWeight: 700,
+              padding: '3px 9px',
+              borderRadius: '6px',
+              letterSpacing: '0.2px',
+              zIndex: 3,
+            }}
+          >
+            {levelBadge}
+          </span>
+
+          {/* Centered Circular Play Button */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.28)',
+              backdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#ffffff',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+              zIndex: 2,
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <polygon points="8 5 19 12 8 19 8 5" />
+            </svg>
+          </div>
+
+          {/* Bottom Duration & Video Count Strip */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              left: '10px',
+              background: 'rgba(15, 23, 42, 0.75)',
+              backdropFilter: 'blur(4px)',
+              color: '#ffffff',
+              fontSize: '11px',
+              fontWeight: 600,
+              padding: '3px 8px',
+              borderRadius: '5px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              zIndex: 3,
+            }}
+          >
+            <span style={{ fontSize: '10px' }}>▶</span>
+            <span>{durationText}</span>
           </div>
         </Link>
       </div>
 
-      {/* Card Content */}
-      <div className="video-card-body" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <div className="video-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {initialObj.focusArea && (
-            <span className="video-badge-focus">{initialObj.focusArea}</span>
-          )}
-          {displayChannel && (
-            <span
-              className="video-channel-name truncate line-clamp-1"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                maxWidth: '140px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={displayChannel}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <rect x="2" y="4" width="20" height="15" rx="2" />
-                <polygon points="10 9 15 11.5 10 14 10 9" fill="currentColor" />
-              </svg>
-              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayChannel}</span>
-            </span>
-          )}
-        </div>
-
-        {/* Title -> Direct Link */}
+      {/* Card Body */}
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {/* Title (2-line clamp) */}
         <h3
-          className="video-card-title min-h-[2.8rem] line-clamp-2"
           style={{
-            minHeight: '2.8rem',
+            fontSize: '15px',
+            fontWeight: 800,
+            color: '#0f172a',
+            margin: '0 0 6px',
+            lineHeight: 1.35,
+            minHeight: '2.7rem',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -187,72 +239,109 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
           </Link>
         </h3>
 
-        {initialObj.whyHighQuality && (
-          <div className="video-card-reason">
-            <span className="video-card-reason-label">Overview:</span>
-            <span className="video-card-reason-text">
-              {initialObj.whyHighQuality}
-            </span>
-          </div>
-        )}
+        {/* Clean 2-Line Description (Old harsh OVERVIEW: box completely removed) */}
+        <p
+          style={{
+            fontSize: '12.5px',
+            color: '#64748b',
+            margin: '0 0 14px',
+            lineHeight: 1.5,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {initialObj.whyHighQuality || video.description || 'Structured academic masterclass covering core theory, proofs, and real-world problem sets.'}
+        </p>
 
-        {/* Progress Bar (if course has progress) */}
+        {/* Progress Bar (if course in progress) */}
         {progressPercent > 0 && (
-          <div style={{ margin: '10px 0 6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--p-dark)', fontWeight: 700, marginBottom: '4px' }}>
+          <div style={{ margin: '0 0 10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#0F5E53', fontWeight: 700, marginBottom: '3px' }}>
               <span>Progress</span>
               <span>{progressPercent}%</span>
             </div>
-            <div style={{ height: '6px', background: '#ccebe4', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--p-gradient)', transition: 'width 0.3s ease' }} />
+            <div style={{ height: '5px', background: '#E6F4F1', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ width: `${progressPercent}%`, height: '100%', background: '#0F5E53', transition: 'width 0.3s ease' }} />
             </div>
           </div>
         )}
 
-        {/* Quick Action & Details Link Bar */}
-        <div style={{ marginTop: 'auto', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={handleSaveClick}
-              title={saved ? 'Remove from Favorites' : 'Save to Favorites'}
-              className={`card-heart-btn ${saved ? 'saved' : ''}`}
-              aria-label={saved ? 'Remove from Favorites' : 'Save to Favorites'}
+        {/* Creator Footer with Avatar & Bookmark */}
+        <div
+          style={{
+            marginTop: 'auto',
+            paddingTop: '10px',
+            borderTop: '1px solid #f1f5f9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                background: '#E6F4F1',
+                color: '#0F5E53',
+                fontSize: '11px',
+                fontWeight: 800,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
             >
-              <svg
-                className="card-heart-icon"
-                viewBox="0 0 24 24"
-                fill={saved ? 'currentColor' : 'none'}
-                stroke="currentColor"
-                strokeWidth="1.65"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-              </svg>
-            </button>
+              {(displayChannel || 'C').slice(0, 1).toUpperCase()}
+            </div>
+            <span
+              style={{
+                fontSize: '12px',
+                color: '#64748b',
+                fontWeight: 600,
+                maxWidth: '160px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+              title={displayChannel}
+            >
+              {displayChannel}
+            </span>
           </div>
 
-          <Link
-            to={videoDetailsUrl}
-            className="action-btn"
+          <button
+            type="button"
+            onClick={handleSaveClick}
+            title={saved ? 'Remove from Favorites' : 'Save to Favorites'}
             style={{
-              background: 'var(--p)',
-              color: '#ffffff',
-              border: 0,
-              padding: '8px 16px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: 700,
-              textDecoration: 'none',
-              minHeight: '40px',
-              display: 'inline-flex',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: saved ? '#0F5E53' : '#94a3b8',
+              padding: '4px',
+              display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              transition: 'color 0.15s ease',
             }}
+            aria-label={saved ? 'Remove from Favorites' : 'Save to Favorites'}
           >
-            Start Learning →
-          </Link>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill={saved ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

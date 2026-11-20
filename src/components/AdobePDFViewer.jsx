@@ -78,6 +78,7 @@ export function AdobePDFViewer({
   const [error, setError] = useState(null);
   const [viewFallbackEmbed, setViewFallbackEmbed] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [showTimeoutFallback, setShowTimeoutFallback] = useState(false);
   const adobeViewRef = useRef(null);
 
   const containerId = useRef(`adobe-pdf-view-${Math.random().toString(36).substring(2, 8)}`).current;
@@ -100,6 +101,13 @@ export function AdobePDFViewer({
       setLoading(true);
     }
     setError(null);
+    setShowTimeoutFallback(false);
+
+    const timeoutTimer = setTimeout(() => {
+      if (!isCancelled) {
+        setShowTimeoutFallback(true);
+      }
+    }, 7000);
 
     const initAdobeViewer = async () => {
       try {
@@ -261,6 +269,7 @@ export function AdobePDFViewer({
 
     return () => {
       isCancelled = true;
+      clearTimeout(timeoutTimer);
       const el = document.getElementById(containerId);
       if (el) el.innerHTML = '';
     };
@@ -276,18 +285,58 @@ export function AdobePDFViewer({
       width: '100%',
       height: isMobile ? mobileHeight : '100%',
       minHeight: isMobile ? '400px' : '600px',
-      background: 'var(--bg, #f0fdf9)',
+      background: 'var(--bg, #F4F9F8)',
       borderRadius: 0,
       overflow: 'hidden',
     }}>
       {loading && !error && (
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#ffffff', zIndex: 10 }}>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#ffffff', zIndex: 10, padding: '24px' }}>
           <span className="pdf-spinner" style={{ width: '32px', height: '32px' }} />
-          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--p, #0d9488)' }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--p, #0F5E53)' }}>
             {downloadProgress > 0 && downloadProgress < 100
               ? `Loading document… ${downloadProgress}%`
               : 'Loading document…'}
           </span>
+
+          {showTimeoutFallback && (
+            <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: '8px',
+                  background: 'var(--p, #0F5E53)',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  boxShadow: '0 2px 6px rgba(15, 94, 83, 0.25)',
+                }}
+              >
+                🚀 Open Official PDF in New Tab ↗
+              </a>
+              {effectiveReadUrl && (
+                <button
+                  type="button"
+                  onClick={() => setViewFallbackEmbed(true)}
+                  style={{
+                    padding: '7px 16px',
+                    borderRadius: '8px',
+                    background: '#E6F4F1',
+                    color: '#0F5E53',
+                    border: 'none',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  🌐 Web Reader
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 

@@ -174,15 +174,45 @@ export function Shell({ children, welcomeMsg }) {
 
         {/* Desktop Navigation */}
         <nav>
-          <NavLink to="/library">Library</NavLink>
+          <NavLink to="/library" className={({ isActive }) => (isActive || location.pathname === '/' ? 'active' : '')}>
+            Library
+          </NavLink>
           <NavLink to="/categories">Categories</NavLink>
           <NavLink to="/videos">Videos</NavLink>
           <NavLink to="/saved">My library</NavLink>
         </nav>
 
-        <div className="head-actions">
+        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: 'auto' }}>
+          {/* Borderless Tonal Search Pill (Search resources... 🔍) */}
+          <button
+            type="button"
+            className="nav-search-pill"
+            onClick={() => setSearchModalOpen(true)}
+            title="Search resources... (Ctrl+K)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#E6F4F1',
+              border: 'none',
+              borderRadius: '9999px',
+              padding: '7px 16px',
+              color: '#475569',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.18s ease',
+            }}
+          >
+            <span>Search resources...</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+
           {loading ? (
-            <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: 'var(--line)', opacity: 0.5 }} />
+            <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
           ) : isLoggedIn ? (
             <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
               <button
@@ -262,43 +292,47 @@ export function Shell({ children, welcomeMsg }) {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <Link className="auth-nav-btn" to="/login">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Link
+                to="/login"
+                style={{
+                  color: '#334155',
+                  fontWeight: 600,
+                  fontSize: '13.5px',
+                  textDecoration: 'none',
+                  padding: '6px 10px',
+                  transition: 'color 0.15s ease',
+                }}
+              >
                 Log In
               </Link>
-              <Link className="auth-nav-btn primary" to="/register">
+              <Link
+                to="/register"
+                style={{
+                  background: '#0F5E53',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  textDecoration: 'none',
+                  padding: '8px 18px',
+                  borderRadius: '10px',
+                  boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
+                  transition: 'all 0.18s ease',
+                }}
+              >
                 Sign Up
               </Link>
             </div>
           )}
 
-          {/* Desktop Command-K Search Trigger */}
+          {/* Hamburger Menu Toggle Button for Mobile (<1024px only) */}
           <button
             type="button"
-            className="desktop-search-trigger"
-            onClick={() => setSearchModalOpen(true)}
-            title="Search books, NCERT, video courses (Ctrl+K)"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <span>Search resources...</span>
-            <kbd className="search-kbd-shortcut">Ctrl K</kbd>
-          </button>
-
-          <Link className="outline" to="/upload">
-            Contribute
-          </Link>
-
-          {/* Hamburger Menu Toggle Button for Mobile (<768px) */}
-          <button
-            type="button"
-            className="mobile-nav-toggle"
+            className="mobile-nav-toggle lg:hidden"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open Mobile Navigation Menu"
           >
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="6" x2="21" y2="6" />
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="21" y2="18" />

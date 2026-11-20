@@ -33,14 +33,44 @@ export function BookCarousel({ title, itemsList, saved, toggle }) {
           <button
             onClick={() => scroll('left')}
             aria-label="Scroll carousel left"
-            style={{ border: '1px solid var(--line)', background: '#fff', borderRadius: '50%', width: '36px', height: '36px', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            style={{
+              border: 'none',
+              background: '#E6F4F1',
+              color: '#0F5E53',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              fontSize: '18px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(15, 94, 83, 0.08)',
+              transition: 'all 0.15s ease',
+            }}
           >
             ‹
           </button>
           <button
             onClick={() => scroll('right')}
             aria-label="Scroll carousel right"
-            style={{ border: '1px solid var(--line)', background: '#fff', borderRadius: '50%', width: '36px', height: '36px', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            style={{
+              border: 'none',
+              background: '#E6F4F1',
+              color: '#0F5E53',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              fontSize: '18px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(15, 94, 83, 0.08)',
+              transition: 'all 0.15s ease',
+            }}
           >
             ›
           </button>
