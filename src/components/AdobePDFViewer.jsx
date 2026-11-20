@@ -325,9 +325,10 @@ export function AdobePDFViewer({
       {/* Error Fallback Screen */}
       {error && !viewFallbackEmbed && (() => {
         const is403 = error.includes('403');
+        const isSslCertError = error.includes('issuer certificate') || error.includes('certificate') || error.includes('SSL') || error.includes('TLS');
         const is503or502 = error.includes('503') || error.includes('502');
         const isOpenLib = (sourceUrl && sourceUrl.includes('openlibrary.org')) || (url && url.includes('archive.org'));
-        const directReadingUrl = sourceUrl || readUrl || url;
+        const directReadingUrl = url || sourceUrl || readUrl;
 
         return (
           <div style={{
@@ -347,8 +348,8 @@ export function AdobePDFViewer({
               width: '52px',
               height: '52px',
               borderRadius: '50%',
-              background: is403 ? '#ecfdf5' : '#fef2f2',
-              color: is403 ? '#059669' : '#ef4444',
+              background: is403 ? '#ecfdf5' : isSslCertError ? '#f0fdfa' : '#fef2f2',
+              color: is403 ? '#059669' : isSslCertError ? '#0d9488' : '#ef4444',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -356,12 +357,14 @@ export function AdobePDFViewer({
               marginBottom: '14px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             }}>
-              {is403 ? '📖' : '⚠️'}
+              {is403 ? '📖' : isSslCertError ? '📚' : '⚠️'}
             </div>
 
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', margin: '0 0 8px 0' }}>
               {is403
                 ? 'Open Library Digital Edition'
+                : isSslCertError
+                ? 'Direct Textbook Access'
                 : is503or502
                 ? 'Document Temporarily Unavailable'
                 : 'Document Load Error'}
@@ -370,14 +373,16 @@ export function AdobePDFViewer({
             <p style={{
               fontSize: '13px',
               color: '#475569',
-              maxWidth: '440px',
+              maxWidth: '460px',
               lineHeight: 1.5,
               margin: '0 0 18px 0',
             }}>
               {is403
                 ? 'Direct raw PDF download for this title is restricted under Open Library digital lending copyright. You can borrow and read the digital edition directly on Open Library for free.'
+                : isSslCertError
+                ? 'The government repository (NCERT) uses an official state certificate that is temporarily unreachable via the server proxy. You can open and read this chapter directly in your browser or with Google Docs Viewer.'
                 : is503or502
-                ? 'The remote document host (e.g. Internet Archive) is currently offline, undergoing maintenance, or experiencing high traffic.'
+                ? 'The remote document host (e.g. NCERT or Internet Archive) is currently offline, undergoing maintenance, or experiencing high traffic.'
                 : error}
             </p>
 

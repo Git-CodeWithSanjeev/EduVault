@@ -127,7 +127,7 @@ export function BookCover({ item }) {
           <div className="cover-title">{item.title}</div>
         </div>
         <div className="cover-bottom">
-          <span>{item.level}</span>
+          <span className="cover-level-text" title={item.level}>{item.level}</span>
           <span className="cover-badge">{item.subject === 'All subjects' ? 'OPEN' : item.subject}</span>
         </div>
       </div>

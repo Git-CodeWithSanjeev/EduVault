@@ -5666,10 +5666,22 @@ div[id^="adobe-pdf-view"] [class*="AppIcon"],
 div[id^="adobe-pdf-view"] [class*="headerIcon"],
 div[id^="adobe-pdf-view"] [class*="titleIcon"],
 div[id^="adobe-pdf-view"] [class*="HeaderLeft"] {
-    width: 130px !important;
-    height: 32px !important;
-    background: url("/logo.png") no-repeat center left / contain !important;
+    display: none !important;
+}
+
+.cover-level-text {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 60% !important;
     display: inline-block !important;
+}
+
+.wishlist-btn-float {
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+.wishlist-btn-float:hover {
+    transform: scale(1.08);
 }
 
 /* ── Adobe-Style Page View Popover Menu ── */

@@ -10,7 +10,9 @@ const MAX_PROXY_BYTES = 50 * 1024 * 1024; // 50MB max file limit
 
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false,
-  keepAlive: false,
+  checkServerIdentity: () => undefined,
+  keepAlive: true,
+  keepAliveMsecs: 30000,
 });
 
 export default async function handler(req, res) {
@@ -79,6 +81,7 @@ export default async function handler(req, res) {
           method: req.method === 'HEAD' ? 'HEAD' : 'GET',
           timeout: 25000,
           rejectUnauthorized: false,
+          checkServerIdentity: () => undefined,
           agent: isHttps ? httpsAgent : undefined,
           headers,
         };

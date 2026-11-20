@@ -20,33 +20,49 @@ export function BookCarousel({ title, itemsList, saved, toggle }) {
   if (!itemsList || itemsList.length === 0) return null;
 
   return (
-    <div className="carousel-section">
+    <div
+      className="carousel-section"
+      style={{
+        contentVisibility: 'auto',
+        containIntrinsicSize: '0 440px',
+      }}
+    >
       <div className="carousel-header">
         <h2>{title}</h2>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => scroll('left')}
+            aria-label="Scroll carousel left"
             style={{ border: '1px solid var(--line)', background: '#fff', borderRadius: '50%', width: '36px', height: '36px', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           >
             ‹
           </button>
           <button
             onClick={() => scroll('right')}
+            aria-label="Scroll carousel right"
             style={{ border: '1px solid var(--line)', background: '#fff', borderRadius: '50%', width: '36px', height: '36px', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           >
             ›
           </button>
         </div>
       </div>
-      <div className="carousel-track-wrapper">
+      <div
+        className="carousel-track-wrapper"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          maskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 24px), transparent)',
+        }}
+      >
         <div
-          className="carousel-track"
+          className="carousel-track snap-x snap-mandatory scroll-smooth"
           ref={trackRef}
-          style={{ cursor: 'grab' }}
+          style={{ cursor: 'grab', scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' }}
           {...dragProps}
         >
           {itemsList.map((b) => (
-            <div key={b.id} className="carousel-item">
+            <div key={b.id} className="carousel-item snap-start" style={{ scrollSnapAlign: 'start' }}>
               <BookCard
                 item={b}
                 isSaved={saved.includes(b.id)}

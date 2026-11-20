@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
  * VideoCard Component
  * Displays video & playlist cards with direct navigation to the dedicated Video Details Learning Page.
  */
-export function VideoCard({ video }) {
+export const VideoCard = React.memo(function VideoCard({ video }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const { getCourseProgress, isSaved, toggleSave } = useVideoLearning();
@@ -109,7 +109,7 @@ export function VideoCard({ video }) {
   const saved = isSaved(targetId);
 
   return (
-    <div className="video-card-container">
+    <div className="video-card-container flex flex-col h-full" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Aspect Ratio Media Frame -> Navigates to Video Details Page */}
       <div className="video-aspect-box">
         <Link
@@ -123,6 +123,7 @@ export function VideoCard({ video }) {
               alt={displayTitle}
               className="video-thumbnail-img"
               loading="lazy"
+              decoding="async"
               onError={handleImageError}
             />
           )}
@@ -142,24 +143,45 @@ export function VideoCard({ video }) {
       </div>
 
       {/* Card Content */}
-      <div className="video-card-body">
+      <div className="video-card-body" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div className="video-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {initialObj.focusArea && (
             <span className="video-badge-focus">{initialObj.focusArea}</span>
           )}
           {displayChannel && (
-            <span className="video-channel-name" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <span
+              className="video-channel-name truncate line-clamp-1"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                maxWidth: '140px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+              title={displayChannel}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <rect x="2" y="4" width="20" height="15" rx="2" />
                 <polygon points="10 9 15 11.5 10 14 10 9" fill="currentColor" />
               </svg>
-              <span>{displayChannel}</span>
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayChannel}</span>
             </span>
           )}
         </div>
 
         {/* Title -> Direct Link */}
-        <h3 className="video-card-title">
+        <h3
+          className="video-card-title min-h-[2.8rem] line-clamp-2"
+          style={{
+            minHeight: '2.8rem',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
           <Link to={videoDetailsUrl} style={{ color: 'inherit', textDecoration: 'none' }}>
             {displayTitle}
           </Link>
@@ -235,6 +257,6 @@ export function VideoCard({ video }) {
       </div>
     </div>
   );
-}
+});
 
 export default VideoCard;

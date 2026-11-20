@@ -169,35 +169,67 @@ function getMatchingBooks(subjectName, classNum, tier) {
 
   if (!Array.isArray(allPlatformBooks) || allPlatformBooks.length === 0) return [];
   const sLower = (subjectName || '').toLowerCase();
-  
-  if (tier === 'Class 1–12' || (classNum && classNum !== 'All')) {
-    const cNum = String(classNum || '').replace(/\D/g, '');
-    return allPlatformBooks
-      .filter((b) => {
-        const bLevel = (b.level || '').replace(/\D/g, '');
-        const bSub = (b.subject || '').toLowerCase();
-        const bTitle = (b.title || '').toLowerCase();
-        
-        const matchClass = !cNum || bLevel === cNum;
-        const matchSub = sLower === 'all' || bSub.includes(sLower) || sLower.includes(bSub) || bTitle.includes(sLower);
-        return matchClass && matchSub;
-      })
-      .slice(0, 4);
+
+  const isScience = sLower.includes('scienc');
+  const isMath = sLower.includes('math');
+  const isEnglish = sLower.includes('english');
+  const isHindi = sLower.includes('hindi');
+
+  const matchesSubject = (b) => {
+    const bSub = (b.subject || '').toLowerCase();
+    const bTitle = (b.title || '').toLowerCase();
+    const bCat = (b.category || '').toLowerCase();
+
+    if (isScience) {
+      return (
+        bSub.includes('science') ||
+        bSub.includes('physic') ||
+        bSub.includes('chem') ||
+        bSub.includes('bio') ||
+        bTitle.includes('science') ||
+        bTitle.includes('physics') ||
+        bTitle.includes('chemistry') ||
+        bTitle.includes('biology')
+      );
+    }
+    if (isMath) {
+      return bSub.includes('math') || bTitle.includes('math');
+    }
+    if (isEnglish) {
+      return bSub.includes('english') || bTitle.includes('english') || bCat.includes('english');
+    }
+    if (isHindi) {
+      return bSub.includes('hindi') || bTitle.includes('hindi') || bCat.includes('hindi');
+    }
+    return bSub.includes(sLower) || sLower.includes(bSub) || bTitle.includes(sLower);
+  };
+
+  const candidateBooks = allPlatformBooks.filter(matchesSubject);
+
+  if (classNum && classNum !== 'All') {
+    const cNum = String(classNum).replace(/\D/g, '');
+    const exactMatches = candidateBooks.filter((b) => (b.level || '').replace(/\D/g, '') === cNum);
+    if (exactMatches.length > 0) return exactMatches.slice(0, 3);
   }
 
-  // Competitive Books matching
-  if (tier === 'Competitive Exams') {
-    return allPlatformBooks
-      .filter((b) => {
-        const bSub = (b.subject || '').toLowerCase();
-        const bTitle = (b.title || '').toLowerCase();
-        const bCat = (b.category || '').toLowerCase();
-        return bSub.includes(sLower) || sLower.includes(bSub) || bTitle.includes(sLower) || bCat.includes(sLower);
-      })
-      .slice(0, 4);
-  }
+  // Spanning grade levels: middle (1-8), secondary (9-10), senior secondary (11-12)
+  const primary = candidateBooks.find((b) => {
+    const num = parseInt((b.level || '').replace(/\D/g, ''), 10);
+    return num >= 1 && num <= 8;
+  });
+  const secondary = candidateBooks.find((b) => {
+    const num = parseInt((b.level || '').replace(/\D/g, ''), 10);
+    return num === 9 || num === 10;
+  });
+  const senior = candidateBooks.find((b) => {
+    const num = parseInt((b.level || '').replace(/\D/g, ''), 10);
+    return num >= 11;
+  });
 
-  return [];
+  const res = [primary, secondary, senior].filter(Boolean);
+  if (res.length >= 2) return res.slice(0, 3);
+
+  return candidateBooks.slice(0, 3);
 }
 
 /**
@@ -218,6 +250,14 @@ export function VideoGallery({
   const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('eduvault_vg_q') || '');
   const [visibleCount, setVisibleCount] = useState(9);
   const [visibleGroupCount, setVisibleGroupCount] = useState(4);
+  const [expandedSubjects, setExpandedSubjects] = useState({});
+
+  const toggleSubjectExpand = (subName) => {
+    setExpandedSubjects((prev) => ({
+      ...prev,
+      [subName]: !prev[subName],
+    }));
+  };
 
   const pillsTrackRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -353,17 +393,17 @@ export function VideoGallery({
         groups[sub] = {
           subjectName: sub,
           tier: v.tier,
-          classNum: v.classNum,
+          classNum: selectedClassNum !== 'All' ? selectedClassNum : null,
           iconName: getSubjectIconName(sub),
           videos: [],
-          relatedBooks: getMatchingBooks(sub, v.classNum, v.tier),
+          relatedBooks: getMatchingBooks(sub, selectedClassNum !== 'All' ? selectedClassNum : null, v.tier),
         };
       }
       groups[sub].videos.push(v);
     });
 
     return Object.values(groups);
-  }, [filteredVideos, selectedSubject, searchQuery]);
+  }, [filteredVideos, selectedSubject, selectedClassNum, searchQuery]);
 
   return (
     <section className="video-gallery-section" style={{ maxWidth: '1280px', margin: '0 auto' }}>
@@ -774,48 +814,90 @@ export function VideoGallery({
       ) : groupedBySubject ? (
         /* Render Grouped Subject-wise Sections with Pagination */
         <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {groupedBySubject.slice(0, visibleGroupCount).map((group) => (
-            <div key={group.subjectName} className="subject-section" style={{ borderTop: '1px solid var(--line)', paddingTop: '24px' }}>
-              {/* Subject Section Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdfa', border: '1px solid #ccfbf1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ThemeIcon name={group.iconName} size={20} color="var(--p-dark)" />
+          {groupedBySubject.slice(0, visibleGroupCount).map((group) => {
+            const isExpanded = !!expandedSubjects[group.subjectName];
+            const displayVideos = isExpanded ? group.videos : group.videos.slice(0, 6);
+
+            return (
+              <div
+                key={group.subjectName}
+                className="subject-section"
+                style={{
+                  borderTop: '1px solid var(--line)',
+                  paddingTop: '24px',
+                  contentVisibility: 'auto',
+                  containIntrinsicSize: '0 650px',
+                }}
+              >
+                {/* Subject Section Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f0fdfa', border: '1px solid #ccfbf1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ThemeIcon name={group.iconName} size={20} color="var(--p-dark)" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: 'var(--ink)' }}>
+                        {group.subjectName}
+                      </h3>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--muted)' }}>
+                        {group.tier}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: 'var(--ink)' }}>
-                      {group.subjectName}
-                    </h3>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--muted)' }}>
-                      {group.tier}
-                    </span>
-                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSubject(group.subjectName)}
+                    style={{
+                      background: 'none',
+                      border: '1px solid var(--line)',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      color: 'var(--p-dark)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    View Subject Only →
+                  </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedSubject(group.subjectName)}
-                  style={{
-                    background: 'none',
-                    border: '1px solid var(--line)',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: 'var(--p-dark)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  View Subject Only →
-                </button>
-              </div>
+                {/* Grid of Video Cards for this Subject (Capped to 6 initially) */}
+                <div className="video-gallery-grid" style={{ '--desktop-cols': columns, marginBottom: group.relatedBooks.length > 0 ? '16px' : '0' }}>
+                  {displayVideos.map((vid, idx) => (
+                    <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
+                  ))}
+                </div>
 
-              {/* Grid of Video Cards for this Subject */}
-              <div className="video-gallery-grid" style={{ '--desktop-cols': columns, marginBottom: group.relatedBooks.length > 0 ? '16px' : '0' }}>
-                {group.videos.map((vid, idx) => (
-                  <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
-                ))}
-              </div>
+                {/* View all N courses expansion toggle */}
+                {group.videos.length > 6 && (
+                  <div style={{ textAlign: 'center', margin: '12px 0 16px' }}>
+                    <button
+                      type="button"
+                      onClick={() => toggleSubjectExpand(group.subjectName)}
+                      style={{
+                        padding: '8px 20px',
+                        borderRadius: '20px',
+                        border: '1.5px solid var(--p)',
+                        background: isExpanded ? '#f0fdfa' : '#ffffff',
+                        color: 'var(--p-dark)',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
+                        transition: 'all 0.18s ease',
+                      }}
+                    >
+                      {isExpanded
+                        ? `Show fewer ${group.subjectName} courses ↑`
+                        : `View all ${group.videos.length} ${group.subjectName} courses →`}
+                    </button>
+                  </div>
+                )}
 
               {/* Related Books / Textbooks Reference Box */}
               {group.relatedBooks.length > 0 && (
@@ -872,8 +954,9 @@ export function VideoGallery({
                   </div>
                 </div>
               )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
 
           {visibleGroupCount < groupedBySubject.length && (
             <div style={{ textAlign: 'center', padding: '16px 0 24px' }}>
