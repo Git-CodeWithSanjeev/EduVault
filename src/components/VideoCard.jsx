@@ -36,27 +36,27 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
   const initialObj = typeof video === 'string'
     ? {
-        id: initialVideoId,
-        playlistId: null,
-        title: `YouTube Video Course (${initialVideoId})`,
-        channel: 'Educational Channel',
-        focusArea: 'General',
-        whyHighQuality: '',
-        duration: 'Video Course',
-        thumbnail: `https://img.youtube.com/vi/${initialVideoId}/hqdefault.jpg`,
-        lessons: [],
-      }
+      id: initialVideoId,
+      playlistId: null,
+      title: `YouTube Video Course (${initialVideoId})`,
+      channel: 'Educational Channel',
+      focusArea: 'General',
+      whyHighQuality: '',
+      duration: 'Video Course',
+      thumbnail: `https://img.youtube.com/vi/${initialVideoId}/hqdefault.jpg`,
+      lessons: [],
+    }
     : {
-        id: video.id || initialVideoId,
-        playlistId: video.playlistId || null,
-        title: video.title || 'Educational Course',
-        channel: video.channel || 'Educational Channel',
-        focusArea: video.focusArea || video.category || 'Education',
-        whyHighQuality: video.whyHighQuality || video.description || '',
-        duration: video.duration || (video.playlistId ? 'Full Course' : 'Video'),
-        thumbnail: video.thumbnail,
-        lessons: video.lessons || [],
-      };
+      id: video.id || initialVideoId,
+      playlistId: video.playlistId || null,
+      title: video.title || 'Educational Course',
+      channel: video.channel || 'Educational Channel',
+      focusArea: video.focusArea || video.category || 'Education',
+      whyHighQuality: video.whyHighQuality || video.description || '',
+      duration: video.duration || (video.playlistId ? 'Full Course' : 'Video'),
+      thumbnail: video.thumbnail,
+      lessons: video.lessons || [],
+    };
 
   // Query YouTube Data API v3 or RSS fallback
   useEffect(() => {
