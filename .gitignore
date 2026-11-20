@@ -28,3 +28,7 @@ Thumbs.db
 EDULVAULT_FULL_GUIDE.md
 *GUIDE*.md
 EDULVAULT*.md
+
+# Local PDF Storage & Test Scripts
+storage/
+scripts/test_r2.mjs

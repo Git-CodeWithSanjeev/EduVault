@@ -3,6 +3,7 @@
  */
 
 export const NCERT_CHAPTER_COUNTS = {
+  aemr1: 9, // Class 1 English Mridang
   lech1: 5, // Class 12 Chemistry Part 1
   lech2: 5, // Class 12 Chemistry Part 2
   leph1: 8, // Class 12 Physics Part 1
@@ -16,9 +17,22 @@ export const NCERT_CHAPTER_COUNTS = {
   kemh1: 14, // Class 11 Math
   jebh1: 5, // Class 12 Biology
   kebo1: 19, // Class 11 Biology
+  jesc1: 13, // Class 10 Science
+  jemh1: 14, // Class 10 Math
 };
 
 export const NCERT_CHAPTER_NAMES = {
+  aemr1: [
+    'Two Little Hands',
+    'Greetings',
+    'Picture Reading',
+    'The Cap-seller and the Monkeys',
+    'A Bell for the Cat',
+    'The Ant and the Dove',
+    'Catch Me if You Can',
+    'The Clever Chick',
+    'We Love Our School',
+  ],
   leph1: [
     'Electric Charges and Fields',
     'Electrostatic Potential and Capacitance',
