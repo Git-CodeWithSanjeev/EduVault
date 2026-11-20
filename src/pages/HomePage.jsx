@@ -200,7 +200,7 @@ export function Home({ saved = [], toggle = () => {} }) {
   }, []);
 
   return (
-    <div style={{ background: '#EAF3F2', minHeight: '100vh', paddingBottom: '60px' }}>
+    <div style={{ background: 'linear-gradient(135deg, #F4F9F7 0%, #E8F7F2 50%, #F4F9F7 100%)', minHeight: '100vh', paddingBottom: '60px' }}>
       {/* ─── 1. TWO-TONE HERO SECTION ─── */}
       <section
         style={{
@@ -290,7 +290,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             </div>
           </div>
 
-          {/* Right Hero: Soft Mint-Wave Backdrop with Big Students Illustration & Trust Pill */}
+          {/* Right Hero: Seamless 3D Illustration & Frosted Glass Trust Pill */}
           <div
             style={{
               position: 'relative',
@@ -302,41 +302,56 @@ export function Home({ saved = [], toggle = () => {} }) {
               width: '100%',
             }}
           >
-            {/* Soft Mint Wave Glow */}
+            {/* Soft Ambient Glow */}
             <div
               style={{
                 position: 'absolute',
                 inset: '-10px -20px 20px',
-                background: 'radial-gradient(ellipse at 50% 50%, #d5eee7 0%, #def2ed 65%, transparent 85%)',
+                background: 'radial-gradient(ellipse at 50% 50%, #d8f1e9 0%, #e8f7f2 60%, transparent 85%)',
                 borderRadius: '48px',
                 zIndex: 0,
               }}
             />
 
-            {/* Students 3D Illustration (Big & Crisp) */}
-            <img
-              src="/hero-students.png"
-              alt="EduVault students studying with textbooks and video masterclasses"
+            {/* Seamless Masked 3D Illustration */}
+            <div
               style={{
                 position: 'relative',
                 zIndex: 1,
                 width: '100%',
-                maxWidth: '560px',
-                height: 'auto',
-                maxHeight: '360px',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 12px 32px rgba(15, 94, 83, 0.14))',
-                transition: 'transform 0.3s ease',
+                maxWidth: '580px',
+                display: 'flex',
+                justifyContent: 'center',
+                WebkitMaskImage: 'radial-gradient(ellipse at center, black 72%, transparent 100%)',
+                maskImage: 'radial-gradient(ellipse at center, black 72%, transparent 100%)',
               }}
-            />
+            >
+              <img
+                src="/images/hero-students.png"
+                alt="EduVault students studying with textbooks and video masterclasses"
+                width="1376"
+                height="768"
+                loading="eager"
+                fetchPriority="high"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '380px',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 12px 32px rgba(15, 94, 83, 0.10))',
+                }}
+              />
+            </div>
 
-            {/* Non-Overlapping Bottom Trust Pill */}
+            {/* Frosted-Glass Non-Overlapping Bottom Trust Pill */}
             <div
               style={{
                 position: 'relative',
                 zIndex: 2,
                 marginTop: '16px',
-                background: '#ffffff',
+                background: 'rgba(255, 255, 255, 0.78)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
                 borderRadius: '9999px',
                 padding: '8px 24px',
                 boxShadow: '0 4px 20px rgba(15, 94, 83, 0.08)',
