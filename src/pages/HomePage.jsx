@@ -12,7 +12,7 @@ export function Home({ saved = [], toggle = () => {} }) {
 
   // Subjects configuration matching the design
   const subjects = [
-    { id: 'Mathematics', label: 'Mathematics' },
+    { id: 'Mathematics', label: 'Mathematics', symbol: 'π' },
     { id: 'Physics', label: 'Physics' },
     { id: 'Chemistry', label: 'Chemistry' },
     { id: 'Computer Science', label: 'Computer Science' },
@@ -55,8 +55,8 @@ export function Home({ saved = [], toggle = () => {} }) {
       id: 'class-12-quantum-mechanics',
       videoId: 'quantum-mechanics',
       title: 'Introduction to Quantum Mechanics',
-      description: 'Introduction to quantum mechanics covering video, particle duality and theoretical fundamentals.',
-      channel: 'Creator/Semenviraret',
+      description: 'Introduction to quantum science, video courses... and quantum mechanics.',
+      channel: 'Samantha Ray',
       tier: 'Class 12',
       level: 'Class 12',
       duration: '12 Hours · 24 Videos',
@@ -67,8 +67,8 @@ export function Home({ saved = [], toggle = () => {} }) {
       id: 'ug-organic-chemistry',
       videoId: 'organic-chemistry',
       title: 'Organic Chemistry Masterclass',
-      description: 'Organic chemistry masterclass on reaction mechanisms, functional groups, and molecular synthesis.',
-      channel: 'Creator James Miller',
+      description: 'Organic chemistry masterclass chemistry and lots few more.',
+      channel: 'James Miller',
       tier: 'Undergraduate (UG)',
       level: 'UG',
       duration: '12 Hours · 24 Videos',
@@ -79,8 +79,8 @@ export function Home({ saved = [], toggle = () => {} }) {
       id: 'cs-masterclass',
       videoId: 'cs-masterclass-vid',
       title: 'Computer Science Masterclass',
-      description: 'Learn computational thinking, data structures, algorithms, and full-stack software development.',
-      channel: 'Creator/Earah Jankins',
+      description: 'Learn programming with molecular and computer.',
+      channel: 'Soran Jenkins',
       tier: 'Class 12',
       level: 'Class 12',
       duration: '12 Hours · 24 Videos',
@@ -124,14 +124,14 @@ export function Home({ saved = [], toggle = () => {} }) {
     return matches.slice(0, 3);
   }, [selectedSubject, selectedGrade, canonicalVideos]);
 
-  // Canonical 4 textbooks matching the target design
+  // Canonical 3 textbooks matching the target design
   const canonicalBooks = useMemo(() => [
     {
       id: 'ncert-leph1',
       title: 'Physics Part 1',
       author: 'NCERT',
       level: 'Class 12',
-      coverBadge: 'NCERT · Class 12',
+      coverBadge: 'Indigo Cover',
       subject: 'Physics',
     },
     {
@@ -139,28 +139,20 @@ export function Home({ saved = [], toggle = () => {} }) {
       title: 'Comprehensive Chemistry',
       author: 'NCERT',
       level: 'Class 11',
-      coverBadge: 'NCERT · Class 11',
+      coverBadge: 'Amber Cover',
       subject: 'Chemistry',
     },
     {
       id: 'biology',
       title: 'Biology: Life Sciences',
-      author: 'OpenStax',
+      author: 'NCERT',
       level: 'Class 12',
-      coverBadge: 'OpenStax · Biology',
+      coverBadge: 'Emerald Cover',
       subject: 'Biology',
-    },
-    {
-      id: 'cs50-harvard',
-      title: 'CS50: Introduction to Computer Science',
-      author: 'David J. Malan',
-      level: 'Class 12',
-      coverBadge: 'Harvard · CS50',
-      subject: 'Computer Science',
     },
   ], []);
 
-  // Featured Textbooks (4 items matching design)
+  // Featured Textbooks (3 items matching design)
   const featuredBooks = useMemo(() => {
     if (selectedSubject === 'Mathematics') {
       return canonicalBooks;
@@ -175,8 +167,8 @@ export function Home({ saved = [], toggle = () => {} }) {
       return bSub.includes(sLower) || bTitle.includes(sLower);
     });
 
-    if (matches.length >= 4) {
-      return matches.slice(0, 4);
+    if (matches.length >= 3) {
+      return matches.slice(0, 3);
     }
     return canonicalBooks;
   }, [selectedSubject, canonicalBooks]);
@@ -200,135 +192,133 @@ export function Home({ saved = [], toggle = () => {} }) {
   }, []);
 
   return (
-    <div style={{ background: '#EDF5F2', minHeight: '100vh', padding: '16px 12px 90px' }}>
-      <div style={{ maxWidth: '1440px', margin: '0 auto', background: '#ffffff', borderRadius: '28px', boxShadow: '0 8px 36px rgba(15, 94, 83, 0.06)', padding: '24px 20px 40px', overflow: 'hidden' }}>
-        {/* ─── 1. TWO-TONE HERO SECTION ─── */}
-        <section
-          style={{
-            background: 'linear-gradient(135deg, #E6F5F0 0%, #F4F9F7 50%, #E6F5F0 100%)',
-            borderRadius: '24px',
-            padding: '36px 32px 30px',
-            marginBottom: '24px',
-          }}
+    <div className="home-content-container" style={{ padding: '24px 28px 36px', boxSizing: 'border-box' }}>
+      {/* ─── 1. TWO-TONE HERO SECTION ─── */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #EEF8F4 0%, #E2F2EC 50%, #F0F8F5 100%)',
+          borderRadius: '24px',
+          padding: '36px 32px 30px',
+          marginBottom: '24px',
+        }}
+      >
+        <div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center"
         >
-          <div
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center"
-          >
-            {/* Left Hero Content */}
-            <div style={{ maxWidth: '580px' }}>
-              <h1
+          {/* Left Hero Content */}
+          <div style={{ maxWidth: '580px' }}>
+            <h1
+              style={{
+                fontSize: 'clamp(28px, 4vw, 46px)',
+                lineHeight: 1.15,
+                fontWeight: 800,
+                color: '#0f172a',
+                margin: '0 0 16px',
+                letterSpacing: '-0.025em',
+              }}
+            >
+              Your trusted library for <span style={{ color: '#0F5E53' }}>textbooks</span> &amp;{' '}
+              <span style={{ color: '#0F5E53' }}>video</span> masterclasses
+            </h1>
+
+            <p
+              style={{
+                fontSize: '15px',
+                color: '#475569',
+                lineHeight: 1.6,
+                margin: '0 0 24px',
+              }}
+            >
+              Access high-quality open textbooks, video courses, and study resources absolutely free.
+            </p>
+
+            {/* Search Pill + Stacked CTAs Row (matching mockup) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              {/* Hero Search Pill (hidden on mobile < 768px where header has search button) */}
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
+                className="hero-search-pill"
                 style={{
-                  fontSize: 'clamp(28px, 4vw, 46px)',
-                  lineHeight: 1.15,
-                  fontWeight: 800,
-                  color: '#0f172a',
-                  margin: '0 0 16px',
-                  letterSpacing: '-0.025em',
+                  background: '#ffffff',
+                  borderRadius: '9999px',
+                  padding: '12px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  width: '100%',
+                  maxWidth: '360px',
+                  transition: 'all 0.18s ease',
                 }}
               >
-                Your trusted library for <span style={{ color: '#0F5E53' }}>textbooks</span> &amp;{' '}
-                <span style={{ color: '#0F5E53' }}>video</span> masterclasses
-              </h1>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span style={{ color: '#64748b', fontSize: '13px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Search NCERT, OpenStax, or video courses...
+                </span>
+                <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
+                  Ctrl K
+                </kbd>
+              </button>
 
-              <p
-                style={{
-                  fontSize: '15px',
-                  color: '#475569',
-                  lineHeight: 1.6,
-                  margin: '0 0 24px',
-                }}
-              >
-                Access high-quality open textbooks, video courses, and study resources absolutely free.
-              </p>
+              {/* Stacked CTAs */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <Link
+                  to="/library"
+                  style={{
+                    background: '#0F5E53',
+                    color: '#ffffff',
+                    padding: '10px 22px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '13.5px',
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
+                    transition: 'all 0.18s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                  </svg>
+                  <span>Explore Textbooks</span>
+                </Link>
 
-              {/* Search Pill + CTAs Row (matching mockup) */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  {/* Hero Search Pill */}
-                  <button
-                    type="button"
-                    onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
-                    className="hero-search-pill"
-                    style={{
-                      background: '#ffffff',
-                      borderRadius: '9999px',
-                      padding: '11px 18px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
-                      border: 'none',
-                      cursor: 'pointer',
-                      flex: 1,
-                      minWidth: '240px',
-                      transition: 'all 0.18s ease',
-                    }}
-                  >
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8" />
-                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <span style={{ color: '#64748b', fontSize: '13px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      Search NCERT, OpenStax, or video courses...
-                    </span>
-                    <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700 }}>
-                      Ctrl K
-                    </kbd>
-                  </button>
-
-                  {/* Explore Textbooks CTA */}
-                  <Link
-                    to="/library"
-                    style={{
-                      background: '#0F5E53',
-                      color: '#ffffff',
-                      padding: '11px 20px',
-                      borderRadius: '12px',
-                      fontWeight: 700,
-                      fontSize: '13.5px',
-                      textDecoration: 'none',
-                      whiteSpace: 'nowrap',
-                      boxShadow: '0 4px 14px rgba(15, 94, 83, 0.22)',
-                      transition: 'all 0.18s ease',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                    </svg>
-                    <span>Explore Textbooks</span>
-                  </Link>
-
-                  {/* Watch Playlists CTA */}
-                  <Link
-                    to="/videos"
-                    style={{
-                      background: '#E5F2EE',
-                      color: '#0F5E53',
-                      padding: '11px 18px',
-                      borderRadius: '12px',
-                      fontWeight: 700,
-                      fontSize: '13.5px',
-                      textDecoration: 'none',
-                      whiteSpace: 'nowrap',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '7px',
-                      transition: 'all 0.18s ease',
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                      <circle cx="12" cy="12" r="10" />
-                      <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
-                    </svg>
-                    <span>Watch Playlists</span>
-                  </Link>
-                </div>
+                <Link
+                  to="/videos"
+                  style={{
+                    background: '#DCEDE7',
+                    color: '#0F5E53',
+                    padding: '10px 22px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '13.5px',
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.18s ease',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                  </svg>
+                  <span>Watch Playlists</span>
+                </Link>
               </div>
             </div>
+          </div>
 
             {/* Right Hero: Seamless 3D Illustration & Trust Pill */}
             <div
@@ -468,9 +458,13 @@ export function Home({ saved = [], toggle = () => {} }) {
                         whiteSpace: 'nowrap',
                         transition: 'all 0.15s ease',
                         flexShrink: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
                       }}
                     >
-                      {sub.label}
+                      {sub.symbol && <span style={{ fontSize: '13px', fontWeight: 800 }}>{sub.symbol}</span>}
+                      <span>{sub.label}</span>
                     </button>
                   );
                 })}
@@ -553,18 +547,22 @@ export function Home({ saved = [], toggle = () => {} }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
               <div
                 style={{
-                  width: '36px',
-                  height: '36px',
+                  width: '34px',
+                  height: '34px',
                   borderRadius: '50%',
-                  background: '#d1ebe2',
+                  background: '#D4EFE5',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '18px',
+                  color: '#0F5E53',
                   flexShrink: 0,
                 }}
               >
-                💡
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="9" y1="18" x2="15" y2="18" />
+                  <line x1="10" y1="22" x2="14" y2="22" />
+                  <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+                </svg>
               </div>
               <span
                 style={{
@@ -754,7 +752,6 @@ export function Home({ saved = [], toggle = () => {} }) {
             </div>
           </div>
         </section>
-      </div>
     </div>
   );
 }

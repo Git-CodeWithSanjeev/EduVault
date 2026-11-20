@@ -170,313 +170,327 @@ export function Shell({ children, welcomeMsg }) {
 
   return (
     <>
-      {/* ─── 1. MAIN WEBSITE HEADER ─── */}
-      {/* ─── 1. MAIN WEBSITE HEADER ─── */}
-      <header>
-        <Link className="logo" to="/" aria-label="EduVault Home">
-          <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
-        </Link>
+      {isReaderRoute ? (
+        <main className="reader-page-main" style={{ height: '100dvh', overflow: 'hidden' }}>
+          {children}
+        </main>
+      ) : (
+        <div className="app-canvas-wrap">
+          <div className="app-viewport-card">
+            {/* ─── 1. MAIN WEBSITE HEADER ─── */}
+            <header>
+              <Link className="logo" to="/" aria-label="EduVault Home">
+                <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
+              </Link>
 
-        {/* Desktop Navigation in soft floating pill container */}
-        <nav className="nav-pill-group">
-          <NavLink to="/library" className={({ isActive }) => (isActive || location.pathname === '/' ? 'active' : '')}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Library</span>
-          </NavLink>
-          <NavLink to="/categories">Categories</NavLink>
-          <NavLink to="/videos">Videos</NavLink>
-          <NavLink to="/saved">My Library</NavLink>
-        </nav>
+              {/* Desktop Navigation in soft floating pill container */}
+              <nav className="nav-pill-group">
+                <NavLink to="/library" className={({ isActive }) => (isActive || location.pathname === '/' ? 'active' : '')}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  <span>Library</span>
+                </NavLink>
+                <NavLink to="/categories">Categories</NavLink>
+                <NavLink to="/videos">Videos</NavLink>
+                <NavLink to="/saved">My Library</NavLink>
+              </nav>
 
-        <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
-          {/* Circular Search Icon Button (matching the mockup) */}
-          <button
-            type="button"
-            className="nav-search-circle-btn"
-            onClick={() => setSearchModalOpen(true)}
-            title="Search resources... (Ctrl+K)"
-            aria-label="Search resources"
-          >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-
-          {/* Desktop & Tablet Auth Actions */}
-          <div className="desktop-auth-group">
-            {loading ? (
-              <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
-            ) : isLoggedIn ? (
-              <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
+              <div className="head-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+                {/* Circular Search Icon Button (matching the mockup) */}
                 <button
-                  className="user-profile-btn"
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  aria-label="User Profile Menu"
+                  type="button"
+                  className="nav-search-circle-btn"
+                  onClick={() => setSearchModalOpen(true)}
+                  title="Search resources... (Ctrl+K)"
+                  aria-label="Search resources"
                 >
-                  {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="user-avatar-img"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <span className="user-avatar-icon">{user.avatar || '🎓'}</span>
-                  )}
-                  <strong className="user-name-label">{user.name}</strong>
-                  <svg className="user-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9" />
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
                   </svg>
                 </button>
 
-                {menuOpen && (
-                  <>
-                    <div
-                      className="user-dropdown-backdrop"
-                      onClick={() => setMenuOpen(false)}
-                      style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 290,
-                        cursor: 'default',
-                        background: 'transparent',
-                      }}
-                    />
-                    <div className="user-dropdown" onClick={() => setMenuOpen(false)} style={{ zIndex: 300 }}>
-                      <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
+                {/* Desktop & Tablet Auth Actions */}
+                <div className="desktop-auth-group">
+                  {loading ? (
+                    <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
+                  ) : isLoggedIn ? (
+                    <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
+                      <button
+                        className="user-profile-btn"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        aria-label="User Profile Menu"
+                      >
                         {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
                           <img
                             src={user.avatar}
                             alt={user.name}
                             className="user-avatar-img"
-                            style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
                             referrerPolicy="no-referrer"
                           />
                         ) : (
-                          <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
+                          <span className="user-avatar-icon">{user.avatar || '🎓'}</span>
                         )}
-                        <div style={{ textAlign: 'center', width: '100%' }}>
-                          <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
-                          <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
-                        </div>
-                      </div>
-                      <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
-                        <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                          Account &amp; Profile
-                        </Link>
-                        <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                          Saved Wishlist
-                        </Link>
-                        <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
-                          Contribute Books
-                        </Link>
-                        <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
-                          🛡️ Admin Console
-                        </Link>
-                        <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                        <strong className="user-name-label">{user.name}</strong>
+                        <svg className="user-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+
+                      {menuOpen && (
+                        <>
+                          <div
+                            className="user-dropdown-backdrop"
+                            onClick={() => setMenuOpen(false)}
+                            style={{
+                              position: 'fixed',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              zIndex: 290,
+                              cursor: 'default',
+                              background: 'transparent',
+                            }}
+                          />
+                          <div className="user-dropdown" onClick={() => setMenuOpen(false)} style={{ zIndex: 300 }}>
+                            <div className="user-dropdown-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '14px 16px 10px' }}>
+                              {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                                <img
+                                  src={user.avatar}
+                                  alt={user.name}
+                                  className="user-avatar-img"
+                                  style={{ width: '42px', height: '42px', borderRadius: '50%', marginBottom: '8px', objectFit: 'cover', border: '1.5px solid var(--p)' }}
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <span style={{ fontSize: '30px', marginBottom: '6px' }}>{user.avatar || '🎓'}</span>
+                              )}
+                              <div style={{ textAlign: 'center', width: '100%' }}>
+                                <p style={{ margin: '0 0 2px', fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>{user.name}</p>
+                                <small style={{ fontSize: '11px', color: 'var(--muted)', wordBreak: 'break-all' }}>{user.email}</small>
+                              </div>
+                            </div>
+                            <div className="user-dropdown-body" style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '6px 0', alignItems: 'center', textAlign: 'center' }}>
+                              <Link to="/profile" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                                Account &amp; Profile
+                              </Link>
+                              <Link to="/saved" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                                Saved Wishlist
+                              </Link>
+                              <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                                Contribute Books
+                              </Link>
+                              <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
+                                🛡️ Admin Console
+                              </Link>
+                              <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
+                                Sign Out
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <Link to="/login" className="nav-login-link">
+                        Log in
+                      </Link>
+                      <Link to="/register" className="nav-signup-btn">
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Hamburger Menu Toggle Button for Mobile & Tablet (<1024px) */}
+                <button
+                  type="button"
+                  className="mobile-nav-toggle"
+                  onClick={() => setDrawerOpen(true)}
+                  aria-label="Open Mobile Navigation Menu"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '38px',
+                    height: '38px',
+                    background: '#E6F4F1',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#0F5E53',
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="20" y2="17" />
+                  </svg>
+                </button>
+              </div>
+            </header>
+
+            {/* Slide-out Mobile Drawer */}
+            {drawerOpen && (
+              <>
+                <div className="mobile-drawer-overlay" onClick={closeDrawer} />
+                <aside className="mobile-drawer">
+                  <div className="mobile-drawer-header">
+                    <Link className="logo" to="/" onClick={closeDrawer} aria-label="EduVault Home">
+                      <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={closeDrawer}
+                      style={{
+                        background: 'transparent',
+                        border: 0,
+                        fontSize: '18px',
+                        cursor: 'pointer',
+                        color: 'var(--ink)',
+                        minHeight: '44px',
+                        minWidth: '44px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      aria-label="Close Mobile Navigation Menu"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+                  <nav className="mobile-drawer-nav">
+                    <NavLink to="/" onClick={closeDrawer}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                      </svg>
+                      <span>Home</span>
+                    </NavLink>
+                    <NavLink to="/library" onClick={closeDrawer}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        <line x1="9" y1="7" x2="15" y2="7" />
+                        <line x1="9" y1="11" x2="13" y2="11" />
+                      </svg>
+                      <span>Library</span>
+                    </NavLink>
+                    <NavLink to="/videos" onClick={closeDrawer}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="18" rx="4" />
+                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
+                      </svg>
+                      <span>Videos</span>
+                    </NavLink>
+                    <NavLink to="/categories" onClick={closeDrawer}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                      </svg>
+                      <span>Categories</span>
+                    </NavLink>
+                    <NavLink to="/saved" onClick={closeDrawer}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                      <span>My Library</span>
+                    </NavLink>
+
+                    {isLoggedIn ? (
+                      <>
+                        <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                            <img
+                              src={user.avatar}
+                              alt={user.name}
+                              className="user-avatar-img"
+                              style={{ width: '22px', height: '22px' }}
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                              <circle cx="12" cy="7" r="4" />
+                            </svg>
+                          )}
+                          <span>Account &amp; Profile ({user.name})</span>
+                        </NavLink>
+                        <button
+                          onClick={() => {
+                            logout();
+                            closeDrawer();
+                          }}
+                          style={{
+                            background: 'rgba(220, 38, 38, 0.1)',
+                            color: 'var(--error)',
+                            border: '1px solid rgba(220, 38, 38, 0.2)',
+                            padding: '12px',
+                            borderRadius: '8px',
+                            fontWeight: '700',
+                            marginTop: '12px',
+                            cursor: 'pointer',
+                          }}
+                        >
                           Sign Out
                         </button>
+                      </>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                        <Link
+                          className="auth-submit-btn"
+                          to="/login"
+                          onClick={closeDrawer}
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          className="auth-submit-btn secondary"
+                          to="/register"
+                          onClick={closeDrawer}
+                        >
+                          Create Account
+                        </Link>
                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <Link to="/login" className="nav-login-link">
-                  Log in
-                </Link>
-                <Link to="/register" className="nav-signup-btn">
-                  Sign Up
-                </Link>
-              </div>
+                    )}
+                  </nav>
+                </aside>
+              </>
             )}
+
+            {welcomeMsg && <div className="welcome-back">{welcomeMsg}</div>}
+            
+            <main style={{ minHeight: 'calc(100vh - 160px)', height: 'auto', overflow: 'visible' }}>
+              {children}
+            </main>
+
+            {/* Footer inside viewport card */}
+            <footer className="main-site-footer">
+              <div style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
+                <span style={{ fontWeight: 800, color: '#0f172a' }}>EduVault</span>
+                <span style={{ margin: '0 8px', color: '#94a3b8' }}>·</span>
+                <span>Learn openly. Share responsibly.</span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '22px', fontSize: '13px' }}>
+                <Link to="/about" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>About</Link>
+                <Link to="/privacy" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Privacy</Link>
+                <Link to="/terms" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Terms</Link>
+                <Link to="/contact" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Contact</Link>
+              </div>
+            </footer>
           </div>
 
-          {/* Hamburger Menu Toggle Button for Mobile & Tablet (<1024px) */}
-          <button
-            type="button"
-            className="mobile-nav-toggle"
-            onClick={() => setDrawerOpen(true)}
-            aria-label="Open Mobile Navigation Menu"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '38px',
-              height: '38px',
-              background: '#E6F4F1',
-              border: 'none',
-              borderRadius: '12px',
-              color: '#0F5E53',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <line x1="4" y1="17" x2="20" y2="17" />
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      {/* Slide-out Mobile Drawer */}
-      {drawerOpen && (
-        <>
-          <div className="mobile-drawer-overlay" onClick={closeDrawer} />
-          <aside className="mobile-drawer">
-            <div className="mobile-drawer-header">
-              <Link className="logo" to="/" onClick={closeDrawer} aria-label="EduVault Home">
-                <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
-              </Link>
-              <button
-                type="button"
-                onClick={closeDrawer}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  fontSize: '18px',
-                  cursor: 'pointer',
-                  color: 'var(--ink)',
-                  minHeight: '44px',
-                  minWidth: '44px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                aria-label="Close Mobile Navigation Menu"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-            <nav className="mobile-drawer-nav">
-              <NavLink to="/" onClick={closeDrawer}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-                <span>Home</span>
-              </NavLink>
-              <NavLink to="/library" onClick={closeDrawer}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  <line x1="9" y1="7" x2="15" y2="7" />
-                  <line x1="9" y1="11" x2="13" y2="11" />
-                </svg>
-                <span>Library</span>
-              </NavLink>
-              <NavLink to="/videos" onClick={closeDrawer}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="18" rx="4" />
-                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
-                </svg>
-                <span>Videos</span>
-              </NavLink>
-              <NavLink to="/categories" onClick={closeDrawer}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                  <rect x="14" y="14" width="7" height="7" rx="1.5" />
-                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                </svg>
-                <span>Categories</span>
-              </NavLink>
-              <NavLink to="/saved" onClick={closeDrawer}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                </svg>
-                <span>My Library</span>
-              </NavLink>
-
-              {isLoggedIn ? (
-                <>
-                  <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="user-avatar-img"
-                        style={{ width: '22px', height: '22px' }}
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
-                    )}
-                    <span>Account &amp; Profile ({user.name})</span>
-                  </NavLink>
-                  <button
-                    onClick={() => {
-                      logout();
-                      closeDrawer();
-                    }}
-                    style={{
-                      background: 'rgba(220, 38, 38, 0.1)',
-                      color: 'var(--error)',
-                      border: '1px solid rgba(220, 38, 38, 0.2)',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      fontWeight: '700',
-                      marginTop: '12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
-                  <Link
-                    className="auth-submit-btn"
-                    to="/login"
-                    onClick={closeDrawer}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    className="auth-submit-btn secondary"
-                    to="/register"
-                    onClick={closeDrawer}
-                  >
-                    Create Account
-                  </Link>
-                </div>
-              )}
-            </nav>
-          </aside>
-        </>
-      )}
-
-      {welcomeMsg && <div className="welcome-back">{welcomeMsg}</div>}
-      
-      <main
-        className={isReaderRoute ? 'reader-page-main' : ''}
-        style={{
-          minHeight: isReaderRoute ? 'calc(100dvh - 56px)' : 'calc(100vh - 140px)',
-          height: isReaderRoute ? 'calc(100dvh - 56px)' : 'auto',
-          overflow: isReaderRoute ? 'hidden' : 'visible',
-        }}
-      >
-        {children}
-      </main>
-
-      {!isReaderRoute && (
-        <>
           {/* Mobile Bottom Navigation Bar (< 768px) */}
           <div className="mobile-bottom-nav">
             <NavLink to="/" className={`bottom-nav-item ${location.pathname === '/' ? 'active' : ''}`}>
@@ -529,34 +543,7 @@ export function Shell({ children, welcomeMsg }) {
               <span>Profile</span>
             </NavLink>
           </div>
-
-          <footer className="main-site-footer" style={{
-            maxWidth: '1240px',
-            margin: '0 auto',
-            padding: '24px 24px 32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '16px',
-            background: 'transparent',
-            borderTop: 'none',
-            boxSizing: 'border-box',
-          }}>
-            <div style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
-              <span style={{ fontWeight: 800, color: '#0f172a' }}>EduVault</span>
-              <span style={{ margin: '0 8px', color: '#94a3b8' }}>·</span>
-              <span>Learn openly. Share responsibly.</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '22px', fontSize: '13px' }}>
-              <Link to="/about" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>About</Link>
-              <Link to="/privacy" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Privacy</Link>
-              <Link to="/terms" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Terms</Link>
-              <Link to="/contact" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Contact</Link>
-            </div>
-          </footer>
-        </>
+        </div>
       )}
 
       {/* ─── 4. GLOBAL SPOTLIGHT SEARCH MODAL OVERLAY ─── */}
