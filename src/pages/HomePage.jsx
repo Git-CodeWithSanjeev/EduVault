@@ -212,8 +212,8 @@ export function Home({ saved = [], toggle = () => {} }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '32px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: '40px',
             alignItems: 'center',
           }}
         >
@@ -221,8 +221,8 @@ export function Home({ saved = [], toggle = () => {} }) {
           <div style={{ maxWidth: '560px' }}>
             <h1
               style={{
-                fontSize: 'clamp(32px, 4.2vw, 46px)',
-                lineHeight: 1.18,
+                fontSize: 'clamp(32px, 4.2vw, 48px)',
+                lineHeight: 1.16,
                 fontWeight: 800,
                 color: '#0f172a',
                 margin: '0 0 16px',
@@ -235,7 +235,7 @@ export function Home({ saved = [], toggle = () => {} }) {
 
             <p
               style={{
-                fontSize: '15px',
+                fontSize: '15.5px',
                 color: '#475569',
                 lineHeight: 1.6,
                 margin: '0 0 24px',
@@ -250,7 +250,7 @@ export function Home({ saved = [], toggle = () => {} }) {
                 style={{
                   background: '#0F5E53',
                   color: '#ffffff',
-                  padding: '12px 24px',
+                  padding: '13px 26px',
                   borderRadius: '12px',
                   fontWeight: 700,
                   fontSize: '14px',
@@ -270,7 +270,7 @@ export function Home({ saved = [], toggle = () => {} }) {
                 style={{
                   background: 'transparent',
                   color: '#0F5E53',
-                  padding: '12px 18px',
+                  padding: '13px 20px',
                   borderRadius: '12px',
                   fontWeight: 700,
                   fontSize: '14px',
@@ -290,7 +290,7 @@ export function Home({ saved = [], toggle = () => {} }) {
             </div>
           </div>
 
-          {/* Right Hero: Soft Mint-Wave Backdrop with Students Illustration & Non-overlapping Trust Pill */}
+          {/* Right Hero: Soft Mint-Wave Backdrop with Big Students Illustration & Trust Pill */}
           <div
             style={{
               position: 'relative',
@@ -298,33 +298,35 @@ export function Home({ saved = [], toggle = () => {} }) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '16px',
-              minHeight: '270px',
+              padding: '10px 0',
+              width: '100%',
             }}
           >
             {/* Soft Mint Wave Glow */}
             <div
               style={{
                 position: 'absolute',
-                inset: '0 10px',
-                background: 'radial-gradient(ellipse at 50% 50%, #d5eee7 0%, #def2ed 60%, transparent 85%)',
-                borderRadius: '40px',
+                inset: '-10px -20px 20px',
+                background: 'radial-gradient(ellipse at 50% 50%, #d5eee7 0%, #def2ed 65%, transparent 85%)',
+                borderRadius: '48px',
                 zIndex: 0,
               }}
             />
 
-            {/* Students 3D Illustration */}
+            {/* Students 3D Illustration (Big & Crisp) */}
             <img
               src="/hero-students.png"
               alt="EduVault students studying with textbooks and video masterclasses"
               style={{
                 position: 'relative',
                 zIndex: 1,
-                maxHeight: '220px',
-                width: 'auto',
-                maxWidth: '100%',
+                width: '100%',
+                maxWidth: '560px',
+                height: 'auto',
+                maxHeight: '360px',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 8px 24px rgba(15, 94, 83, 0.12))',
+                filter: 'drop-shadow(0 12px 32px rgba(15, 94, 83, 0.14))',
+                transition: 'transform 0.3s ease',
               }}
             />
 
@@ -333,12 +335,12 @@ export function Home({ saved = [], toggle = () => {} }) {
               style={{
                 position: 'relative',
                 zIndex: 2,
-                marginTop: '12px',
+                marginTop: '16px',
                 background: '#ffffff',
                 borderRadius: '9999px',
-                padding: '7px 20px',
-                boxShadow: '0 4px 18px rgba(15, 94, 83, 0.08)',
-                fontSize: '12px',
+                padding: '8px 24px',
+                boxShadow: '0 4px 20px rgba(15, 94, 83, 0.08)',
+                fontSize: '12.5px',
                 fontWeight: 700,
                 color: '#0f172a',
                 display: 'inline-flex',
