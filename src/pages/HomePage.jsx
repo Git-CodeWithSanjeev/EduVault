@@ -196,59 +196,61 @@ export function Home({ saved = [], toggle = () => { } }) {
       {/* ─── 1. TWO-TONE HERO SECTION ─── */}
       <section className="hero-card-section">
         <div className="hero-grid-layout">
-          {/* Left Hero Content */}
-          <div className="hero-left-content">
+          {/* Header Area (Title & Subtitle) */}
+          <div className="hero-header-area">
             <h1 className="hero-two-tone-title">
-              Your trusted library for <span className="accent">textbooks &amp; video</span> masterclasses
+              Your trusted library for<br className="mobile-break" />{' '}
+              <span className="accent">textbooks &amp; video</span><br className="mobile-break" />{' '}
+              masterclasses
             </h1>
 
             <p className="hero-subtitle">
               Access high-quality open textbooks, video courses, and study resources absolutely free.
             </p>
+          </div>
 
-            {/* Search Pill + Stacked CTAs Row */}
-            <div className="hero-actions-row">
-              {/* Hero Search Pill */}
-              <button
-                type="button"
-                onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
-                className="hero-search-pill"
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          {/* CTA Actions Area */}
+          <div className="hero-cta-area">
+            {/* Search Pill (Hidden on mobile) */}
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
+              className="hero-search-pill"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span style={{ color: '#64748b', fontSize: '12.5px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                Search NCERT, OpenStax, or video courses...
+              </span>
+              <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700, flexShrink: 0 }}>
+                Ctrl K
+              </kbd>
+            </button>
+
+            {/* Stacked CTAs */}
+            <div className="hero-cta-stack">
+              <Link to="/library" className="hero-cta-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
                 </svg>
-                <span style={{ color: '#64748b', fontSize: '12.5px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Search NCERT, OpenStax, or video courses...
-                </span>
-                <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700, flexShrink: 0 }}>
-                  Ctrl K
-                </kbd>
-              </button>
+                <span>Explore Textbooks</span>
+              </Link>
 
-              {/* Stacked CTAs */}
-              <div className="hero-cta-stack">
-                <Link to="/library" className="hero-cta-primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                  </svg>
-                  <span>Explore Textbooks</span>
-                </Link>
-
-                <Link to="/videos" className="hero-cta-secondary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                    <circle cx="12" cy="12" r="10" />
-                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
-                  </svg>
-                  <span>Watch Playlists</span>
-                </Link>
-              </div>
+              <Link to="/videos" className="hero-cta-secondary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" />
+                </svg>
+                <span>Watch Playlists</span>
+              </Link>
             </div>
           </div>
 
-          {/* Right Hero: 3D Students Illustration & Frosted Trust Pill */}
-          <div className="hero-right-visual">
+          {/* Visual Area (3D Students Illustration & Frosted Trust Pill) */}
+          <div className="hero-visual-area">
             <div className="hero-students-img-wrap">
               <img
                 src="/images/hero-students.png"
@@ -264,11 +266,11 @@ export function Home({ saved = [], toggle = () => { } }) {
             {/* Frosted-Glass Trust Pill matching mockup */}
             <div className="hero-trust-pill">
               <span style={{ color: '#eab308' }}>⭐</span>
-              <span>200+ Open Textbooks</span>
+              <span>200+ Open Books</span>
+              <span className="desktop-only-trust-item" style={{ color: '#cbd5e1' }}>•</span>
+              <span className="desktop-only-trust-item">50+ Video Courses</span>
               <span style={{ color: '#cbd5e1' }}>•</span>
-              <span>50+ Video Courses</span>
-              <span style={{ color: '#cbd5e1' }}>•</span>
-              <span>100% Free &amp; Ad-Free</span>
+              <span>100% Free &amp; Verified</span>
             </div>
           </div>
         </div>
@@ -403,8 +405,8 @@ export function Home({ saved = [], toggle = () => { } }) {
 
         {/* Right: Continue Learning Banner */}
         <div className="continue-learning-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <div className="continue-learning-left">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
               <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.5 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
               <line x1="9" y1="18" x2="15" y2="18" />
               <line x1="10" y1="22" x2="14" y2="22" />
@@ -414,50 +416,21 @@ export function Home({ saved = [], toggle = () => { } }) {
               <line x1="17.66" y1="5.34" x2="19.07" y2="3.93" />
             </svg>
             <span
-              style={{
-                fontWeight: 700,
-                fontSize: '13.5px',
-                color: '#0f172a',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
+              className="continue-learning-title"
               title={recentBook.title}
             >
               Continue Learning: {recentBook.title}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-            <div
-              style={{
-                width: '84px',
-                height: '7px',
-                background: '#BCE2D7',
-                borderRadius: '4px',
-                overflow: 'hidden',
-              }}
-            >
+          <div className="continue-learning-right">
+            <div className="continue-learning-bar-wrap">
               <div style={{ width: '65%', height: '100%', background: '#0F5E53', borderRadius: '4px' }} />
             </div>
 
             <Link
               to={'/read/' + recentBook.id}
-              style={{
-                background: '#0F5E53',
-                color: '#ffffff',
-                padding: '9px 18px',
-                borderRadius: '10px',
-                fontSize: '12.5px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 2px 8px rgba(15, 94, 83, 0.2)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'background 0.15s ease',
-              }}
+              className="continue-learning-btn"
             >
               <span>▶</span>
               <span>Resume PDF</span>
@@ -507,7 +480,7 @@ export function Home({ saved = [], toggle = () => { } }) {
             </Link>
           </div>
 
-          <div className="cards-grid-3">
+          <div className="cards-grid-3 videos-grid-responsive">
             {filteredVideos.slice(0, 3).map((vid, idx) => (
               <VideoCard key={(vid.id || vid.videoId || 'vid') + '-' + idx} video={vid} />
             ))}
@@ -517,7 +490,7 @@ export function Home({ saved = [], toggle = () => { } }) {
         {/* Panel 2: Featured Textbooks */}
         <div className="panel-container">
           {/* Top Filter Tabs: All, Textbooks, Videos */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+          <div className="featured-books-filter-tabs" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
             <button
               type="button"
               style={{
@@ -588,7 +561,7 @@ export function Home({ saved = [], toggle = () => { } }) {
             </Link>
           </div>
 
-          <div className="cards-grid-3">
+          <div className="cards-grid-3 textbooks-grid-responsive">
             {featuredBooks.slice(0, 3).map((b) => (
               <BookCard
                 key={b.id}
