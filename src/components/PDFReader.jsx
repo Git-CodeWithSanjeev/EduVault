@@ -205,6 +205,10 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
     }
   };
 
+  const handleToggleTwoPage = () => {
+    setPageViewMode((prev) => (prev === 'two-page' ? 'single' : 'two-page'));
+  };
+
   const handleToggleFullscreen = () => {
     const stage = document.querySelector('.reader-stage-container') || document.documentElement;
     if (!document.fullscreenElement) {
@@ -252,7 +256,145 @@ export function PDFReader({ saved = [], toggle = () => {} }) {
   return (
     <div className={`pdf-reader-fullscreen-shell ${isMobile ? 'is-mobile-screen' : ''}`}>
 
-      {/* ─── 1. MOBILE HEADER (Mobile Only) ─── */}
+      {/* ─── 1. DESKTOP READER HEADER (Desktop Only) ─── */}
+      {!isMobile && (
+        <header className="desktop-reader-toolbar">
+          <div className="reader-toolbar-left">
+            <a href="/library" onClick={handleBack} className="reader-back-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              <span>Library</span>
+            </a>
+            <div className="reader-toolbar-divider" />
+            <div className="reader-toolbar-bookinfo">
+              <span className="reader-book-title" title={b.title}>{b.title}</span>
+              <span className="reader-chap-badge">{activeChapter.name}</span>
+            </div>
+          </div>
+
+          <div className="reader-toolbar-center">
+            {/* Page Navigation */}
+            <div className="reader-page-nav-pill">
+              <button
+                type="button"
+                className="reader-tool-btn"
+                onClick={handlePrevPage}
+                disabled={currentPage <= 1}
+                title="Previous Page"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <div className="reader-page-indicator">
+                <input
+                  type="text"
+                  value={currentPage}
+                  onChange={handlePageInputChange}
+                  className="reader-page-input"
+                  aria-label="Current Page"
+                />
+                <span className="reader-page-total">/ {totalPages || 1}</span>
+              </div>
+              <button
+                type="button"
+                className="reader-tool-btn"
+                onClick={handleNextPage}
+                disabled={currentPage >= totalPages}
+                title="Next Page"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Zoom Controls */}
+            <div className="reader-zoom-nav-pill">
+              <button
+                type="button"
+                className="reader-tool-btn"
+                onClick={handleZoomOut}
+                title="Zoom Out"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <span className="reader-zoom-text">{Math.round((zoomLevel || 1) * 100)}%</span>
+              <button
+                type="button"
+                className="reader-tool-btn"
+                onClick={handleZoomIn}
+                title="Zoom In"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="reader-toolbar-right">
+            {/* View Mode Switching */}
+            <div className="reader-view-mode-pill">
+              <button
+                type="button"
+                className={`reader-mode-btn ${fitMode === 'fit-width' ? 'active' : ''}`}
+                onClick={handleFitWidth}
+                title="Fit Width"
+              >
+                Fit Width
+              </button>
+              <button
+                type="button"
+                className={`reader-mode-btn ${fitMode === 'fit-page' ? 'active' : ''}`}
+                onClick={handleFitPage}
+                title="Fit Page"
+              >
+                Fit Page
+              </button>
+              <button
+                type="button"
+                className={`reader-mode-btn ${pageViewMode === 'two-page' ? 'active' : ''}`}
+                onClick={handleToggleTwoPage}
+                title="Two-Page Spread"
+              >
+                2-Up
+              </button>
+            </div>
+
+            {/* Fullscreen Toggle */}
+            <button
+              type="button"
+              className="reader-icon-btn"
+              onClick={handleToggleFullscreen}
+              title="Toggle Fullscreen"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+              </svg>
+            </button>
+
+            {/* Save Book */}
+            <button
+              type="button"
+              className={`reader-save-btn ${isSaved ? 'saved' : ''}`}
+              onClick={() => toggle && toggle(b.id)}
+              title={isSaved ? 'Saved to Library' : 'Save Book'}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span>{isSaved ? 'Saved' : 'Save'}</span>
+            </button>
+          </div>
+        </header>
+      )}
+
+      {/* ─── 2. MOBILE HEADER (Mobile Only) ─── */}
       {isMobile && (
         <div className="mobile-reader-header">
           <a href="/library" onClick={handleBack} className="mobile-back-btn">
