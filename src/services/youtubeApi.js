@@ -195,7 +195,7 @@ export async function fetchYouTubePlaylistItems(playlistId, apiKey = getStoredYo
   try {
     const rawRssEndpoint = `https://www.youtube.com/feeds/videos.xml?playlist_id=${encodeURIComponent(playlistId)}`;
     const rssEndpoint = typeof window !== 'undefined'
-      ? `/api/proxy?url=${encodeURIComponent(rawRssEndpoint)}`
+      ? `/api/pdf?url=${encodeURIComponent(rawRssEndpoint)}`
       : rawRssEndpoint;
     const rssResponse = await fetch(rssEndpoint);
 
