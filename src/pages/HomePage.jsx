@@ -5,8 +5,11 @@ import { ncertBooks } from '../data/ncertBooksData';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 import { VideoCard } from '../components/VideoCard';
 import { BookCard } from '../components/BookCard';
+import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 
 export function Home({ saved = [], toggle = () => { } }) {
+  const { isLoggedIn } = useAuth();
   const [selectedSubject, setSelectedSubject] = useState('Mathematics');
   const [selectedGrade, setSelectedGrade] = useState('Class 10');
 
@@ -439,6 +442,17 @@ export function Home({ saved = [], toggle = () => { } }) {
             <Link
               to={'/read/' + recentBook.id}
               className="continue-learning-btn"
+              onClick={(e) => {
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  triggerAuthPrompt({
+                    feature: 'Continue Reading',
+                    title: 'Sign In to Resume Reading',
+                    message: 'Sign in or create an account to pick up right where you left off, sync your page position, and access your notes across devices.',
+                    from: `/read/${recentBook.id}`,
+                  });
+                }
+              }}
             >
               <span>▶</span>
               <span>Resume PDF</span>

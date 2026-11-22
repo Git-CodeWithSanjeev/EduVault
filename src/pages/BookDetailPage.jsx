@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { ExternalLink } from '../components/ResourceGrid';
 import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 
 export function Detail({ saved = [], toggle = () => {} }) {
   const { id } = useParams();
@@ -13,6 +14,15 @@ export function Detail({ saved = [], toggle = () => {} }) {
 
   const handleToggleSaved = () => {
     if (!b || !toggle) return;
+    if (!isLoggedIn) {
+      triggerAuthPrompt({
+        feature: 'Save to My Library',
+        title: 'Sign In to Save Books',
+        message: 'Please sign in or create an account to save books to your personal library and access them across all your devices.',
+        from: `/resource/${b.id}`,
+      });
+      return;
+    }
     toggle(b.id);
   };
 

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeApi';
 import { useVideoLearning } from '../hooks/useVideoLearning';
 import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 
 /**
  * VideoCard Component
@@ -15,8 +16,14 @@ export const VideoCard = React.memo(function VideoCard({ video }) {
 
   const handleSaveClick = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!isLoggedIn) {
-      navigate('/login');
+      triggerAuthPrompt({
+        feature: 'Save Video Course',
+        title: 'Sign In to Save Courses',
+        message: 'Sign in or create an account to save this video course to your library and track your progress.',
+        from: window.location.pathname,
+      });
       return;
     }
     toggleSave(targetId);

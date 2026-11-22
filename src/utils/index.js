@@ -4,3 +4,4 @@ export * from './pdfHelpers';
 export * from './subjectHelpers';
 export * from './pdfAnnotationStore';
 export * from './pdfTextSearchEngine';
+export * from './authPrompt';

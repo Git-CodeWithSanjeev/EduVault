@@ -6,6 +6,7 @@ import { items } from '../data/openItems';
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeApi';
 import { useVideoLearning } from '../hooks/useVideoLearning';
 import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 import { VideoCard } from '../components/VideoCard';
 import { ToastNotification } from '../components/FormElements';
 
@@ -377,7 +378,12 @@ export function VideoTheater() {
               className={`action-btn ${saved ? 'active' : ''}`}
               onClick={() => {
                 if (!isLoggedIn) {
-                  navigate('/login', { state: { from: location, notice: 'Please sign in to save video lessons to your library.' } });
+                  triggerAuthPrompt({
+                    feature: 'Save Video Course',
+                    title: 'Sign In to Save Courses',
+                    message: 'Please sign in or create an account to save video lessons to your library and track your progress.',
+                    from: location.pathname,
+                  });
                   return;
                 }
                 toggleSave(vid.id || primaryVidId);

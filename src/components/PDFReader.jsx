@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { EmbedPdfViewer } from './EmbedPdfViewer';
 import { getChapterPdfUrls, proxyUrl } from '../utils/pdfHelpers';
+import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 
 export { getChapterPdfUrls };
 
@@ -47,8 +49,23 @@ export function DownloadPDFButton({ url, cloudUrl, filename, label, className = 
 export function PDFReader({ saved = [], toggle = () => { } }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const normalizedId = id ? id.trim().replace(/\s+/g, '-') : '';
   const b = items.find((x) => x.id === id || x.id === normalizedId);
+
+  const handleSaveBook = () => {
+    if (!b) return;
+    if (!isLoggedIn) {
+      triggerAuthPrompt({
+        feature: 'Save Book to Library',
+        title: 'Sign In to Save Book',
+        message: 'Please sign in or create an account to save this book to your personal library and access bookmarks anywhere.',
+        from: `/read/${b.id}`,
+      });
+      return;
+    }
+    if (toggle) toggle(b.id);
+  };
 
   const handleBack = (e) => {
     e.preventDefault();
@@ -187,7 +204,7 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
             <button
               type="button"
               className={`reader-save-btn ${isSaved ? 'saved' : ''}`}
-              onClick={() => toggle && toggle(b.id)}
+              onClick={handleSaveBook}
               title={isSaved ? 'Saved to Library' : 'Save Book'}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -283,7 +300,7 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
 
               <button
                 className={`sidebar-btn-save ${isSaved ? 'saved' : ''}`}
-                onClick={() => toggle && toggle(b.id)}
+                onClick={handleSaveBook}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

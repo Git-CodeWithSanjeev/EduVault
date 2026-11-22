@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { items } from '../data/openItems';
 import { educationalVideos } from '../data/educationalVideos';
+import { educationalGalleryData } from '../data/educationalGalleryData';
 
 export function Shell({ children, welcomeMsg }) {
   const { user, isLoggedIn, loading, logout } = useAuth();
@@ -10,6 +11,7 @@ export function Shell({ children, welcomeMsg }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTab, setSearchTab] = useState('all'); // 'all', 'books', 'videos', 'ncert'
   const [activeIndex, setActiveIndex] = useState(0);
@@ -67,12 +69,13 @@ export function Shell({ children, welcomeMsg }) {
   const closeDrawer = () => setDrawerOpen(false);
   const isReaderRoute = location.pathname.startsWith('/read/');
 
-  // Keyboard shortcut listener (Ctrl+K or Cmd+K to toggle search, Escape to close, Arrow keys & Enter to navigate)
+  // Global listeners (Keyboard shortcut Ctrl+K/Cmd+K, Escape to close, open-search-modal, open-auth-prompt)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setSearchModalOpen(false);
         setDrawerOpen(false);
+        setAuthPrompt(null);
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -80,56 +83,79 @@ export function Shell({ children, welcomeMsg }) {
       }
     };
     const handleCustomOpen = () => setSearchModalOpen(true);
+    const handleAuthPrompt = (e) => setAuthPrompt(e.detail || {});
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('open-search-modal', handleCustomOpen);
+    window.addEventListener('open-auth-prompt', handleAuthPrompt);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('open-search-modal', handleCustomOpen);
+      window.removeEventListener('open-auth-prompt', handleAuthPrompt);
     };
   }, []);
 
   const rawSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
+
+    // 1. Textbooks & open reading resources
     const books = items
       .filter((b) => {
-        const fullText = (
-          (b.title || '') + ' ' +
-          (b.subject || '') + ' ' +
-          (b.author || '') + ' ' +
-          (b.level || '') + ' ' +
-          (b.source || '') + ' ' +
-          (b.description || '') + ' ' +
-          (b.chapters ? b.chapters.join(' ') : '')
-        ).toLowerCase();
+        const fullText = [
+          b.title,
+          b.subject,
+          b.author,
+          b.authors,
+          b.level,
+          b.grade ? `class ${b.grade}` : '',
+          b.classNum ? `class ${b.classNum}` : '',
+          b.source,
+          b.category,
+          b.description,
+          b.chapters ? b.chapters.join(' ') : ''
+        ].filter(Boolean).join(' ').toLowerCase();
         return fullText.includes(q);
       })
       .map((b) => ({
         type: b.source === 'NCERT' ? 'ncert' : 'book',
         id: b.id,
         title: b.title,
-        meta: `${b.subject || 'Textbook'} · ${b.level || 'Open Resource'} ${b.source ? `· ${b.source}` : ''}`,
-        url: b.source === 'NCERT' ? `/read/${b.id}` : `/resource/${b.id}`,
+        meta: `${b.subject || 'Textbook'} · ${b.level || (b.grade ? `Class ${b.grade}` : 'Open Resource')} ${b.source ? `· ${b.source}` : ''}`,
+        url: (b.source === 'NCERT' || b.source === 'OpenStax' || b.cloudUrl || b.pdfUrl) ? `/read/${b.id}` : `/resource/${b.id}`,
         icon: b.source === 'NCERT' ? '🎓' : '📚',
-        badge: b.source === 'NCERT' ? 'NCERT' : 'Book',
+        badge: b.source === 'NCERT' ? 'NCERT' : (b.source || 'Book'),
       }));
 
-    const videos = educationalVideos
+    // 2. Video courses and masterclasses
+    const allVideos = [...educationalVideos, ...(educationalGalleryData || [])];
+    const uniqueVideos = [];
+    const seenVideoIds = new Set();
+    for (const v of allVideos) {
+      const vidKey = v.id || v.videoId || v.playlistId;
+      if (vidKey && !seenVideoIds.has(vidKey)) {
+        seenVideoIds.add(vidKey);
+        uniqueVideos.push(v);
+      }
+    }
+
+    const videos = uniqueVideos
       .filter((v) => {
-        const fullText = (
-          (v.title || '') + ' ' +
-          (v.channel || '') + ' ' +
-          (v.category || '') + ' ' +
-          (v.description || '')
-        ).toLowerCase();
+        const fullText = [
+          v.title,
+          v.channel,
+          v.category,
+          v.subject,
+          v.description
+        ].filter(Boolean).join(' ').toLowerCase();
         return fullText.includes(q);
       })
       .map((v) => ({
         type: 'video',
-        id: v.id,
+        id: v.id || v.videoId,
         title: v.title,
-        meta: `Video Course · ${v.channel} · ${v.category || 'Educational'}`,
-        url: `/video/${v.id}`,
+        meta: `Video Course · ${v.channel || 'EduVault'} · ${v.category || v.subject || 'Educational'}`,
+        url: `/video/${v.id || v.videoId}`,
         icon: '🎬',
         badge: 'Video',
       }));
@@ -138,10 +164,10 @@ export function Shell({ children, welcomeMsg }) {
   }, [searchQuery]);
 
   const searchResults = useMemo(() => {
-    if (searchTab === 'books') return rawSearchResults.filter((r) => r.type === 'book').slice(0, 8);
-    if (searchTab === 'videos') return rawSearchResults.filter((r) => r.type === 'video').slice(0, 8);
-    if (searchTab === 'ncert') return rawSearchResults.filter((r) => r.type === 'ncert').slice(0, 8);
-    return rawSearchResults.slice(0, 10);
+    if (searchTab === 'books') return rawSearchResults.filter((r) => r.type === 'book' || r.type === 'ncert').slice(0, 16);
+    if (searchTab === 'videos') return rawSearchResults.filter((r) => r.type === 'video').slice(0, 16);
+    if (searchTab === 'ncert') return rawSearchResults.filter((r) => r.type === 'ncert').slice(0, 16);
+    return rawSearchResults.slice(0, 20);
   }, [rawSearchResults, searchTab]);
 
   useEffect(() => {
@@ -768,6 +794,74 @@ export function Shell({ children, welcomeMsg }) {
               <span><kbd>↵</kbd> Select</span>
               <span><kbd>Esc</kbd> Exit</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── 6. GLOBAL AUTHENTICATION GATE PROMPT MODAL ─── */}
+      {authPrompt && (
+        <div className="auth-gate-modal-overlay" onClick={() => setAuthPrompt(null)}>
+          <div
+            className="auth-gate-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auth-gate-title"
+          >
+            <button
+              type="button"
+              className="auth-gate-modal-close"
+              onClick={() => setAuthPrompt(null)}
+              aria-label="Close dialog"
+            >
+              ✕
+            </button>
+
+            <div className="auth-gate-icon-circle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F5E53" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+
+            <span className="auth-gate-feature-pill">
+              🔒 {authPrompt.feature || 'Account Feature'}
+            </span>
+
+            <h3 id="auth-gate-title" className="auth-gate-title">
+              {authPrompt.title || 'Sign In Required'}
+            </h3>
+
+            <p className="auth-gate-message">
+              {authPrompt.message || 'Please sign in or create an account to access this feature and sync across all your devices.'}
+            </p>
+
+            <div className="auth-gate-actions">
+              <Link
+                to="/login"
+                state={{ from: authPrompt.from || location.pathname, notice: authPrompt.message }}
+                className="auth-gate-btn-primary"
+                onClick={() => setAuthPrompt(null)}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                state={{ from: authPrompt.from || location.pathname }}
+                className="auth-gate-btn-secondary"
+                onClick={() => setAuthPrompt(null)}
+              >
+                Create Free Account
+              </Link>
+            </div>
+
+            <button
+              type="button"
+              className="auth-gate-btn-dismiss"
+              onClick={() => setAuthPrompt(null)}
+            >
+              Continue Browsing as Guest
+            </button>
           </div>
         </div>
       )}

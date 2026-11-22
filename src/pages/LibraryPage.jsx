@@ -183,59 +183,11 @@ export function Library({ saved = [], toggle = () => {} }) {
           {items.length}+ verified free textbooks · NCERT · OpenStax · Open License
         </p>
 
-        {/* Global Search & Integrated Filter Bar */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '720px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-            {/* Search Input Box */}
-            <div style={{ position: 'relative', flex: 1 }}>
-              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </span>
-              <input
-                value={q}
-                onChange={(e) => { setQ(e.target.value); if (e.target.value) setTab('search'); else setTab('class'); }}
-                placeholder="Search books, subjects, classes, authors…"
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  padding: '0 42px 0 46px',
-                  background: 'var(--card)',
-                  border: '1.5px solid rgba(13, 148, 136, 0.22)',
-                  borderRadius: '20px',
-                  fontSize: '14px',
-                  color: 'var(--ink)',
-                  outline: 'none',
-                  boxShadow: '0 4px 16px rgba(13, 148, 136, 0.06)',
-                  boxSizing: 'border-box',
-                }}
-              />
-              {q && (
-                <button
-                  onClick={() => { setQ(''); setTab('class'); }}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 0,
-                    color: 'var(--muted)',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                  }}
-                  aria-label="Clear search"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Filter Button on the RIGHT of Search Box */}
-            {/* Filter Button on the RIGHT of Search Box */}
-            {!q && (currentSubjectList.length > 1 || tab === 'class') && (
+        {/* Integrated Filter Bar */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '720px', margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {/* Filter Button */}
+            {(currentSubjectList.length > 1 || tab === 'class') && (
               <button
                 type="button"
                 onClick={() => setLibFilterOpen(!libFilterOpen)}
@@ -243,8 +195,8 @@ export function Library({ saved = [], toggle = () => {} }) {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  height: '46px',
-                  padding: '0 18px',
+                  height: '42px',
+                  padding: '0 20px',
                   background: (currentActiveSub !== 'All' || tab === 'class') ? 'var(--p-gradient)' : '#e6f7f3',
                   color: (currentActiveSub !== 'All' || tab === 'class') ? '#ffffff' : 'var(--p-dark)',
                   border: (currentActiveSub !== 'All' || tab === 'class') ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.25)',
@@ -273,16 +225,16 @@ export function Library({ saved = [], toggle = () => {} }) {
             )}
 
             {/* Clear Filter button if a subject is active */}
-            {!q && currentActiveSub !== 'All' && (
+            {currentActiveSub !== 'All' && (
               <button
                 type="button"
                 onClick={handleClearSubject}
                 style={{
-                  height: '46px',
+                  height: '42px',
                   padding: '0 14px',
                   background: '#ffffff',
                   border: '1.5px solid rgba(13, 148, 136, 0.22)',
-                  borderRadius: '12px',
+                  borderRadius: '20px',
                   fontSize: '12px',
                   fontWeight: 700,
                   color: 'var(--muted)',

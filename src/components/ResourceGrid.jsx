@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 import { BookCard } from './BookCard';
 
 export function ExternalLink({ item, children, className }) {
@@ -22,6 +23,15 @@ export function Cards({ list = [], saved = [], toggle, initialCount = 16, pageSi
   }, [list, initialCount]);
 
   const handleSave = (id) => {
+    if (!isLoggedIn) {
+      triggerAuthPrompt({
+        feature: 'Save to My Library',
+        title: 'Sign In to Save Books',
+        message: 'Please sign in or create an account to save books to your personal library and sync across all devices.',
+        from: window.location.pathname,
+      });
+      return;
+    }
     if (toggle) toggle(id);
   };
 
