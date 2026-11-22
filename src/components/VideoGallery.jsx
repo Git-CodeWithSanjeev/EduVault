@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '../utils/routerCompat';
 import { VideoCard } from './VideoCard';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 import { items as allPlatformBooks } from '../data/openItems';

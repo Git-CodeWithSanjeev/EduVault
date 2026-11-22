@@ -1,5 +1,7 @@
+'use client';
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '../utils/routerCompat';
 import { BookCover } from './BookCover';
 import { useAuth } from '../context/AuthContext';
 import { triggerAuthPrompt } from '../utils/authPrompt';

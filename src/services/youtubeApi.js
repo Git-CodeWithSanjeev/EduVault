@@ -8,8 +8,10 @@
  * Never hardcode the key in source files committed to version control.
  */
 
+import { getEnv } from '../utils/env';
+
 // Loaded from .env at build time — never committed to git
-const ENV_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || '';
+const ENV_API_KEY = getEnv('YOUTUBE_API_KEY');
 
 // In-memory cache for playlist items & metadata to reduce quota usage
 const playlistCache = new Map();

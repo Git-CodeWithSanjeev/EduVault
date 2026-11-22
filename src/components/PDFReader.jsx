@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from '../utils/routerCompat';
 import { items } from '../data/openItems';
 import { EmbedPdfViewer } from './EmbedPdfViewer';
 import { getChapterPdfUrls, proxyUrl } from '../utils/pdfHelpers';

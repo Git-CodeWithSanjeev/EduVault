@@ -21,7 +21,7 @@ import {
   AuthCallbackPage,
   AdminDashboardPage,
   StaticInfoPage,
-} from './pages';
+} from './views';
 
 const scrollPositionsMap = new Map();
 

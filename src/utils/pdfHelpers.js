@@ -3,6 +3,7 @@
  */
 
 import { NCERT_FULL_CHAPTER_NAMES, NCERT_FULL_CHAPTER_COUNTS } from '../data/ncertCatalogData.js';
+import { getEnv } from './env.js';
 
 export const NCERT_CHAPTER_COUNTS = {
   ...NCERT_FULL_CHAPTER_COUNTS,
@@ -142,7 +143,7 @@ export const NCERT_CHAPTER_NAMES = {
   ],
 };
 
-const CLOUD_R2_BASE = (import.meta.env.VITE_R2_PUBLIC_URL || 'https://pub-54ce43e6ab02460299838f807b567083.r2.dev').replace(/\/+$/, '');
+const CLOUD_R2_BASE = (getEnv('R2_PUBLIC_URL', 'https://pub-54ce43e6ab02460299838f807b567083.r2.dev')).replace(/\/+$/, '');
 
 /** Generate the list of chapter PDF URLs mapped directly to Cloudflare R2 */
 export function getChapterPdfUrls(book) {
@@ -217,7 +218,7 @@ export function getChapterPdfUrls(book) {
   ];
 }
 
-const PROXY_BASE = import.meta.env.VITE_PROXY_URL || '/api/pdf';
+const PROXY_BASE = getEnv('PROXY_URL', '/api/pdf');
 
 export function proxyUrl(originalUrl) {
   if (!originalUrl) return '';

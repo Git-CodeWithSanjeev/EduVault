@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from '../utils/routerCompat';
 import { useAuth } from '../context/AuthContext';
 import { items } from '../data/openItems';
 import { educationalVideos } from '../data/educationalVideos';

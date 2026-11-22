@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isDev } from '../utils/env';
 
 const AuthContext = createContext();
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3001' : '';
+const API_BASE = isDev ? 'http://localhost:3001' : '';
 const STORAGE_KEY = 'eduvault_auth_user';
 
 /** Helper to decode base64url Google JWT payload on client */
@@ -270,7 +271,7 @@ export function AuthProvider({ children }) {
   const sendAuthRequest = async (endpoint, payload) => {
     const urlsToTry = [
       endpoint,
-      ...(import.meta.env.DEV ? [`http://localhost:3001${endpoint}`] : []),
+      ...(isDev ? [`http://localhost:3001${endpoint}`] : []),
     ];
 
     let lastError = null;

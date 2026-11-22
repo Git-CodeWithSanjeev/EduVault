@@ -1,9 +1,11 @@
+import { getEnv } from './env';
+
 /**
  * Direct Google Authentication Helper using Google Identity Services SDK
  */
 
 const DEFAULT_GOOGLE_CLIENT_ID = '627819986888-a9uamfrp25u162ei4dn6a25fohhoqd2u.apps.googleusercontent.com';
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = getEnv('GOOGLE_CLIENT_ID', DEFAULT_GOOGLE_CLIENT_ID);
 
 /**
  * Loads the Google Identity Services SDK script dynamically if not present
