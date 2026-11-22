@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Detail } from '@/views/BookDetailPage';
+import { Detail } from '@/views/BookDetail';
 import { useSaved } from '@/hooks/useEduVault';
 
 export function ResourceClient() {

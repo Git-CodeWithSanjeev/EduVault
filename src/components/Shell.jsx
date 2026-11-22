@@ -325,9 +325,6 @@ export function Shell({ children, welcomeMsg }) {
                               <Link to="/upload" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
                                 Contribute Books
                               </Link>
-                              <Link to="/admin" className="user-dropdown-item" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%', color: 'var(--primary)', fontWeight: '600' }}>
-                                🛡️ Admin Console
-                              </Link>
                               <button className="user-dropdown-item logout" onClick={logout} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', width: '100%' }}>
                                 Sign Out
                               </button>
@@ -385,17 +382,27 @@ export function Shell({ children, welcomeMsg }) {
 
             {/* Footer inside viewport card */}
             <footer className="main-site-footer">
-              <div style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
-                <span style={{ fontWeight: 800, color: '#0f172a' }}>EduVault</span>
-                <span style={{ margin: '0 8px', color: '#94a3b8' }}>·</span>
+              <div className="footer-brand-tagline">
+                <span className="footer-brand-name">EduVault</span>
+                <span className="footer-separator">·</span>
                 <span>Learn openly. Share responsibly.</span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '22px', fontSize: '13px' }}>
-                <Link to="/about" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>About</Link>
-                <Link to="/privacy" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Privacy</Link>
-                <Link to="/terms" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Terms</Link>
-                <Link to="/contact" style={{ color: '#475569', textDecoration: 'none', fontWeight: 600 }}>Contact</Link>
+              <div className="footer-links-group">
+                <Link to="/about" className="footer-link">About</Link>
+                <Link to="/privacy" className="footer-link">Privacy</Link>
+                <Link to="/terms" className="footer-link">Terms</Link>
+                <Link to="/contact" className="footer-link">Contact</Link>
+                <Link
+                  to="/admin"
+                  className="footer-admin-btn"
+                  title="EduVault Admin Console"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  <span>Admin</span>
+                </Link>
               </div>
             </footer>
           </div>

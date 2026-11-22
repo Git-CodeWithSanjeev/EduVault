@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CategoryView } from '@/views/CategoryDetailPage';
+import { CategoryView } from '@/views/CategoryDetail';
 import { useSaved } from '@/hooks/useEduVault';
 
 export default function CategoryDetailRoute() {

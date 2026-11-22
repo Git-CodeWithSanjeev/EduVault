@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Home } from '@/views/HomePage';
+import { Home } from '@/views/Home';
 import { useSaved, useRecentlyVisited } from '@/hooks/useEduVault';
 
 export default function Page() {

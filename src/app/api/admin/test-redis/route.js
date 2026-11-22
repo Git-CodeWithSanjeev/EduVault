@@ -27,7 +27,7 @@ export async function POST(request) {
         error: err.message || 'Redis test failed',
         latencyMs: Date.now() - startTime,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

@@ -212,7 +212,7 @@ export function Library({ saved = [], toggle = () => {} }) {
               <button
                 type="button"
                 onClick={() => setLibFilterOpen(!libFilterOpen)}
-                className={`lib-filter-pill-btn ${(currentActiveSub !== 'All' || tab === 'class') ? 'active' : ''}`}
+                className={`lib-filter-pill-btn ${currentActiveSub !== 'All' ? 'active' : ''}`}
                 aria-expanded={libFilterOpen}
                 aria-label="Filter options dropdown"
               >
@@ -220,9 +220,7 @@ export function Library({ saved = [], toggle = () => {} }) {
                   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                 </svg>
                 <span>
-                  {tab === 'class'
-                    ? (currentActiveSub === 'All' ? `Filter (${activeClass})` : `${activeClass} · ${currentActiveSub}`)
-                    : (currentActiveSub === 'All' ? 'Filter Subjects' : currentActiveSub)}
+                  {currentActiveSub === 'All' ? 'All Subjects' : currentActiveSub}
                 </span>
                 <span style={{ fontSize: '9px', opacity: 0.8, marginLeft: '2px' }}>{libFilterOpen ? '▲' : '▼'}</span>
               </button>

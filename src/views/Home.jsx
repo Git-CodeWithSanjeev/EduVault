@@ -142,7 +142,7 @@ export function Home({ saved = [], toggle = () => { } }) {
     return matches.slice(0, 3);
   }, [selectedSubject, selectedGrade, canonicalVideos]);
 
-  // Canonical 3 textbooks matching the target design
+  // Canonical textbooks matching the target design
   const canonicalBooks = useMemo(() => [
     {
       id: 'ncert-leph1',
@@ -159,14 +159,6 @@ export function Home({ saved = [], toggle = () => { } }) {
       level: 'Class 11',
       coverBadge: 'Amber Cover',
       subject: 'Chemistry',
-    },
-    {
-      id: 'biology',
-      title: 'Biology: Life Sciences',
-      author: 'NCERT',
-      level: 'Class 12',
-      coverBadge: 'Emerald Cover',
-      subject: 'Biology',
     },
   ], []);
 
@@ -229,7 +221,7 @@ export function Home({ saved = [], toggle = () => { } }) {
 
           {/* CTA Actions Area */}
           <div className="hero-cta-area">
-            {/* Search Pill (Hidden on mobile) */}
+            {/* Search Pill (Hidden on mobile per mockup, top navbar provides search) */}
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent('open-search-modal'))}
@@ -239,10 +231,10 @@ export function Home({ saved = [], toggle = () => { } }) {
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-              <span style={{ color: '#64748b', fontSize: '12.5px', fontWeight: 500, flex: 1, textAlign: 'left', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <span className="hero-search-placeholder">
                 Search NCERT, OpenStax, or video courses...
               </span>
-              <kbd style={{ background: '#F1F5F9', color: '#64748b', padding: '3px 7px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700, flexShrink: 0 }}>
+              <kbd className="hero-search-kbd">
                 Ctrl K
               </kbd>
             </button>

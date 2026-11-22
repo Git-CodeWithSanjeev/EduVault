@@ -11,14 +11,14 @@ export async function POST(request) {
   const targetEmail = (toEmail || process.env.SMTP_USER || '').trim();
 
   if (!targetEmail) {
-    return NextResponse.json({ error: 'Destination test email is required' }, { status: 400 });
+    return NextResponse.json({ success: false, error: 'Destination test email is required' }, { status: 200 });
   }
 
   const startTime = Date.now();
   try {
     const transporter = createEmailTransporter();
     if (!transporter) {
-      return NextResponse.json({ error: 'SMTP is not configured. Please set SMTP_USER and SMTP_PASS first.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'SMTP is not configured. Please set SMTP_USER and SMTP_PASS first.' }, { status: 200 });
     }
 
     await transporter.verify();
@@ -55,7 +55,7 @@ export async function POST(request) {
         error: err.message || 'SMTP test failed',
         latencyMs: Date.now() - startTime,
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

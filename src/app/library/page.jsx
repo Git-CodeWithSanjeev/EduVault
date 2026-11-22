@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Library } from '@/views/LibraryPage';
+import { Library } from '@/views/Library';
 import { useSaved } from '@/hooks/useEduVault';
 
 export default function LibraryRoute() {

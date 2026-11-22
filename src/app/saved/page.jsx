@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SavedPage } from '@/views/SavedWishlistPage';
+import { SavedPage } from '@/views/SavedWishlist';
 import { useSaved } from '@/hooks/useEduVault';
 
 export default function SavedRoute() {

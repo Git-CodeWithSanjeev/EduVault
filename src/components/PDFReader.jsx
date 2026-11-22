@@ -290,6 +290,42 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
             <span>📖</span>
             <span>{getMobileChapterButtonLabel()}</span>
           </button>
+
+          <button
+            type="button"
+            className={`mobile-save-toggle-btn ${isSaved ? 'is-saved' : ''}`}
+            onClick={handleSaveBook}
+            title={isSaved ? 'In My Library' : 'Save Book'}
+            aria-label={isSaved ? 'Book is saved in library' : 'Save book to library'}
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              border: `1.5px solid ${isSaved ? '#0F5E53' : '#CBD5E1'}`,
+              background: isSaved ? '#E6F4F1' : '#ffffff',
+              color: isSaved ? '#0F5E53' : '#64748b',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              flexShrink: 0,
+              padding: 0,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill={isSaved ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </button>
         </div>
       )}
 
@@ -430,6 +466,51 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
                   </button>
                 );
               })}
+            </div>
+
+            {/* Mobile Sheet Footer Actions (Download & Save) */}
+            <div className="mobile-sheet-actions" style={{ padding: '14px 16px', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '10px', background: '#F8FAFC' }}>
+              <DownloadPDFButton
+                url={activeChapter.pdfUrl}
+                cloudUrl={activeChapter.cloudUrl}
+                filename={`${b.title} - ${activeChapter.name}.pdf`}
+              />
+              <button
+                type="button"
+                className={`sidebar-btn-save ${isSaved ? 'saved' : ''}`}
+                onClick={handleSaveBook}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '99px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: isSaved ? '1px solid #0d9488' : '1px solid #cbd5e1',
+                  background: isSaved ? '#f0fdf9' : '#ffffff',
+                  color: isSaved ? '#0f766e' : '#334155',
+                  transition: 'all 0.2s ease',
+                  minHeight: '42px',
+                }}
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill={isSaved ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                <span>{isSaved ? 'Saved to Library' : 'Save Book to Library'}</span>
+              </button>
             </div>
           </div>
         </div>

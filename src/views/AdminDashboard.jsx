@@ -176,10 +176,19 @@ const IconKey = ({ size = 14 }) => (
 );
 
 export function AdminPanel() {
-  // Admin Authentication Gate
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    return sessionStorage.getItem('eduvault_admin_auth') === 'true';
-  });
+  // Admin Authentication Gate (Safe for SSR & Client Hydration)
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && sessionStorage.getItem('eduvault_admin_auth') === 'true') {
+        setIsUnlocked(true);
+      }
+    } catch {
+      // safe fallback if storage is disabled/inaccessible
+    }
+  }, []);
+
   const [adminUsernameInput, setAdminUsernameInput] = useState('');
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
@@ -256,16 +265,24 @@ export function AdminPanel() {
 
   // Helper for authenticated Admin API requests
   const getAdminHeaders = () => {
-    const token = sessionStorage.getItem('eduvault_admin_token') || '';
-    return {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
+    try {
+      const token = typeof window !== 'undefined' ? (sessionStorage.getItem('eduvault_admin_token') || '') : '';
+      return {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
+    } catch {
+      return { 'Content-Type': 'application/json' };
+    }
   };
 
   const handleLockConsole = (reason = '') => {
-    sessionStorage.removeItem('eduvault_admin_auth');
-    sessionStorage.removeItem('eduvault_admin_token');
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('eduvault_admin_auth');
+        sessionStorage.removeItem('eduvault_admin_token');
+      }
+    } catch {}
     setIsUnlocked(false);
     setAdminPasswordInput('');
     if (reason && typeof reason === 'string') {
@@ -305,7 +322,7 @@ export function AdminPanel() {
     setLoading(true);
     setSaveError('');
     try {
-      const res = await fetch('/api/admin/credentials', { headers: getAdminHeaders() });
+      const res = await fetch('/api/admin/credentials?reveal=true', { headers: getAdminHeaders() });
       if (res.status === 401) {
         handleLockConsole('Admin session has expired or is unauthorized. Please log in.');
         return;
@@ -397,10 +414,14 @@ export function AdminPanel() {
         throw new Error(data.error || 'Invalid Admin ID or Password');
       }
 
-      if (data.token) {
-        sessionStorage.setItem('eduvault_admin_token', data.token);
-      }
-      sessionStorage.setItem('eduvault_admin_auth', 'true');
+      try {
+        if (typeof window !== 'undefined') {
+          if (data.token) {
+            sessionStorage.setItem('eduvault_admin_token', data.token);
+          }
+          sessionStorage.setItem('eduvault_admin_auth', 'true');
+        }
+      } catch {}
       setInactivityTimer(600);
       setIsUnlocked(true);
       fetchCredentials();
@@ -468,10 +489,14 @@ export function AdminPanel() {
     setDbTestLoading(true);
     setDbTestResult(null);
     try {
+      const uriToTest = config.MONGODB_URI && !config.MONGODB_URI.includes('•') && !config.MONGODB_URI.includes('*')
+        ? config.MONGODB_URI.trim()
+        : undefined;
+
       const res = await fetch('/api/admin/test-db', {
         method: 'POST',
         headers: getAdminHeaders(),
-        body: JSON.stringify({ uri: config.MONGODB_URI }),
+        body: JSON.stringify({ uri: uriToTest }),
       });
       const data = await res.json();
       setDbTestResult(data);
@@ -639,7 +664,7 @@ export function AdminPanel() {
       <div className="admin-login-wrapper">
         <div className="admin-login-card">
           <div className="admin-login-header">
-            <Link to="/" style={{ display: 'inline-block', marginBottom: '14px' }}>
+            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
               <img src="/logo.png" alt="EduVault" style={{ height: '42px', width: 'auto', objectFit: 'contain' }} />
             </Link>
             <div className="admin-badge">
@@ -723,20 +748,9 @@ export function AdminPanel() {
           <p>Securely manage MongoDB Atlas users, inspect credentials, Gmail SMTP, Redis, and API keys in real time.</p>
         </div>
 
-        <div className="admin-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="admin-header-actions">
           <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '5px',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              background: inactivityTimer < 60 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid ${inactivityTimer < 60 ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.1)'}`,
-              color: inactivityTimer < 60 ? '#f87171' : '#94a3b8',
-              fontSize: '12px',
-              fontWeight: 500,
-            }}
+            className={`admin-timer-pill ${inactivityTimer < 60 ? 'urgent' : ''}`}
             title="Console will automatically lock itself if no activity is detected."
           >
             <span>⏱️</span>

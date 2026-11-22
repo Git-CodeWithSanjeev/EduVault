@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Outbound } from '@/views/OutboundGatewayPage';
+import { Outbound } from '@/views/OutboundGateway';
 
 export default function OutboundRoute() {
   return <Outbound />;
