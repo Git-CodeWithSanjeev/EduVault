@@ -41,10 +41,60 @@ export function VideoTheater() {
     const foundStatic = educationalVideos.find((v) => v.id === id || v.videoId === id || v.playlistId === id);
     if (foundStatic) return foundStatic;
 
+    // Explicit resolution for canonical featured courses
+    if (id === 'class-12-quantum-mechanics') {
+      return {
+        id: 'class-12-quantum-mechanics',
+        videoId: 'lZ3bPUKo5zc',
+        playlistId: 'PLUl4u3cNGP61-9PEhRognw5vryrSEVLPr',
+        title: 'Introduction to Quantum Mechanics',
+        channel: 'Samantha Ray',
+        category: 'Physics',
+        tier: 'Class 12',
+        level: 'Class 12',
+        duration: '12 Hours · 24 Videos',
+        description: 'Introduction to quantum science, wave mechanics, superposition, and quantum states.',
+        theme: 'quantum',
+      };
+    }
+    if (id === 'ug-organic-chemistry') {
+      return {
+        id: 'ug-organic-chemistry',
+        videoId: 'ZgccHLOj3W4',
+        playlistId: 'PLgqhGKMp0Djaj_Tmch5c0zjqHEEHAGivd',
+        title: 'Organic Chemistry Masterclass',
+        channel: 'James Miller',
+        category: 'Chemistry',
+        tier: 'Undergraduate (UG)',
+        level: 'UG',
+        duration: '12 Hours · 24 Videos',
+        description: 'Comprehensive masterclass on organic reaction mechanisms, IUPAC nomenclature, and stereochemistry.',
+        theme: 'organic-chem',
+      };
+    }
+    if (id === 'cs-masterclass') {
+      return {
+        id: 'cs-masterclass',
+        videoId: 'F0WoVEr0-44',
+        playlistId: 'PLWKjhJtqVAbmGw5fN5BQlwuug-8bDmabi',
+        title: 'Computer Science Masterclass',
+        channel: 'Soran Jenkins',
+        category: 'Computer Science',
+        tier: 'Class 12',
+        level: 'Class 12',
+        duration: '12 Hours · 24 Videos',
+        description: 'Learn computational thinking, algorithms, data structures, and foundational programming.',
+        theme: 'cs-tech',
+      };
+    }
+
+    const isPl = id.startsWith('PL');
+    const isDirectVid = !isPl && id.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(id);
+
     return {
       id: id,
-      playlistId: id.startsWith('PL') || id.length > 15 ? id : null,
-      videoId: (!id.startsWith('PL') && id.length <= 15) ? id : null,
+      playlistId: isPl ? id : null,
+      videoId: isDirectVid ? id : 'tVzUXW6siu0',
       title: `Educational Course (${id})`,
       channel: 'Verified Educator',
       category: 'Education',
@@ -80,12 +130,13 @@ export function VideoTheater() {
   // Determine playlistId safely
   const playlistId = useMemo(() => {
     if (!vid) return null;
-    if (vid.playlistId) return vid.playlistId;
+    if (vid.playlistId && vid.playlistId.startsWith('PL')) return vid.playlistId;
     if (vid.embedUrl && vid.embedUrl.includes('list=')) {
       try {
-        return new URL(vid.embedUrl).searchParams.get('list');
+        const listParam = new URL(vid.embedUrl).searchParams.get('list');
+        if (listParam && listParam.startsWith('PL')) return listParam;
       } catch {
-        const match = vid.embedUrl.match(/list=([a-zA-Z0-9_-]+)/);
+        const match = vid.embedUrl.match(/list=(PL[a-zA-Z0-9_-]+)/);
         return match ? match[1] : null;
       }
     }
@@ -170,7 +221,7 @@ export function VideoTheater() {
   // Embed URL with youtube-nocookie, mobile playsinline, autoplay, playlist, and timestamp support
   const posterBg = (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL'))
     ? `https://i.ytimg.com/vi/${targetVidId}/hqdefault.jpg`
-    : vid.thumbnail || `https://i.ytimg.com/vi/7X8M8zUe-fI/hqdefault.jpg`;
+    : (vid.thumbnail || `https://i.ytimg.com/vi/tVzUXW6siu0/hqdefault.jpg`);
 
   // Course Progress calculation
   const totalLessonsCount = lessons.length;
@@ -280,7 +331,7 @@ export function VideoTheater() {
               <iframe
                 ref={iframeRef}
                 key={`${vid.id}-${targetVidId}`}
-                src={`https://www.youtube-nocookie.com/embed/${targetVidId}?enablejsapi=1&playsinline=1&rel=0${playlistId ? `&list=${playlistId}` : ''}${startTimestamp ? `&start=${startTimestamp}` : ''}`}
+                src={`https://www.youtube-nocookie.com/embed/${targetVidId}?enablejsapi=1&playsinline=1&rel=0${startTimestamp ? `&start=${startTimestamp}` : ''}`}
                 title={activeLesson.title || courseTitle}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen

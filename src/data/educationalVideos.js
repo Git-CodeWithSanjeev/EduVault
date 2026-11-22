@@ -1,4 +1,4 @@
-import { educationalGalleryData } from './educationalGalleryData';
+import { educationalGalleryData } from './educationalGalleryData.js';
 
 export const educationalVideos = [
   {
@@ -1554,6 +1554,48 @@ export const educationalVideos = [
     "thumbnail": "https://img.youtube.com/vi/Vzgk3RJjwY8/hqdefault.jpg",
     "description": "Essential spoken English vocabulary, pronunciation guidelines, and job interview communication practice.",
     "videoCount": 40
+  },
+  {
+    "id": "class-12-quantum-mechanics",
+    "title": "Introduction to Quantum Mechanics",
+    "channel": "Samantha Ray",
+    "category": "Physics",
+    "classNum": 12,
+    "level": "Class 12",
+    "subject": "Physics",
+    "videoId": "lZ3bPUKo5zc",
+    "playlistId": "PLUl4u3cNGP61-9PEhRognw5vryrSEVLPr",
+    "thumbnail": "https://img.youtube.com/vi/lZ3bPUKo5zc/hqdefault.jpg",
+    "description": "Introduction to quantum science, wave mechanics, superposition, and quantum states.",
+    "videoCount": 24
+  },
+  {
+    "id": "ug-organic-chemistry",
+    "title": "Organic Chemistry Masterclass",
+    "channel": "James Miller",
+    "category": "Chemistry",
+    "classNum": "UG",
+    "level": "UG",
+    "subject": "Chemistry",
+    "videoId": "ZgccHLOj3W4",
+    "playlistId": "PLgqhGKMp0Djaj_Tmch5c0zjqHEEHAGivd",
+    "thumbnail": "https://img.youtube.com/vi/ZgccHLOj3W4/hqdefault.jpg",
+    "description": "Comprehensive masterclass on organic reaction mechanisms, IUPAC nomenclature, and stereochemistry.",
+    "videoCount": 24
+  },
+  {
+    "id": "cs-masterclass",
+    "title": "Computer Science Masterclass",
+    "channel": "Soran Jenkins",
+    "category": "Computer Science",
+    "classNum": 12,
+    "level": "Class 12",
+    "subject": "Computer Science",
+    "videoId": "F0WoVEr0-44",
+    "playlistId": "PLWKjhJtqVAbmGw5fN5BQlwuug-8bDmabi",
+    "thumbnail": "https://img.youtube.com/vi/F0WoVEr0-44/hqdefault.jpg",
+    "description": "Learn computational thinking, algorithms, data structures, and foundational programming.",
+    "videoCount": 24
   }
 ];
 
@@ -1692,15 +1734,15 @@ export const SIGMA_WEBDEV_139_TITLES = [
 ];
 
 export function getVideoId(vid) {
-  if (!vid) return '7X8M8zUe-fI';
-  if (vid.videoId) return vid.videoId;
-  if (vid.id && !vid.id.startsWith('PL') && vid.id.length <= 15) return vid.id;
-  return '7X8M8zUe-fI';
+  if (!vid) return 'tVzUXW6siu0';
+  if (vid.videoId && vid.videoId.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(vid.videoId)) return vid.videoId;
+  if (vid.id && !vid.id.startsWith('PL') && vid.id.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(vid.id)) return vid.id;
+  return 'tVzUXW6siu0';
 }
 
 export function getPlaylistLessons(vid) {
   if (!vid) return [];
-  
+
   if (vid.id === 'cwh-sigma-webdev' || vid.id === 'cwh-webdev' || vid.playlistId === 'PLu0W_9lII9agq5TrH9XLIKQvv0iaF2X3w') {
     const mainVidId = 'tVzUXW6siu0';
     return SIGMA_WEBDEV_139_TITLES.map((title, i) => ({
@@ -1708,6 +1750,75 @@ export function getPlaylistLessons(vid) {
       videoId: mainVidId,
       title: `Tutorial #${i + 1} — ${title}`,
       duration: `Lesson ${i + 1}`,
+      playlistIndex: i + 1,
+    }));
+  }
+
+  if (vid.id === 'class-12-quantum-mechanics') {
+    const mainVidId = 'lZ3bPUKo5zc';
+    const quantumTitles = [
+      'Lecture 1: Introduction to Superposition & Wave Mechanics',
+      'Lecture 2: Experimental Basis of Quantum Physics',
+      'Lecture 3: Photons, Matter Waves & De Broglie Hypothesis',
+      'Lecture 4: Wave Functions & The Uncertainty Principle',
+      'Lecture 5: The Time-Dependent Schrödinger Equation',
+      'Lecture 6: Infinite Square Well Potential & Boundary Conditions',
+      'Lecture 7: Finite Potential Wells & Quantum Tunneling',
+      'Lecture 8: Quantum Harmonic Oscillator',
+      'Lecture 9: Operator Formalism & Observables in Quantum Mechanics',
+      'Lecture 10: Central Potentials & Hydrogen Atom Introduction'
+    ];
+    return quantumTitles.map((title, i) => ({
+      id: i + 1,
+      videoId: mainVidId,
+      title: `Lesson ${i + 1} — ${title}`,
+      duration: '45 mins',
+      playlistIndex: i + 1,
+    }));
+  }
+
+  if (vid.id === 'ug-organic-chemistry') {
+    const mainVidId = 'ZgccHLOj3W4';
+    const organicTitles = [
+      'Lecture 1: IUPAC Nomenclature Fundamentals & Alkanes',
+      'Lecture 2: Structural Isomerism & Stereochemistry',
+      'Lecture 3: Hybridization, Electronegativity & Resonance',
+      'Lecture 4: Nucleophiles, Electrophiles & Reaction Intermediates',
+      'Lecture 5: Carbocation Stability & Inductive Effects',
+      'Lecture 6: SN1 vs SN2 Nucleophilic Substitution Reactions',
+      'Lecture 7: E1 vs E2 Elimination Reactions & Mechanisms',
+      'Lecture 8: Electrophilic Addition to Alkenes & Alkynes',
+      'Lecture 9: Aromaticity, Benzene & Electrophilic Substitution',
+      'Lecture 10: Carbonyl Compounds: Aldehydes, Ketones & Carboxylic Acids'
+    ];
+    return organicTitles.map((title, i) => ({
+      id: i + 1,
+      videoId: mainVidId,
+      title: `Lesson ${i + 1} — ${title}`,
+      duration: '50 mins',
+      playlistIndex: i + 1,
+    }));
+  }
+
+  if (vid.id === 'cs-masterclass') {
+    const mainVidId = 'F0WoVEr0-44';
+    const csTitles = [
+      'Week 0: Computational Thinking & Scratch Foundations',
+      'Week 1: C Basics, Compiling & Syntax',
+      'Week 2: Arrays, Strings & Memory Layout',
+      'Week 3: Algorithms, Big-O, Sorting & Searching',
+      'Week 4: Memory, Pointers, Dynamic Allocation & Valgrind',
+      'Week 5: Data Structures, Linked Lists, Hash Tables & Trees',
+      'Week 6: Python Programming & Scripting',
+      'Week 7: SQL, Relational Databases & Queries',
+      'Week 8: HTML, CSS & Modern JavaScript',
+      'Week 9: Flask & Full-Stack Web Development'
+    ];
+    return csTitles.map((title, i) => ({
+      id: i + 1,
+      videoId: mainVidId,
+      title: `Lesson ${i + 1} — ${title}`,
+      duration: '55 mins',
       playlistIndex: i + 1,
     }));
   }

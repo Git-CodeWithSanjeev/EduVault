@@ -71,7 +71,8 @@ export function Home({ saved = [], toggle = () => { } }) {
   const canonicalVideos = useMemo(() => [
     {
       id: 'class-12-quantum-mechanics',
-      videoId: 'quantum-mechanics',
+      videoId: 'lZ3bPUKo5zc',
+      playlistId: 'PLUl4u3cNGP61-9PEhRognw5vryrSEVLPr',
       title: 'Introduction to Quantum Mechanics',
       description: 'Introduction to quantum science, video courses... and quantum mechanics.',
       channel: 'Samantha Ray',
@@ -83,7 +84,8 @@ export function Home({ saved = [], toggle = () => { } }) {
     },
     {
       id: 'ug-organic-chemistry',
-      videoId: 'organic-chemistry',
+      videoId: 'ZgccHLOj3W4',
+      playlistId: 'PLgqhGKMp0Djaj_Tmch5c0zjqHEEHAGivd',
       title: 'Organic Chemistry Masterclass',
       description: 'Organic chemistry masterclass chemistry and lots few more.',
       channel: 'James Miller',
@@ -95,7 +97,8 @@ export function Home({ saved = [], toggle = () => { } }) {
     },
     {
       id: 'cs-masterclass',
-      videoId: 'cs-masterclass-vid',
+      videoId: 'F0WoVEr0-44',
+      playlistId: 'PLWKjhJtqVAbmGw5fN5BQlwuug-8bDmabi',
       title: 'Computer Science Masterclass',
       description: 'Learn programming with molecular and computer.',
       channel: 'Soran Jenkins',
