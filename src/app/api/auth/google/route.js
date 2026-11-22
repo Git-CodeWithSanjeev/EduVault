@@ -41,32 +41,36 @@ export async function POST(request) {
     const cleanEmail = email.toLowerCase().trim();
     await connectToDatabase();
 
-    let user = await User.findOne({ email: cleanEmail });
-
-    if (user) {
-      user.name = name || user.name;
-      user.avatar = user.avatar || avatar || '🎓';
-      user.provider = 'google';
-      if (googleId) user.googleId = googleId;
-      user.lastLogin = new Date();
-      await user.save();
-    } else {
-      user = await User.create({
-        name: name || cleanEmail.split('@')[0],
-        email: cleanEmail,
-        password: '',
-        avatar: avatar || '🎓',
-        provider: 'google',
-        googleId: googleId || '',
-        lastLogin: new Date(),
-      });
-    }
+    const user = await User.findOneAndUpdate(
+      { email: cleanEmail },
+      {
+        $set: {
+          name: name || cleanEmail.split('@')[0],
+          avatar: avatar || '🎓',
+          provider: 'google',
+          ...(googleId ? { googleId } : {}),
+          lastLogin: new Date(),
+        },
+        $setOnInsert: {
+          password: '',
+          savedBooks: [],
+          role: 'student',
+          isVerified: true,
+          createdAt: new Date(),
+        },
+      },
+      { new: true, upsert: true }
+    ).lean();
 
     const token = signAuthToken({
       userId: user._id.toString(),
       email: user.email,
       name: user.name,
     });
+
+    const joinedDate = user.createdAt
+      ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+      : 'Recent';
 
     return NextResponse.json({
       success: true,
@@ -79,7 +83,7 @@ export async function POST(request) {
         provider: 'google',
         isVerified: true,
         savedBooks: user.savedBooks || [],
-        joinedDate: user.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        joinedDate,
       },
     });
   } catch (err) {

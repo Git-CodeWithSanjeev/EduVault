@@ -97,10 +97,13 @@ export function GoogleIcon({ className = '', size = 18 }) {
 export function GoogleAuthButton({
   onClick,
   loading = false,
+  loadingText,
   disabled = false,
   text = 'Continue with Google',
   className = '',
 }) {
+  const displayLoadingText = loadingText || (text.includes('Sign up') ? 'Signing up with Google…' : 'Connecting to Google…');
+
   return (
     <button
       type="button"
@@ -114,7 +117,7 @@ export function GoogleAuthButton({
       ) : (
         <GoogleIcon className="google-icon" size={18} />
       )}
-      <span>{loading ? 'Connecting to Google…' : text}</span>
+      <span>{loading ? displayLoadingText : text}</span>
     </button>
   );
 }

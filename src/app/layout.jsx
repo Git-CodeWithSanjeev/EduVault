@@ -20,6 +20,11 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://accounts.google.com" />
+        <link rel="dns-prefetch" href="https://accounts.google.com" />
+        <link rel="preconnect" href="https://www.googleapis.com" />
+      </head>
       <body>
         <Providers>
           <Suspense fallback={null}>

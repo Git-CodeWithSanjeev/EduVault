@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from '../utils/routerCompat';
 import { useAuth } from '../context/AuthContext';
 import { PasswordInput, AuthAlert, GoogleAuthButton, AuthDivider } from '../components/FormElements';
 import { isValidEmail } from '../utils/validation';
-import { triggerDirectGoogleLogin } from '../utils/googleAuth';
+import { triggerDirectGoogleLogin, loadGoogleScript } from '../utils/googleAuth';
 
 export function Login() {
   const { login, loginWithGoogle, isLoggedIn } = useAuth();
@@ -21,6 +21,11 @@ export function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleStage, setGoogleStage] = useState('');
+
+  useEffect(() => {
+    loadGoogleScript();
+  }, []);
 
   if (isLoggedIn) {
     navigate(from, { replace: true });
@@ -29,10 +34,17 @@ export function Login() {
   const handleGoogleLogin = async () => {
     setError('');
     setGoogleLoading(true);
+    setGoogleStage('Opening Google…');
 
     try {
-      const googleProfile = await triggerDirectGoogleLogin();
+      const googleProfile = await triggerDirectGoogleLogin((stage) => {
+        if (stage === 'opening') setGoogleStage('Opening Google…');
+        else if (stage === 'fetching') setGoogleStage('Fetching details…');
+        else if (stage === 'signing_in') setGoogleStage('Signing in…');
+      });
+      setGoogleStage('Signing in…');
       await loginWithGoogle(googleProfile);
+      setGoogleStage('Redirecting…');
       navigate(from, { replace: true });
     } catch (err) {
       console.warn('[Google Login Warning]:', err.message);
@@ -43,6 +55,7 @@ export function Login() {
       }
     } finally {
       setGoogleLoading(false);
+      setGoogleStage('');
     }
   };
 
@@ -101,6 +114,7 @@ export function Login() {
         <GoogleAuthButton
           onClick={handleGoogleLogin}
           loading={googleLoading}
+          loadingText={googleStage}
           disabled={loading || googleLoading}
           text="Continue with Google"
         />

@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from '../utils/routerCompat';
 import { useAuth } from '../context/AuthContext';
 import { PasswordInput, AuthAlert, GoogleAuthButton, AuthDivider } from '../components/FormElements';
 import { isValidEmail, isValidName, getPasswordRequirements } from '../utils/validation';
-import { triggerDirectGoogleLogin } from '../utils/googleAuth';
+import { triggerDirectGoogleLogin, loadGoogleScript } from '../utils/googleAuth';
 
 export function Register() {
   const { register, loginWithGoogle, isLoggedIn } = useAuth();
@@ -20,6 +20,11 @@ export function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleStage, setGoogleStage] = useState('');
+
+  useEffect(() => {
+    loadGoogleScript();
+  }, []);
 
   if (isLoggedIn) {
     navigate('/', { replace: true });
@@ -32,10 +37,17 @@ export function Register() {
   const handleGoogleSignup = async () => {
     setError('');
     setGoogleLoading(true);
+    setGoogleStage('Opening Google…');
 
     try {
-      const googleProfile = await triggerDirectGoogleLogin();
+      const googleProfile = await triggerDirectGoogleLogin((stage) => {
+        if (stage === 'opening') setGoogleStage('Opening Google…');
+        else if (stage === 'fetching') setGoogleStage('Fetching details…');
+        else if (stage === 'signing_in') setGoogleStage('Creating account…');
+      });
+      setGoogleStage('Creating account…');
       await loginWithGoogle(googleProfile);
+      setGoogleStage('Redirecting…');
       navigate('/', { replace: true });
     } catch (err) {
       if (!err.message?.includes('popup_closed') && !err.message?.includes('user_closed')) {
@@ -43,6 +55,7 @@ export function Register() {
       }
     } finally {
       setGoogleLoading(false);
+      setGoogleStage('');
     }
   };
 
@@ -96,6 +109,7 @@ export function Register() {
         <GoogleAuthButton
           onClick={handleGoogleSignup}
           loading={googleLoading}
+          loadingText={googleStage}
           disabled={loading || googleLoading}
           text="Sign up with Google"
         />
