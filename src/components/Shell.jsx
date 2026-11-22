@@ -6,7 +6,8 @@ import { educationalVideos } from '../data/educationalVideos';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 
 export function Shell({ children, welcomeMsg }) {
-  const { user, isLoggedIn, loading, logout } = useAuth();
+  const { user, isLoggedIn, loading, isAuthLoading, logout } = useAuth();
+  const authBusy = isAuthLoading || loading;
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -251,9 +252,11 @@ export function Shell({ children, welcomeMsg }) {
 
                 {/* Desktop & Tablet Auth Actions */}
                 <div className="desktop-auth-group">
-                  {loading ? (
-                    <div className="auth-nav-skeleton" style={{ width: '80px', height: '36px', borderRadius: '8px', background: '#E6F4F1', opacity: 0.7 }} />
-                  ) : isLoggedIn ? (
+                  {authBusy ? (
+                    <div className="auth-nav-skeleton" title="Verifying session…">
+                      <div className="nav-skeleton-spinner" />
+                    </div>
+                  ) : isLoggedIn && user ? (
                     <div className="user-menu-wrap" ref={userMenuRef} style={{ position: 'relative' }}>
                       <button
                         className="user-profile-btn"
@@ -439,12 +442,16 @@ export function Shell({ children, welcomeMsg }) {
             </NavLink>
             <NavLink to={isLoggedIn ? "/profile" : "/login"} className={`bottom-nav-item ${location.pathname === '/profile' || location.pathname === '/login' ? 'active' : ''}`}>
               <span className="nav-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+                {authBusy ? (
+                  <div className="nav-skeleton-spinner" style={{ width: '15px', height: '15px', margin: '2px' }} />
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                )}
               </span>
-              <span>Profile</span>
+              <span>{authBusy ? 'Checking…' : (isLoggedIn ? 'Profile' : 'Log In')}</span>
             </NavLink>
           </div>
         </div>
@@ -553,7 +560,12 @@ export function Shell({ children, welcomeMsg }) {
                 <span>Search Books & Videos</span>
               </button>
 
-              {isLoggedIn ? (
+              {authBusy ? (
+                <div style={{ padding: '12px 14px', borderRadius: '10px', background: '#E6F4F1', display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px' }}>
+                  <div className="nav-skeleton-spinner" style={{ width: '16px', height: '16px' }} />
+                  <span style={{ fontSize: '13px', color: '#0F5E53', fontWeight: 600 }}>Verifying session…</span>
+                </div>
+              ) : isLoggedIn && user ? (
                 <>
                   <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (

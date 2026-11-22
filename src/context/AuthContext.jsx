@@ -21,7 +21,46 @@ export function decodeGoogleCredential(token) {
   }
 }
 
+/**
+ * Global authentication state listener (onAuthStateChanged).
+ * Triggers callback immediately with current session and subscribes to real-time auth changes.
+ */
+export function onAuthStateChanged(callback) {
+  if (typeof callback !== 'function') return () => {};
+
+  const handleAuthEvent = (e) => {
+    callback(e.detail ?? null);
+  };
+
+  const handleStorageEvent = (e) => {
+    if (e.key === STORAGE_KEY) {
+      try {
+        callback(e.newValue ? JSON.parse(e.newValue) : null);
+      } catch {
+        callback(null);
+      }
+    }
+  };
+
+  window.addEventListener('eduvault-auth-change', handleAuthEvent);
+  window.addEventListener('storage', handleStorageEvent);
+
+  // Synchronous immediate invocation with current stored state
+  try {
+    const current = localStorage.getItem(STORAGE_KEY);
+    callback(current ? JSON.parse(current) : null);
+  } catch {
+    callback(null);
+  }
+
+  return () => {
+    window.removeEventListener('eduvault-auth-change', handleAuthEvent);
+    window.removeEventListener('storage', handleStorageEvent);
+  };
+}
+
 export function AuthProvider({ children }) {
+  // 1. Instant synchronous initialization from localStorage (no flash for active sessions)
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -30,20 +69,67 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
-  const [loading, setLoading] = useState(false);
 
-  // Sync state changes to localStorage
-  useEffect(() => {
+  // 2. isAuthLoading state: true if OAuth redirect/callback is in flight or actively resolving
+  const [isAuthLoading, setIsAuthLoading] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const isCallback = window.location.pathname.startsWith('/auth/callback');
+    const hasOAuthParams =
+      window.location.hash.includes('access_token') ||
+      window.location.hash.includes('id_token') ||
+      window.location.search.includes('credential=') ||
+      window.location.search.includes('code=') ||
+      window.location.search.includes('token=');
+    return isCallback || hasOAuthParams;
+  });
+
+  /**
+   * Synchronously persists auth session to localStorage, updates React state,
+   * and dispatches global event to immediately update navbar and all subscribers.
+   */
+  const syncUser = (newUserData) => {
     try {
-      if (user) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      if (newUserData) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newUserData));
       } else {
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch (e) {
-      console.error('Storage error:', e);
+      console.error('[Auth Storage Sync Error]:', e);
     }
-  }, [user]);
+    setUser(newUserData);
+    setIsAuthLoading(false);
+    window.dispatchEvent(new CustomEvent('eduvault-auth-change', { detail: newUserData }));
+  };
+
+  // Cross-tab and global in-app instantaneous auth synchronization listener
+  useEffect(() => {
+    const handleAuthChange = (e) => {
+      setUser(e.detail ?? null);
+      setIsAuthLoading(false);
+    };
+
+    const handleStorageEvent = (e) => {
+      if (e.key === STORAGE_KEY) {
+        try {
+          const fresh = e.newValue ? JSON.parse(e.newValue) : null;
+          setUser(fresh);
+          setIsAuthLoading(false);
+        } catch {
+          setUser(null);
+          setIsAuthLoading(false);
+        }
+      }
+    };
+
+    window.addEventListener('eduvault-auth-change', handleAuthChange);
+    window.addEventListener('storage', handleStorageEvent);
+
+    return () => {
+      window.removeEventListener('eduvault-auth-change', handleAuthChange);
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
 
   const [pendingEmail, setPendingEmail] = useState('');
 
@@ -98,7 +184,7 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('eduvault_admin_auth');
     sessionStorage.removeItem('eduvault_admin_token');
 
-    setUser(authUser);
+    syncUser(authUser);
     setPendingEmail('');
     return { success: true, user: authUser };
   };
@@ -140,7 +226,7 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('eduvault_admin_auth');
     sessionStorage.removeItem('eduvault_admin_token');
 
-    setUser(authUser);
+    syncUser(authUser);
     return { success: true, user: authUser };
   };
 
@@ -176,7 +262,7 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem('eduvault_admin_auth');
     sessionStorage.removeItem('eduvault_admin_token');
 
-    setUser(authUser);
+    syncUser(authUser);
     return { success: true, user: authUser };
   };
 
@@ -344,14 +430,13 @@ export function AuthProvider({ children }) {
       token: user.token,
     };
 
-    setUser(updatedUser);
+    syncUser(updatedUser);
     return { success: true, user: updatedUser };
   };
 
   /** 9. Logout */
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+    syncUser(null);
     sessionStorage.removeItem('eduvault-redirect-after-auth');
     sessionStorage.removeItem('eduvault_admin_auth');
     sessionStorage.removeItem('eduvault_admin_token');
@@ -361,8 +446,11 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        loading,
+        loading: isAuthLoading,
+        isAuthLoading,
+        setIsAuthLoading,
         isLoggedIn: !!user,
+        syncUser,
         pendingEmail,
         setPendingEmail,
         login,

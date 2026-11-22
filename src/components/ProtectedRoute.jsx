@@ -3,10 +3,11 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export function ProtectedRoute({ children }) {
-  const { isLoggedIn, loading } = useAuth();
+  const { isLoggedIn, loading, isAuthLoading } = useAuth();
   const location = useLocation();
+  const authBusy = isAuthLoading ?? loading;
 
-  if (loading) {
+  if (authBusy) {
     return (
       <div className="auth-loading-screen">
         <div className="auth-loading-spinner" />

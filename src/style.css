@@ -383,6 +383,39 @@ nav a.active::after,
     position: relative;
 }
 
+/* Auth Loading State & Navbar Skeleton */
+.auth-nav-skeleton {
+    width: 88px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, #E6F4F1 25%, #d1ede7 50%, #E6F4F1 75%);
+    background-size: 200% 100%;
+    animation: authNavShimmer 1.5s infinite ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+@keyframes authNavShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.nav-skeleton-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(15, 94, 83, 0.2);
+    border-top-color: #0F5E53;
+    border-radius: 50%;
+    animation: navSpin 0.75s linear infinite;
+}
+
+@keyframes navSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .user-profile-btn {
     display: inline-flex;
     align-items: center;
