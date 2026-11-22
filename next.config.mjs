@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  distDir: 'dist',
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'ncert.nic.in' },
@@ -11,19 +12,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'archive.org' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
-  },
-  async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
-      },
-      {
-        source: '/pdf/:path*',
-        destination: `${backendUrl}/pdf/:path*`,
-      },
-    ];
   },
 };
 
