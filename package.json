@@ -6,16 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "server": "node server.js",
-    "dev:all": "start cmd /k node server.js && next dev",
-    "dev:vite": "vite",
-    "build:vite": "vite build",
-    "preview": "vite preview"
+    "start": "next start"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1173.0",
-    "@vitejs/plugin-react": "latest",
     "bcryptjs": "^3.0.3",
     "ioredis": "^6.0.0",
     "mongoose": "^9.9.2",
@@ -23,11 +17,6 @@
     "nodemailer": "^9.0.5",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "latest",
-    "vite": "latest"
-  },
-  "devDependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "react-router-dom": "latest"
   }
 }
