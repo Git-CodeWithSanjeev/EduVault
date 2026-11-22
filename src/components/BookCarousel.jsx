@@ -10,11 +10,7 @@ export function BookCarousel({ title, itemsList, saved, toggle }) {
   const navigate = useNavigate();
 
   const handleSave = (id) => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
-    toggle(id);
+    if (toggle) toggle(id);
   };
 
   if (!itemsList || itemsList.length === 0) return null;

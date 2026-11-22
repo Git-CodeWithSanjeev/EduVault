@@ -122,11 +122,7 @@ export function App() {
         />
         <Route
           path="/saved"
-          element={
-            <ProtectedRoute>
-              <SavedWishlistPage saved={saved} toggle={toggle} />
-            </ProtectedRoute>
-          }
+          element={<SavedWishlistPage saved={saved} toggle={toggle} />}
         />
         <Route
           path="/upload"

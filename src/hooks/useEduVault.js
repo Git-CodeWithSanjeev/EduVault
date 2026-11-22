@@ -5,10 +5,18 @@ export function useSaved() {
   const [s, setS] = useLocalStorage('eduvault-saved', []);
 
   const toggleSaved = (id) => {
-    setS((x) => (x.includes(id) ? x.filter((y) => y !== id) : [...x, id]));
+    if (!id) return;
+    setS((x) => {
+      const arr = Array.isArray(x) ? x : [];
+      return arr.includes(id) ? arr.filter((y) => y !== id) : [...arr, id];
+    });
   };
 
-  return [s, toggleSaved];
+  const res = [s, toggleSaved];
+  res.saved = s;
+  res.toggle = toggleSaved;
+  res.toggleSaved = toggleSaved;
+  return res;
 }
 
 export function useWelcomeBack() {
@@ -38,8 +46,16 @@ export function useRecentlyVisited() {
   const [recent, setRecent] = useLocalStorage('eduvault-recent', []);
 
   const addRecent = (id) => {
-    setRecent((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, 6));
+    if (!id) return;
+    setRecent((prev) => {
+      const arr = Array.isArray(prev) ? prev : [];
+      return [id, ...arr.filter((x) => x !== id)].slice(0, 6);
+    });
   };
 
-  return [recent, addRecent];
+  const res = [recent, addRecent];
+  res.recent = recent;
+  res.recentIds = recent;
+  res.addRecent = addRecent;
+  return res;
 }

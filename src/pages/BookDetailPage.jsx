@@ -9,12 +9,10 @@ export function Detail({ saved = [], toggle = () => {} }) {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const b = items.find((x) => x.id === id);
+  const isSaved = Array.isArray(saved) && b && saved.includes(b.id);
 
   const handleToggleSaved = () => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return;
-    }
+    if (!b || !toggle) return;
     toggle(b.id);
   };
 
@@ -78,8 +76,13 @@ export function Detail({ saved = [], toggle = () => {} }) {
         <Link className="detail-button detail-primary-cta inline-flex h-10 items-center whitespace-nowrap" to={'/read/' + b.id}>
           📖 Read PDF on EduVault
         </Link>
-        <button type="button" className="detail-button-secondary inline-flex h-10 items-center whitespace-nowrap" onClick={handleToggleSaved}>
-          {saved.includes(b.id) ? '✓ In My Library' : '＋ Save to my library'}
+        <button
+          type="button"
+          className={`detail-button-secondary inline-flex h-10 items-center whitespace-nowrap ${isSaved ? 'saved-active' : ''}`}
+          onClick={handleToggleSaved}
+          style={isSaved ? { background: '#E6F4F1', color: '#0F5E53', borderColor: '#0F5E53', fontWeight: 700 } : {}}
+        >
+          {isSaved ? '✓ In My Library' : '＋ Save to my library'}
         </button>
         <ExternalLink item={b} className="detail-button-secondary inline-flex h-10 items-center whitespace-nowrap">
           {b.source === 'NCERT' ? 'Download from NCERT ↗' : (b.source === 'Open Library' ? 'Open on Open Library ↗' : 'Read at official source ↗')}

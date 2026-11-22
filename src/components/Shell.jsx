@@ -346,139 +346,6 @@ export function Shell({ children, welcomeMsg }) {
               </div>
             </header>
 
-            {/* Slide-out Mobile Drawer */}
-            {drawerOpen && (
-              <>
-                <div className="mobile-drawer-overlay" onClick={closeDrawer} />
-                <aside className="mobile-drawer">
-                  <div className="mobile-drawer-header">
-                    <Link className="logo" to="/" onClick={closeDrawer} aria-label="EduVault Home">
-                      <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={closeDrawer}
-                      style={{
-                        background: 'transparent',
-                        border: 0,
-                        fontSize: '18px',
-                        cursor: 'pointer',
-                        color: 'var(--ink)',
-                        minHeight: '44px',
-                        minWidth: '44px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                      aria-label="Close Mobile Navigation Menu"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-                  <nav className="mobile-drawer-nav">
-                    <NavLink to="/" onClick={closeDrawer}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        <polyline points="9 22 9 12 15 12 15 22" />
-                      </svg>
-                      <span>Home</span>
-                    </NavLink>
-                    <NavLink to="/library" onClick={closeDrawer}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        <line x1="9" y1="7" x2="15" y2="7" />
-                        <line x1="9" y1="11" x2="13" y2="11" />
-                      </svg>
-                      <span>Library</span>
-                    </NavLink>
-                    <NavLink to="/videos" onClick={closeDrawer}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="3" width="20" height="18" rx="4" />
-                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
-                      </svg>
-                      <span>Videos</span>
-                    </NavLink>
-                    <NavLink to="/categories" onClick={closeDrawer}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                        <rect x="14" y="14" width="7" height="7" rx="1.5" />
-                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                      </svg>
-                      <span>Categories</span>
-                    </NavLink>
-                    <NavLink to="/saved" onClick={closeDrawer}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
-                      <span>My Library</span>
-                    </NavLink>
-
-                    {isLoggedIn ? (
-                      <>
-                        <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
-                            <img
-                              src={user.avatar}
-                              alt={user.name}
-                              className="user-avatar-img"
-                              style={{ width: '22px', height: '22px' }}
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                              <circle cx="12" cy="7" r="4" />
-                            </svg>
-                          )}
-                          <span>Account &amp; Profile ({user.name})</span>
-                        </NavLink>
-                        <button
-                          onClick={() => {
-                            logout();
-                            closeDrawer();
-                          }}
-                          style={{
-                            background: 'rgba(220, 38, 38, 0.1)',
-                            color: 'var(--error)',
-                            border: '1px solid rgba(220, 38, 38, 0.2)',
-                            padding: '12px',
-                            borderRadius: '8px',
-                            fontWeight: '700',
-                            marginTop: '12px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Sign Out
-                        </button>
-                      </>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
-                        <Link
-                          className="auth-submit-btn"
-                          to="/login"
-                          onClick={closeDrawer}
-                        >
-                          Sign In
-                        </Link>
-                        <Link
-                          className="auth-submit-btn secondary"
-                          to="/register"
-                          onClick={closeDrawer}
-                        >
-                          Create Account
-                        </Link>
-                      </div>
-                    )}
-                  </nav>
-                </aside>
-              </>
-            )}
-
             {welcomeMsg && <div className="welcome-back">{welcomeMsg}</div>}
             
             <main style={{ minHeight: 'calc(100vh - 160px)', height: 'auto', overflow: 'visible' }}>
@@ -557,7 +424,172 @@ export function Shell({ children, welcomeMsg }) {
         </div>
       )}
 
-      {/* ─── 4. GLOBAL SPOTLIGHT SEARCH MODAL OVERLAY ─── */}
+      {/* ─── 4. MOBILE NAVIGATION DRAWER (Slide-out menu for mobile & tablet) ─── */}
+      {drawerOpen && (
+        <>
+          <div className="mobile-drawer-overlay" onClick={closeDrawer} />
+          <aside className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu">
+            <div className="mobile-drawer-header">
+              <Link className="logo" to="/" onClick={closeDrawer} aria-label="EduVault Home">
+                <img src="/logo.png" alt="EduVault" className="brand-logo-img" />
+              </Link>
+              <button
+                type="button"
+                onClick={closeDrawer}
+                style={{
+                  background: 'transparent',
+                  border: 0,
+                  fontSize: '18px',
+                  cursor: 'pointer',
+                  color: 'var(--ink)',
+                  minHeight: '44px',
+                  minWidth: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label="Close Mobile Navigation Menu"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mobile-drawer-nav" role="navigation">
+              <NavLink to="/" onClick={closeDrawer}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Home</span>
+              </NavLink>
+              <NavLink to="/library" onClick={closeDrawer}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  <line x1="9" y1="7" x2="15" y2="7" />
+                  <line x1="9" y1="11" x2="13" y2="11" />
+                </svg>
+                <span>Library</span>
+              </NavLink>
+              <NavLink to="/videos" onClick={closeDrawer}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="3" width="20" height="18" rx="4" />
+                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" />
+                </svg>
+                <span>Videos</span>
+              </NavLink>
+              <NavLink to="/categories" onClick={closeDrawer}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                  <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                  <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+                <span>Categories</span>
+              </NavLink>
+              <NavLink to="/saved" onClick={closeDrawer}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>My Library</span>
+              </NavLink>
+
+              <button
+                type="button"
+                onClick={() => {
+                  closeDrawer();
+                  setSearchModalOpen(true);
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  borderRadius: 'var(--radius-md, 12px)',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  color: '#334155',
+                  background: '#F1F5F9',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  width: '100%',
+                  marginTop: '4px',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span>Search Books & Videos</span>
+              </button>
+
+              {isLoggedIn ? (
+                <>
+                  <NavLink to="/profile" onClick={closeDrawer} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {user.avatar && typeof user.avatar === 'string' && user.avatar.startsWith('http') ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="user-avatar-img"
+                        style={{ width: '22px', height: '22px' }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    )}
+                    <span>Account &amp; Profile ({user.name})</span>
+                  </NavLink>
+                  <button
+                    onClick={() => {
+                      logout();
+                      closeDrawer();
+                    }}
+                    style={{
+                      background: 'rgba(220, 38, 38, 0.1)',
+                      color: 'var(--error, #ef4444)',
+                      border: '1px solid rgba(220, 38, 38, 0.2)',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      fontWeight: '700',
+                      marginTop: '12px',
+                      cursor: 'pointer',
+                      width: '100%',
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+                  <Link
+                    className="auth-submit-btn"
+                    to="/login"
+                    onClick={closeDrawer}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    className="auth-submit-btn secondary"
+                    to="/register"
+                    onClick={closeDrawer}
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              )}
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* ─── 5. GLOBAL SPOTLIGHT SEARCH MODAL OVERLAY ─── */}
       {searchModalOpen && (
         <div className="global-search-modal-overlay" onClick={() => setSearchModalOpen(false)}>
           <div

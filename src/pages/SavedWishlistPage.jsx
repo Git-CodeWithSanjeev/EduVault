@@ -1,12 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { items } from '../data/openItems';
 import { Cards } from '../components/ResourceGrid';
 import { useVideoLearning } from '../hooks/useVideoLearning';
+import { useAuth } from '../context/AuthContext';
 import { VideoCard } from '../components/VideoCard';
 import { educationalVideos } from '../data/educationalVideos';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 
 export function SavedPage({ saved = [], toggle = () => {} }) {
+  const { isLoggedIn } = useAuth();
   const { savedVideos, bookmarkedVideos } = useVideoLearning();
 
   const savedBooksList = items.filter((x) => (Array.isArray(saved) ? saved : []).includes(x.id));
@@ -33,6 +36,29 @@ export function SavedPage({ saved = [], toggle = () => {} }) {
       <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '8px 0 20px', color: 'var(--ink)' }}>
         Saved Textbooks & Video Courses
       </h2>
+
+      {!isLoggedIn && (
+        <div
+          style={{
+            padding: '12px 16px',
+            background: '#F0FDF4',
+            border: '1px solid #BBF7D0',
+            borderRadius: '12px',
+            color: '#166534',
+            fontSize: '13px',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          <span>
+            💾 <strong>Saved Locally:</strong> Items are saved in this browser. <Link to="/register" style={{ color: '#0F5E53', fontWeight: 700, textDecoration: 'underline' }}>Create a free account</Link> or <Link to="/login" style={{ color: '#0F5E53', fontWeight: 700, textDecoration: 'underline' }}>Sign In</Link> to sync across all your devices.
+          </span>
+        </div>
+      )}
 
       {/* Saved Video Courses Section */}
       <div style={{ marginBottom: '36px' }}>

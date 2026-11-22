@@ -41,9 +41,57 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
       }}
     >
       {/* 3:4 Subject-Coded Book Cover */}
-      <Link to={'/read/' + item.id} style={{ display: 'block', textDecoration: 'none' }}>
-        <BookCover item={item} />
-      </Link>
+      <div style={{ position: 'relative' }}>
+        <Link to={'/read/' + item.id} style={{ display: 'block', textDecoration: 'none' }}>
+          <BookCover item={item} />
+        </Link>
+        {onSaveToggle && (
+          <button
+            type="button"
+            className={`card-bookmark-btn ${isSaved ? 'saved' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onSaveToggle(item.id);
+            }}
+            title={isSaved ? 'In My Library (Click to remove)' : 'Save to My Library'}
+            aria-label={isSaved ? 'In My Library' : 'Save to My Library'}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              zIndex: 3,
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: isSaved ? '#0F5E53' : 'rgba(255, 255, 255, 0.92)',
+              color: isSaved ? '#ffffff' : '#475569',
+              border: isSaved ? '1px solid #0F5E53' : '1px solid rgba(0, 0, 0, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+              backdropFilter: 'blur(4px)',
+              padding: 0,
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill={isSaved ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </button>
+        )}
+      </div>
 
       {/* Card Info */}
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: '10px' }}>

@@ -23,9 +23,6 @@ export function Cards({ list = [], saved = [], toggle, initialCount = 16, pageSi
 
   const handleSave = (id) => {
     if (toggle) toggle(id);
-    if (!isLoggedIn) {
-      navigate('/login');
-    }
   };
 
   const visibleList = list.slice(0, displayCount);
