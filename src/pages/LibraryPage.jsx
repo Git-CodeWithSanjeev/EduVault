@@ -382,69 +382,49 @@ export function Library({ saved = [], toggle = () => {} }) {
            BY CLASS TAB
       ════════════════════════════════════════════ */}
       {tab === 'class' && (
-        <div className="lib-split">
-          {/* Class Selector */}
-          <div className="lib-class-rail">
-            <div className="lib-rail-label">NCERT Classes</div>
-            {NCERT_CLASSES.map((cls) => (
-              <button
-                key={cls}
-                className={`lib-class-btn ${activeClass === cls ? 'active' : ''}`}
-                onClick={() => { setActiveClass(cls); setActiveSub('All'); }}
-              >
-                {cls}
-                <span className="lib-class-count">
-                  {Object.values(classGroup[cls] || {}).flat().length}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Books Panel */}
-          <div className="lib-books-panel">
-            {/* Active Subject Filter Badge */}
-            {activeSub !== 'All' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>Active Subject Filter:</span>
-                <span style={{
-                  padding: '6px 14px',
-                  background: 'var(--p-gradient)',
-                  color: '#ffffff',
-                  borderRadius: '20px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 2px 8px var(--p-glow)',
-                }}>
-                  {subjectIcon(activeSub)} {activeSub}
-                  <button
-                    type="button"
-                    onClick={() => setActiveSub('All')}
-                    style={{ background: 'none', border: 0, color: '#ffffff', cursor: 'pointer', padding: 0, fontSize: '13px', marginLeft: '4px' }}
-                    title="Remove filter"
-                  >
-                    ✕
-                  </button>
-                </span>
-              </div>
-            )}
-
-            <div className="lib-section-header">
-              <span>
-                {subjectIcon(activeSub !== 'All' ? activeSub : 'Science')}&nbsp;
-                <strong>{activeClass}</strong>
-                {activeSub !== 'All' && ` · ${activeSub}`}
+        <div className="lib-content">
+          {/* Active Subject Filter Badge */}
+          {activeSub !== 'All' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 600 }}>Active Subject Filter:</span>
+              <span style={{
+                padding: '6px 14px',
+                background: 'var(--p-gradient)',
+                color: '#ffffff',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 8px var(--p-glow)',
+              }}>
+                {subjectIcon(activeSub)} {activeSub}
+                <button
+                  type="button"
+                  onClick={() => setActiveSub('All')}
+                  style={{ background: 'none', border: 0, color: '#ffffff', cursor: 'pointer', padding: 0, fontSize: '13px', marginLeft: '4px' }}
+                  title="Remove filter"
+                >
+                  ✕
+                </button>
               </span>
-              <span className="lib-count-badge">{classBooks.length} books</span>
             </div>
+          )}
 
-            {classBooks.length === 0
-              ? <div className="lib-empty">No books found for this selection.</div>
-              : <Cards list={classBooks} saved={saved} toggle={toggle} />
-            }
+          <div className="lib-section-header">
+            <span>
+              {subjectIcon(activeSub !== 'All' ? activeSub : 'Science')}&nbsp;
+              <strong>{activeClass}</strong>
+              {activeSub !== 'All' && ` · ${activeSub}`}
+            </span>
+            <span className="lib-count-badge">{classBooks.length} books</span>
           </div>
+
+          {classBooks.length === 0
+            ? <div className="lib-empty">No books found for this selection.</div>
+            : <Cards list={classBooks} saved={saved} toggle={toggle} />
+          }
         </div>
       )}
 
