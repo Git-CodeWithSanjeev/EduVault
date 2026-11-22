@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookCover } from './BookCover';
+import { useAuth } from '../context/AuthContext';
+import { triggerAuthPrompt } from '../utils/authPrompt';
 
 export function BookCard({ item, isSaved, onSaveToggle, style }) {
+  const { isLoggedIn } = useAuth();
   const sourceName = item.author || item.source || 'NCERT';
   const levelText = item.level || (item.classNum ? `Class ${item.classNum}` : (item.grade ? `Class ${item.grade}` : (item.tier || 'NCERT')));
 
@@ -52,6 +55,15 @@ export function BookCard({ item, isSaved, onSaveToggle, style }) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              if (!isLoggedIn) {
+                triggerAuthPrompt({
+                  feature: 'Save to My Library',
+                  title: 'Sign In to Save Books',
+                  message: 'Please sign in or create an account to save books to your personal library and access them across all your devices.',
+                  from: window.location.pathname,
+                });
+                return;
+              }
               onSaveToggle(item.id);
             }}
             title={isSaved ? 'In My Library (Click to remove)' : 'Save to My Library'}

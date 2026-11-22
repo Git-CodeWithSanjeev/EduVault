@@ -23,6 +23,10 @@
       "destination": "/api/pdf"
     },
     {
+      "source": "/api/auth/:action",
+      "destination": "/api/auth/[action]"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

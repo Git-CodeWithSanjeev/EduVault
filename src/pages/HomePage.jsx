@@ -36,6 +36,19 @@ export function Home({ saved = [], toggle = () => { } }) {
     progress: 65,
   });
 
+  const handleSaveBook = (bookId) => {
+    if (!isLoggedIn) {
+      triggerAuthPrompt({
+        feature: 'Save to My Library',
+        title: 'Sign In to Save Books',
+        message: 'Please sign in or create an account to save books to your personal library and access them across all your devices.',
+        from: window.location.pathname,
+      });
+      return;
+    }
+    toggle(bookId);
+  };
+
   useEffect(() => {
     try {
       const storedRecent = JSON.parse(localStorage.getItem('eduvault-recent') || '[]');
@@ -279,10 +292,10 @@ export function Home({ saved = [], toggle = () => { } }) {
 
           {/* Frosted-Glass Trust Pill (Mobile: centered across full card width below actions + visual) */}
           <div className="hero-trust-pill mobile-hero-trust-pill">
-            <span style={{ color: '#eab308' }}>⭐</span>
-            <span>200+ Open Books</span>
-            <span style={{ color: '#cbd5e1' }}>•</span>
-            <span>100% Free &amp; Verified</span>
+            <span style={{ color: '#eab308', flexShrink: 0 }}>⭐</span>
+            <span style={{ flexShrink: 0 }}>200+ Open Books</span>
+            <span style={{ color: '#cbd5e1', flexShrink: 0 }}>•</span>
+            <span style={{ flexShrink: 0 }}>100% Free &amp; Verified</span>
           </div>
         </div>
       </section>
@@ -589,7 +602,7 @@ export function Home({ saved = [], toggle = () => { } }) {
                 key={b.id}
                 item={b}
                 isSaved={saved.includes(b.id)}
-                onSaveToggle={toggle}
+                onSaveToggle={handleSaveBook}
               />
             ))}
           </div>
