@@ -263,15 +263,23 @@ export function Home({ saved = [], toggle = () => { } }) {
               />
             </div>
 
-            {/* Frosted-Glass Trust Pill matching mockup */}
-            <div className="hero-trust-pill">
+            {/* Frosted-Glass Trust Pill (Desktop & Tablet) */}
+            <div className="hero-trust-pill desktop-hero-trust-pill">
               <span style={{ color: '#eab308' }}>⭐</span>
               <span>200+ Open Books</span>
-              <span className="desktop-only-trust-item" style={{ color: '#cbd5e1' }}>•</span>
-              <span className="desktop-only-trust-item">50+ Video Courses</span>
               <span style={{ color: '#cbd5e1' }}>•</span>
+              <span className="desktop-only-trust-item">50+ Video Courses</span>
+              <span className="desktop-only-trust-item" style={{ color: '#cbd5e1' }}>•</span>
               <span>100% Free &amp; Verified</span>
             </div>
+          </div>
+
+          {/* Frosted-Glass Trust Pill (Mobile: centered across full card width below actions + visual) */}
+          <div className="hero-trust-pill mobile-hero-trust-pill">
+            <span style={{ color: '#eab308' }}>⭐</span>
+            <span>200+ Open Books</span>
+            <span style={{ color: '#cbd5e1' }}>•</span>
+            <span>100% Free &amp; Verified</span>
           </div>
         </div>
       </section>
