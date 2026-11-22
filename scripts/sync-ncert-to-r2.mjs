@@ -20,6 +20,7 @@ import { execFile } from 'child_process';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import { NCERT_FULL_CHAPTER_COUNTS, ncertCatalogByClassAndSubject } from '../src/data/ncertCatalogData.js';
 
 // 1. Load environment configuration
 function loadEnv() {
@@ -43,9 +44,9 @@ function loadEnv() {
 
 loadEnv();
 
-const ACCOUNT_ID = process.env.R2_ACCOUNT_ID || '7b76226b88ca0832393d8026859c1784';
-const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID || '788feaf5e2976f085deef69a3b70148b';
-const SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY || 'b8846f6880be22cdb375ab5ccdea302805d7622b713b9fd3ddde4f93959dbb46';
+const ACCOUNT_ID = process.env.R2_ACCOUNT_ID;
+const ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID;
+const SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY;
 const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'eduvault-books';
 const R2_PUBLIC_URL = (process.env.VITE_R2_PUBLIC_URL || 'https://pub-54ce43e6ab02460299838f807b567083.r2.dev').replace(/\/+$/, '');
 
@@ -97,89 +98,91 @@ async function uploadToR2(key, fileBufferOrPath, contentType = 'application/pdf'
   return `${R2_PUBLIC_URL}/${key}`;
 }
 
-/** Single chapter downloader with robust curl and https fallback */
+/** Check if a PDF file is completely and correctly downloaded */
+function isPdfComplete(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) return false;
+    const stat = fs.statSync(filePath);
+    if (stat.size < 5000) return false;
+
+    // Check %PDF header
+    const fd = fs.openSync(filePath, 'r');
+    const header = Buffer.alloc(5);
+    fs.readSync(fd, header, 0, 5, 0);
+    if (header.toString('utf8') !== '%PDF-') {
+      fs.closeSync(fd);
+      return false;
+    }
+
+    // Check for %%EOF in the last 2048 bytes
+    const tailSize = Math.min(2048, stat.size);
+    const tail = Buffer.alloc(tailSize);
+    fs.readSync(fd, tail, 0, tailSize, stat.size - tailSize);
+    fs.closeSync(fd);
+    return tail.toString('latin1').includes('%%EOF');
+  } catch {
+    return false;
+  }
+}
+
+/** Check if the response was actually an HTML error page (e.g. 404) */
+function isHtml404(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) return false;
+    const buf = Buffer.alloc(512);
+    const fd = fs.openSync(filePath, 'r');
+    const bytesRead = fs.readSync(fd, buf, 0, 512, 0);
+    fs.closeSync(fd);
+    const text = buf.toString('utf8', 0, bytesRead).toLowerCase();
+    return text.includes('404') || text.includes('not found') || text.includes('<!doctype') || text.includes('<html');
+  } catch {
+    return false;
+  }
+}
+
+/** Single chapter downloader with resume (-C -) and Schannel tolerance */
 function downloadFileOnce(url, destPath) {
   return new Promise((resolve, reject) => {
-    // 1. Try curl.exe which reliably negotiates TLS with ncert.nic.in without hanging
+    // If already complete, return immediately
+    if (isPdfComplete(destPath)) {
+      return resolve(fs.statSync(destPath).size);
+    }
+
+    // Try curl.exe with byte-range resume (-C -) and TLS tolerance
     execFile('curl.exe', [
-      '-k', '-s', '-L',
+      '-k', '-s', '-S', '-L',
+      '-C', '-',
+      '--retry', '3',
+      '--retry-delay', '2',
+      '--ssl-no-revoke',
+      '--connect-timeout', '20',
+      '--max-time', '90',
       '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       '-e', 'https://ncert.nic.in/textbook.php',
-      '--max-time', '45',
       '-o', destPath,
       url,
     ], (curlErr) => {
-      if (!curlErr && fs.existsSync(destPath)) {
-        const sz = fs.statSync(destPath).size;
-        if (sz > 2000) {
-          return resolve(sz);
-        }
-        // Check if returned an HTML 404 page
-        try {
-          const content = fs.readFileSync(destPath, 'utf8').slice(0, 200);
-          if (content.includes('404') || content.includes('Not Found') || content.includes('<!DOCTYPE')) {
-            fs.unlinkSync(destPath);
-            return reject(new Error('HTTP 404 Not Found'));
-          }
-        } catch (_) {}
+      // Check if file is an HTML 404 error page
+      if (isHtml404(destPath)) {
         try { fs.unlinkSync(destPath); } catch {}
+        return reject(new Error('HTTP 404 Not Found'));
       }
 
-      // 2. Fallback to Node https stream
-      const file = fs.createWriteStream(destPath);
-      const req = https.get(url, {
-        rejectUnauthorized: false,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Referer': 'https://ncert.nic.in/textbook.php',
-          'Accept': 'application/pdf,*/*',
-        },
-      }, (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          file.close();
-          try { fs.unlinkSync(destPath); } catch {}
-          return downloadFileOnce(res.headers.location, destPath).then(resolve).catch(reject);
-        }
-        if (res.statusCode === 404) {
-          file.close();
-          try { fs.unlinkSync(destPath); } catch {}
-          return reject(new Error('HTTP 404 Not Found'));
-        }
-        if (res.statusCode !== 200) {
-          file.close();
-          try { fs.unlinkSync(destPath); } catch {}
-          return reject(new Error(`HTTP ${res.statusCode}`));
-        }
-        res.pipe(file);
-        file.on('finish', () => {
-          file.close(() => {
-            const sz = fs.existsSync(destPath) ? fs.statSync(destPath).size : 0;
-            if (sz < 2000) {
-              try { fs.unlinkSync(destPath); } catch {}
-              return reject(new Error('Downloaded file too small / invalid'));
-            }
-            resolve(sz);
-          });
-        });
-        file.on('error', (err) => {
-          file.close();
-          try { fs.unlinkSync(destPath); } catch {}
-          reject(err);
-        });
-      });
+      // Check if PDF completed successfully (even if curl exited with Schannel 56 error)
+      if (isPdfComplete(destPath)) {
+        return resolve(fs.statSync(destPath).size);
+      }
 
-      req.on('error', (err) => {
-        file.close();
-        try { fs.unlinkSync(destPath); } catch {}
-        reject(err);
-      });
+      if (curlErr) {
+        return reject(new Error(`curl error: ${curlErr.message}`));
+      }
 
-      req.setTimeout(40000, () => {
-        req.destroy();
-        file.close();
-        try { fs.unlinkSync(destPath); } catch {}
-        reject(new Error('Connection timed out'));
-      });
+      const sz = fs.existsSync(destPath) ? fs.statSync(destPath).size : 0;
+      if (sz > 5000) {
+        return resolve(sz);
+      }
+
+      reject(new Error('Downloaded file too small or incomplete'));
     });
   });
 }
@@ -225,7 +228,7 @@ async function downloadChapterWithRetry(url, destPath, maxAttempts = 4) {
 /** Sync one NCERT book code to Cloudflare R2 */
 async function syncBook(code, customMaxChapters) {
   const cleanCode = code.toLowerCase().trim();
-  const maxChapters = customMaxChapters || KNOWN_CHAPTER_COUNTS[cleanCode] || 10;
+  const maxChapters = customMaxChapters || NCERT_FULL_CHAPTER_COUNTS[cleanCode] || KNOWN_CHAPTER_COUNTS[cleanCode] || 10;
   const storageDir = path.resolve(process.cwd(), 'storage', 'ncert', cleanCode);
   fs.mkdirSync(storageDir, { recursive: true });
 
@@ -382,6 +385,10 @@ async function listR2Status() {
 // Priority NCERT books across Class 1, 10, 11, 12
 const PRIORITY_BOOKS = [
   'aemr1', // Class 1 English (Mridang)
+  'aejm1', // Class 1 Mathematics (Joyful Mathematics)
+  'ahsr1', // Class 1 Hindi (Sarangi)
+  'jesc1', // Class 10 Science
+  'jemh1', // Class 10 Mathematics
   'leph1', // Class 12 Physics Part 1
   'leph2', // Class 12 Physics Part 2
   'lech1', // Class 12 Chemistry Part 1
@@ -395,9 +402,10 @@ const PRIORITY_BOOKS = [
 ];
 
 async function main() {
-  const arg = process.argv[2];
+  const args = process.argv.slice(2);
+  const firstArg = args[0];
 
-  if (!arg || arg === '--help' || arg === '-h') {
+  if (!firstArg || firstArg === '--help' || firstArg === '-h') {
     console.log(`
 EduVault Automated Cloudflare R2 Storage Sync
 ==============================================
@@ -406,35 +414,92 @@ Account ID:       ${ACCOUNT_ID}
 Public CDN:       ${R2_PUBLIC_URL}
 
 Commands:
-  node scripts/sync-ncert-to-r2.mjs <bookCode>     Sync chapters for a specific book (e.g. aemr1, leph1)
-  node scripts/sync-ncert-to-r2.mjs --upload-local Upload all chapters currently in storage/ncert/
-  node scripts/sync-ncert-to-r2.mjs --status       List all live chapters stored in Cloudflare R2
+  node scripts/sync-ncert-to-r2.mjs <code...>      Sync chapters for one or more books (e.g. aemr1 aejm1 leph1)
+  node scripts/sync-ncert-to-r2.mjs --class <1-12> Sync all NCERT books for a specific class
   node scripts/sync-ncert-to-r2.mjs --priority     Sync high-demand Class 1, 10, 11, 12 NCERT books
+  node scripts/sync-ncert-to-r2.mjs --all          Sync ALL 113 NCERT books in the catalog to R2
+  node scripts/sync-ncert-to-r2.mjs --upload-local Upload any chapters already cached in storage/ncert/
+  node scripts/sync-ncert-to-r2.mjs --status       List all live chapters stored in Cloudflare R2
 `);
     return;
   }
 
-  if (arg === '--status') {
+  if (firstArg === '--status') {
     await listR2Status();
     return;
   }
 
-  if (arg === '--upload-local') {
+  if (firstArg === '--upload-local') {
     await uploadAllLocal();
     return;
   }
 
-  if (arg === '--priority') {
+  if (firstArg === '--class') {
+    const classNum = parseInt(args[1], 10);
+    const classData = ncertCatalogByClassAndSubject[classNum];
+    if (!classData) {
+      console.error(`Invalid class: ${args[1]}. Must be a number 1-12.`);
+      return;
+    }
+    const bookCodes = [];
+    for (const [subject, books] of Object.entries(classData)) {
+      for (const b of books) {
+        if (b.code && !bookCodes.includes(b.code)) bookCodes.push(b.code);
+      }
+    }
+    console.log(`\n📚 Syncing Class ${classNum} NCERT Books (${bookCodes.length} books): ${bookCodes.join(', ')}...`);
+    for (const code of bookCodes) {
+      try {
+        await syncBook(code);
+      } catch (err) {
+        console.warn(`[Skip Warning] Could not finish ${code}:`, err.message);
+      }
+    }
+    console.log(`\n🌟 Class ${classNum} sync complete!`);
+    return;
+  }
+
+  if (firstArg === '--priority') {
     console.log(`\n📚 Syncing Priority NCERT Catalog (${PRIORITY_BOOKS.length} books)...`);
     for (const code of PRIORITY_BOOKS) {
-      await syncBook(code);
+      try {
+        await syncBook(code);
+      } catch (err) {
+        console.warn(`[Skip Warning] Could not finish ${code}:`, err.message);
+      }
     }
     console.log('\n🌟 All priority books synced to Cloudflare R2!');
     return;
   }
 
-  // Single book sync
-  await syncBook(arg);
+  if (firstArg === '--all') {
+    const allCodes = Object.keys(NCERT_FULL_CHAPTER_COUNTS);
+    console.log(`\n🌍 Starting Complete NCERT Sync for ALL ${allCodes.length} Books to Cloudflare R2...`);
+    let idx = 0;
+    for (const code of allCodes) {
+      idx++;
+      console.log(`\n------------------------------------------------------------`);
+      console.log(`[${idx}/${allCodes.length}] Processing Book Code: ${code.toUpperCase()}`);
+      console.log(`------------------------------------------------------------`);
+      try {
+        await syncBook(code);
+      } catch (err) {
+        console.warn(`[Skip Warning] Could not finish ${code}:`, err.message);
+      }
+    }
+    console.log('\n🌟 Complete NCERT Catalog sync finished!');
+    return;
+  }
+
+  // Multi or single book sync
+  for (const code of args) {
+    if (code.startsWith('-')) continue;
+    try {
+      await syncBook(code);
+    } catch (err) {
+      console.warn(`[Skip Warning] Could not finish ${code}:`, err.message);
+    }
+  }
 }
 
 main().catch((err) => {

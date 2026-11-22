@@ -10,8 +10,8 @@ export { BookCover } from './BookCover';
 export { Cards, Cards as ResourceGrid, ExternalLink } from './ResourceGrid';
 
 // PDF Reader Components
-export { PDFReader } from './PDFReader';
-export { AdobePDFViewer, DownloadPDFButton } from './AdobePDFViewer';
+export { PDFReader, DownloadPDFButton } from './PDFReader';
+export { EmbedPdfViewer } from './EmbedPdfViewer';
 
 // Video Learning Components
 export { VideoCard } from './VideoCard';

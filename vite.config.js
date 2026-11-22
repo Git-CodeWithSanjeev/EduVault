@@ -43,7 +43,7 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       hostname: parsed.hostname,
       port: parsed.port || (isHttps ? 443 : 80),
       path: parsed.pathname + parsed.search,
-      method: 'GET',
+      method: req.method === 'HEAD' ? 'HEAD' : 'GET',
       rejectUnauthorized: false,
       agent: isHttps ? httpsAgent : undefined,
       headers: headers,
@@ -77,7 +77,8 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       const responseHeaders = {
         'Content-Type': proxyRes.headers['content-type'] || 'application/pdf',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type, Accept, Authorization',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type, Accept, Authorization, X-Requested-With',
         'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
         'Accept-Ranges': 'bytes',
         'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
@@ -91,6 +92,10 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
       }
 
       res.writeHead(proxyRes.statusCode || 200, responseHeaders);
+      if (req.method === 'HEAD') {
+        proxyRes.resume();
+        return res.end();
+      }
       proxyRes.pipe(res);
     });
 
@@ -134,6 +139,16 @@ function authAndPdfDevPlugin() {
       server.middlewares.use(async (req, res, next) => {
         // Handle PDF Proxy
         if (req.url.startsWith('/api/proxy') || req.url.startsWith('/pdf/proxy') || req.url.startsWith('/api/pdf')) {
+          if (req.method === 'OPTIONS') {
+            res.writeHead(200, {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+              'Access-Control-Allow-Headers': 'Range, Accept-Ranges, Content-Type, Accept, Authorization, X-Requested-With',
+              'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
+            });
+            return res.end();
+          }
+
           const rawUrl = req.url.split('?')[1] || '';
           const urlParams = new URLSearchParams(rawUrl);
           const targetUrl = urlParams.get('url');

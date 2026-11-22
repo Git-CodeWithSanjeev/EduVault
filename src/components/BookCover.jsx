@@ -6,17 +6,18 @@ export function BookCover({ item }) {
 
   // If a valid external cover image exists and is not ncert.nic.in
   const hasValidExternalCover = item.coverUrl && !item.coverUrl.includes('ncert.nic.in') && !imgError;
+  const isOpenStax = item.source === 'OpenStax' || (item.coverUrl && item.coverUrl.includes('openstax.org'));
 
   if (hasValidExternalCover) {
     return (
       <div
         style={{
           width: '100%',
-          aspectRatio: '3 / 4',
+          aspectRatio: isOpenStax ? '1 / 1' : '3 / 4',
           borderRadius: '12px',
           overflow: 'hidden',
           position: 'relative',
-          background: '#0f172a',
+          background: isOpenStax ? '#f8fafc' : '#0f172a',
           boxShadow: '0 4px 14px rgba(0,0,0,0.08)',
         }}
       >
@@ -30,22 +31,24 @@ export function BookCover({ item }) {
             position: 'relative',
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
+            objectFit: isOpenStax ? 'contain' : 'cover',
             zIndex: 1,
           }}
         />
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: '8px',
-            background: 'linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(255,255,255,0.15) 50%, transparent 100%)',
-            zIndex: 3,
-            pointerEvents: 'none',
-          }}
-        />
+        {!isOpenStax && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '8px',
+              background: 'linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(255,255,255,0.15) 50%, transparent 100%)',
+              zIndex: 3,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </div>
     );
   }

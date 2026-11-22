@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { educationalVideos, getPlaylistLessons, getVideoId } from '../data/educationalVideos';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 import { items } from '../data/openItems';
@@ -12,7 +12,9 @@ import { ToastNotification } from '../components/FormElements';
 export function VideoTheater() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoggedIn } = useAuth();
+  const iframeRef = useRef(null);
 
   const {
     isLessonCompleted,
@@ -30,11 +32,11 @@ export function VideoTheater() {
 
   const vid = useMemo(() => {
     if (!id) return null;
-    const foundStatic = educationalVideos.find((v) => v.id === id || v.videoId === id || v.playlistId === id);
-    if (foundStatic) return foundStatic;
-
     const foundGallery = educationalGalleryData.find((v) => v.id === id || v.videoId === id || v.playlistId === id);
     if (foundGallery) return foundGallery;
+
+    const foundStatic = educationalVideos.find((v) => v.id === id || v.videoId === id || v.playlistId === id);
+    if (foundStatic) return foundStatic;
 
     return {
       id: id,
@@ -59,7 +61,18 @@ export function VideoTheater() {
   const [playbackSpeed, setPlaybackSpeed] = useState('1');
   const [toastMessage, setToastMessage] = useState('');
   const [isAccordionOpen, setIsAccordionOpen] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Send commands to YouTube iframe via postMessage
+  const sendPlayerCommand = (func, args = []) => {
+    try {
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({ event: 'command', func, args }),
+          '*'
+        );
+      }
+    } catch (_) {}
+  };
 
   // Determine playlistId safely
   const playlistId = useMemo(() => {
@@ -156,14 +169,6 @@ export function VideoTheater() {
     ? `https://i.ytimg.com/vi/${targetVidId}/hqdefault.jpg`
     : vid.thumbnail || `https://i.ytimg.com/vi/7X8M8zUe-fI/hqdefault.jpg`;
 
-  const activeEmbedUrl = playlistId
-    ? (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
-      ? `https://www.youtube-nocookie.com/embed/${targetVidId}?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
-      : `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`)
-    : (targetVidId && targetVidId.length === 11 && !targetVidId.startsWith('PL')
-      ? `https://www.youtube-nocookie.com/embed/${targetVidId}?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1${startTimestamp ? `&start=${startTimestamp}` : ''}`
-      : `https://www.youtube-nocookie.com/embed/7X8M8zUe-fI?autoplay=${isPlaying ? 1 : 0}&playsinline=1&rel=0&enablejsapi=1`);
-
   // Course Progress calculation
   const totalLessonsCount = lessons.length;
   const progressPercent = getCourseProgress(vid.id || primaryVidId, totalLessonsCount);
@@ -178,7 +183,6 @@ export function VideoTheater() {
     if (activeLessonIdx > 0) {
       setActiveLessonIdx(activeLessonIdx - 1);
       setStartTimestamp(0);
-      setIsPlaying(false);
     }
   };
 
@@ -186,15 +190,22 @@ export function VideoTheater() {
     if (activeLessonIdx < lessons.length - 1) {
       setActiveLessonIdx(activeLessonIdx + 1);
       setStartTimestamp(0);
-      setIsPlaying(false);
     }
   };
 
-  // Timestamp Seeking
+  // Timestamp Seeking with YouTube Player API integration
   const handleSeekChapter = (seconds) => {
     setStartTimestamp(seconds);
-    setIsPlaying(true);
-    showToast(`Jumped to chapter timestamp (${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')})`);
+    sendPlayerCommand('seekTo', [seconds, true]);
+    sendPlayerCommand('playVideo', []);
+    showToast(`Jumped to ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`);
+  };
+
+  // Playback Speed control with YouTube Player API integration
+  const handleSetSpeed = (speed) => {
+    setPlaybackSpeed(speed);
+    sendPlayerCommand('setPlaybackRate', [parseFloat(speed)]);
+    showToast(`Playback speed set to ${speed}x`);
   };
 
   // Share link
@@ -236,80 +247,45 @@ export function VideoTheater() {
         {/* Main Learning Area */}
         <div className="learning-main">
           {/* Responsive 16:9 Video Player */}
-          <div className="player-wrapper">
+          <div className="player-wrapper" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#0f172a', borderRadius: '12px', overflow: 'hidden' }}>
             {isLoadingApi ? (
-              <div className="skeleton" style={{ width: '100%', height: '100%' }} />
+              <div className="skeleton" style={{ position: 'absolute', inset: 0 }} />
             ) : hasPlayerError ? (
-              <div style={{ padding: '40px 20px', textAlign: 'center', color: '#ffffff', background: '#0f172a', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ position: 'absolute', inset: 0, padding: '40px 20px', textAlign: 'center', color: '#ffffff', background: '#0f172a', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <p style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>⚠️ Unable to load video embed</p>
-                <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>The video source may be restricted or offline.</p>
-                <button
-                  type="button"
-                  className="action-btn active"
-                  onClick={() => setHasPlayerError(false)}
-                >
-                  🔄 Retry Loading Video
-                </button>
+                <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>The video source may be restricted on this network or browser.</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    type="button"
+                    className="action-btn active"
+                    onClick={() => setHasPlayerError(false)}
+                  >
+                    🔄 Retry Loading Video
+                  </button>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${targetVidId}${playlistId ? `&list=${playlistId}` : ''}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="action-btn"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    ▶ Watch on YouTube
+                  </a>
+                </div>
               </div>
             ) : (
-              <>
-                {!isPlaying && (
-                  <div
-                    onClick={() => setIsPlaying(true)}
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: `#0f172a url(${posterBg}) center/cover no-repeat`,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      zIndex: 20,
-                    }}
-                  >
-                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(2px)' }} />
-
-                    <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '16px' }}>
-                      <div style={{
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '50%',
-                        background: 'var(--p-gradient)',
-                        color: '#ffffff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '24px',
-                        margin: '0 auto 12px',
-                        boxShadow: '0 8px 24px var(--p-glow)',
-                      }}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                          <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                      </div>
-                      <p style={{ color: '#ffffff', fontSize: '15px', fontWeight: 800, margin: '0 0 4px', textShadow: '0 2px 4px rgba(0,0,0,0.6)' }}>
-                        Tap to Play Video
-                      </p>
-                      <span style={{ color: '#e2e8f0', fontSize: '12px', fontWeight: 600 }}>
-                        {activeLesson.title || courseTitle}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                <iframe
-                  key={`${vid.id}-${targetVidId}-${activeLessonIdx}-${startTimestamp}-${isPlaying}`}
-                  src={activeEmbedUrl}
-                  title={activeLesson.title || courseTitle}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  onError={() => setHasPlayerError(true)}
-                />
-              </>
+              <iframe
+                ref={iframeRef}
+                key={`${vid.id}-${targetVidId}`}
+                src={`https://www.youtube-nocookie.com/embed/${targetVidId}?enablejsapi=1&playsinline=1&rel=0${playlistId ? `&list=${playlistId}` : ''}${startTimestamp ? `&start=${startTimestamp}` : ''}`}
+                title={activeLesson.title || courseTitle}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                onError={() => setHasPlayerError(true)}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+              />
             )}
           </div>
-
-
 
           {/* Interactive Player Quick Controls */}
           <div className="player-speed-bar">
@@ -319,10 +295,7 @@ export function VideoTheater() {
                 <button
                   key={speed}
                   type="button"
-                  onClick={() => {
-                    setPlaybackSpeed(speed);
-                    showToast(`Speed set to ${speed}x`);
-                  }}
+                  onClick={() => handleSetSpeed(speed)}
                   style={{
                     minWidth: '42px',
                     height: '28px',
@@ -497,6 +470,20 @@ export function VideoTheater() {
               </svg>
               <span>Share</span>
             </button>
+
+            <a
+              href={`https://www.youtube.com/watch?v=${targetVidId}${playlistId ? `&list=${playlistId}` : ''}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="action-btn"
+              style={{ textDecoration: 'none' }}
+              title="Open video directly on YouTube"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '6px', color: '#ef4444' }}>
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+              <span>YouTube</span>
+            </a>
           </div>
 
           {/* Video Metadata Information */}

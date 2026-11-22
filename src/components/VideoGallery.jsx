@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { VideoCard } from './VideoCard';
 import { educationalGalleryData } from '../data/educationalGalleryData';
 import { items as allPlatformBooks } from '../data/openItems';
-import { getStoredYouTubeApiKey, setStoredYouTubeApiKey, testYouTubeApiKey } from '../services/youtubeApi';
 
 // Clean SVG Icon Component matching website UI theme
 function ThemeIcon({ name, size = 16, color = 'currentColor', style = {} }) {

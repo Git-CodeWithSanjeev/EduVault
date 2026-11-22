@@ -142,67 +142,78 @@ export const NCERT_CHAPTER_NAMES = {
   ],
 };
 
-/** Generate the list of chapter PDF URLs for an NCERT book */
+const CLOUD_R2_BASE = (import.meta.env.VITE_R2_PUBLIC_URL || 'https://pub-54ce43e6ab02460299838f807b567083.r2.dev').replace(/\/+$/, '');
+
+/** Generate the list of chapter PDF URLs mapped directly to Cloudflare R2 */
 export function getChapterPdfUrls(book) {
   if (!book) return [];
 
-  const R2_BASE = (import.meta.env.VITE_R2_PUBLIC_URL || '').replace(/\/+$/, '');
+  const R2_BASE = CLOUD_R2_BASE;
 
   // 1. If book already has real structured chapters
   if (Array.isArray(book.chapters) && book.chapters.length > 0) {
-    return book.chapters.map((ch) => ({
-      ...ch,
-      cloudUrl: ch.cloudUrl || (R2_BASE && ch.pdfUrl ? `${R2_BASE}/ncert/${book.code || ''}/${ch.pdfUrl.split('/').pop()}` : null),
-      proxyUrl: proxyUrl(ch.pdfUrl),
-    }));
+    return book.chapters.map((ch) => {
+      const fileName = ch.pdfUrl ? ch.pdfUrl.split('/').pop() : `${ch.id}.pdf`;
+      const cloudUrl = ch.cloudUrl || `${R2_BASE}/ncert/${book.code || ''}/${fileName}`;
+      return {
+        ...ch,
+        pdfUrl: proxyUrl(cloudUrl),
+        cloudUrl: cloudUrl,
+        proxyUrl: proxyUrl(cloudUrl),
+      };
+    });
   }
 
-  // 2. Otherwise derive from NCERT zip or code
+  // 2. Derive from NCERT code mapped directly to Cloudflare R2
   if (book.source === 'NCERT' && (book.url || book.code)) {
     const match = book.url ? book.url.match(/\/pdf\/([a-z0-9]+)dd\.zip/i) : null;
     const code = match ? match[1].toLowerCase() : (book.code ? book.code.toLowerCase() : null);
 
     if (code) {
-      const allCounts = { ...NCERT_CHAPTER_COUNTS, ...NCERT_FULL_CHAPTER_COUNTS };
-      const allNames = { ...NCERT_CHAPTER_NAMES, ...NCERT_FULL_CHAPTER_NAMES };
+      const allCounts = { ...NCERT_FULL_CHAPTER_COUNTS, ...NCERT_CHAPTER_COUNTS };
+      const allNames = { ...NCERT_FULL_CHAPTER_NAMES, ...NCERT_CHAPTER_NAMES };
       const count = allCounts[code] || (allNames[code]?.length) || 6;
       const namesList = allNames[code] || [];
+      const prelimUrl = `${R2_BASE}/ncert/${code}/${code}ps.pdf`;
       const list = [
         {
           id: 'ps',
           name: '0. Prelims & Index',
-          pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}ps.pdf`,
-          cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}ps.pdf` : null,
-          proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}ps.pdf`),
+          pdfUrl: proxyUrl(prelimUrl),
+          cloudUrl: prelimUrl,
+          proxyUrl: proxyUrl(prelimUrl),
         },
       ];
 
       for (let i = 1; i <= count; i++) {
         const numStr = String(i).padStart(2, '0');
         const chapterTitle = namesList[i - 1] ? `${i}. ${namesList[i - 1]}` : `${i}. Chapter ${i}`;
+        const chapterUrl = `${R2_BASE}/ncert/${code}/${code}${numStr}.pdf`;
         list.push({
           id: numStr,
           name: chapterTitle,
-          pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`,
-          cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}${numStr}.pdf` : null,
-          proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}${numStr}.pdf`),
+          pdfUrl: proxyUrl(chapterUrl),
+          cloudUrl: chapterUrl,
+          proxyUrl: proxyUrl(chapterUrl),
         });
       }
 
+      const answerUrl = `${R2_BASE}/ncert/${code}/${code}an.pdf`;
       list.push({
         id: 'an',
         name: `${count + 1}. Answers & Solutions`,
-        pdfUrl: `https://ncert.nic.in/textbook/pdf/${code}an.pdf`,
-        cloudUrl: R2_BASE ? `${R2_BASE}/ncert/${code}/${code}an.pdf` : null,
-        proxyUrl: proxyUrl(`https://ncert.nic.in/textbook/pdf/${code}an.pdf`),
+        pdfUrl: proxyUrl(answerUrl),
+        cloudUrl: answerUrl,
+        proxyUrl: proxyUrl(answerUrl),
       });
 
       return list;
     }
   }
 
+  const fallbackUrl = book.cloudUrl || book.pdfUrl || book.url;
   return [
-    { id: 'full', name: `${book.title} (Full PDF)`, pdfUrl: book.pdfUrl || book.url },
+    { id: 'full', name: `${book.title} (Full PDF)`, pdfUrl: proxyUrl(fallbackUrl), cloudUrl: fallbackUrl, proxyUrl: proxyUrl(fallbackUrl) },
   ];
 }
 
@@ -215,6 +226,10 @@ export function proxyUrl(originalUrl) {
     originalUrl.startsWith('/api/proxy') ||
     originalUrl.startsWith('/pdf/proxy')
   ) {
+    return originalUrl;
+  }
+  // Relative or blob URLs don't need proxying
+  if (originalUrl.startsWith('blob:') || originalUrl.startsWith('data:') || originalUrl.startsWith('/')) {
     return originalUrl;
   }
   return `${PROXY_BASE}?url=${encodeURIComponent(originalUrl)}`;
