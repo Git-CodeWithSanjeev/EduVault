@@ -183,36 +183,19 @@ export function Library({ saved = [], toggle = () => {} }) {
           {items.length}+ verified free textbooks · NCERT · OpenStax · Open License
         </p>
 
-        {/* Integrated Filter Bar */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '720px', margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            {/* Filter Button */}
-            {(currentSubjectList.length > 1 || tab === 'class') && (
+        {/* Integrated Toolbar: Filter Button on Left, Circled Source Tabs to the Right */}
+        <div className="lib-toolbar-strip">
+          {/* 1. Filter Button & Clear Button */}
+          {(currentSubjectList.length > 1 || tab === 'class') && (
+            <div className="lib-filter-btn-group">
               <button
                 type="button"
                 onClick={() => setLibFilterOpen(!libFilterOpen)}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  height: '42px',
-                  padding: '0 20px',
-                  background: (currentActiveSub !== 'All' || tab === 'class') ? 'var(--p-gradient)' : '#e6f7f3',
-                  color: (currentActiveSub !== 'All' || tab === 'class') ? '#ffffff' : 'var(--p-dark)',
-                  border: (currentActiveSub !== 'All' || tab === 'class') ? '1px solid rgba(255,255,255,0.2)' : '1.5px solid rgba(13, 148, 136, 0.25)',
-                  borderRadius: '20px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  boxShadow: (currentActiveSub !== 'All' || tab === 'class') ? '0 4px 14px var(--p-glow)' : '0 2px 8px rgba(13, 148, 136, 0.05)',
-                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                  whiteSpace: 'nowrap',
-                  boxSizing: 'border-box',
-                }}
+                className={`lib-filter-pill-btn ${(currentActiveSub !== 'All' || tab === 'class') ? 'active' : ''}`}
                 aria-expanded={libFilterOpen}
                 aria-label="Filter options dropdown"
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                 </svg>
                 <span>
@@ -220,58 +203,50 @@ export function Library({ saved = [], toggle = () => {} }) {
                     ? (currentActiveSub === 'All' ? `Filter (${activeClass})` : `${activeClass} · ${currentActiveSub}`)
                     : (currentActiveSub === 'All' ? 'Filter Subjects' : currentActiveSub)}
                 </span>
-                <span style={{ fontSize: '10px', opacity: 0.8 }}>{libFilterOpen ? '▲' : '▼'}</span>
+                <span style={{ fontSize: '9px', opacity: 0.8, marginLeft: '2px' }}>{libFilterOpen ? '▲' : '▼'}</span>
               </button>
-            )}
 
-            {/* Clear Filter button if a subject is active */}
-            {currentActiveSub !== 'All' && (
-              <button
-                type="button"
-                onClick={handleClearSubject}
-                style={{
-                  height: '42px',
-                  padding: '0 14px',
-                  background: '#ffffff',
-                  border: '1.5px solid rgba(13, 148, 136, 0.22)',
-                  borderRadius: '20px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: 'var(--muted)',
-                  cursor: 'pointer',
-                  boxSizing: 'border-box',
-                }}
-                title="Reset active subject"
-              >
-                ✕ Clear
+              {/* Clear Filter button if a subject is active */}
+              {currentActiveSub !== 'All' && (
+                <button
+                  type="button"
+                  onClick={handleClearSubject}
+                  className="lib-filter-clear-btn"
+                  title="Reset active subject"
+                >
+                  ✕ Clear
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* 2. Circled Options: Source Tabs placed directly to the right of the Filter button */}
+          {!q && (
+            <div className="lib-tabs">
+              <button className={`lib-tab ${tab === 'class' ? 'active' : ''}`} onClick={() => setTab('class')}>
+                By Class (NCERT)
               </button>
-            )}
-          </div>
+              <button className={`lib-tab ${tab === 'openstax' ? 'active' : ''}`} onClick={() => setTab('openstax')}>
+                OpenStax College
+              </button>
+              <button className={`lib-tab ${tab === 'openlib' ? 'active' : ''}`} onClick={() => setTab('openlib')}>
+                🌐 Open Library
+              </button>
+              <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
+                By Category
+              </button>
+            </div>
+          )}
+        </div>
 
-          {/* Floating Dropdown Filter Options Popover */}
-          {!q && libFilterOpen && (
-            <>
-              <div
-                onClick={() => setLibFilterOpen(false)}
-                style={{ position: 'fixed', inset: 0, zIndex: 190 }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  left: 0,
-                  background: '#ffffff',
-                  borderRadius: '16px',
-                  padding: '16px',
-                  boxShadow: '0 16px 40px rgba(13, 148, 136, 0.14), 0 2px 8px rgba(0,0,0,0.04)',
-                  border: '1px solid rgba(13, 148, 136, 0.18)',
-                  zIndex: 200,
-                  textAlign: 'left',
-                  maxHeight: '80vh',
-                  overflowY: 'auto',
-                }}
-              >
+        {/* Floating Dropdown Filter Options Popover */}
+        {!q && libFilterOpen && (
+          <div className="lib-filter-popover-wrapper">
+            <div
+              onClick={() => setLibFilterOpen(false)}
+              style={{ position: 'fixed', inset: 0, zIndex: 190 }}
+            />
+            <div className="lib-filter-popover-panel">
                 {/* 1. FILTER BY CLASS SECTION (NCERT) */}
                 {tab === 'class' && (
                   <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(13, 148, 136, 0.12)' }}>
@@ -383,28 +358,9 @@ export function Library({ saved = [], toggle = () => {} }) {
                   })}
                 </div>
               </div>
-            </>
+            </div>
           )}
-        </div>
       </div>
-
-      {/* ── Tab Switcher ── */}
-      {!q && (
-        <div className="lib-tabs">
-          <button className={`lib-tab ${tab === 'class' ? 'active' : ''}`} onClick={() => setTab('class')}>
-            By Class (NCERT)
-          </button>
-          <button className={`lib-tab ${tab === 'openstax' ? 'active' : ''}`} onClick={() => setTab('openstax')}>
-            OpenStax College
-          </button>
-          <button className={`lib-tab ${tab === 'openlib' ? 'active' : ''}`} onClick={() => setTab('openlib')}>
-            🌐 Open Library
-          </button>
-          <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
-            By Category
-          </button>
-        </div>
-      )}
 
       {/* ════════════════════════════════════════════
            SEARCH RESULTS
