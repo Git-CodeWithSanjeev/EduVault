@@ -20,6 +20,16 @@ export function Library({ saved = [], toggle = () => {} }) {
   const [openlibLoading, setOpenlibLoading] = useState(false);
   const [openlibSearchActive, setOpenlibSearchActive] = useState(false);
   const [visibleCount, setVisibleCount] = useState(16);
+  const [tabDropdownOpen, setTabDropdownOpen] = useState(false);
+
+  const TAB_OPTIONS = [
+    { id: 'class', label: 'By Class (NCERT)', icon: '📚' },
+    { id: 'openstax', label: 'OpenStax College', icon: '🎓' },
+    { id: 'openlib', label: 'Open Library', icon: '🌐' },
+    { id: 'category', label: 'By Category', icon: '🗂️' },
+  ];
+
+  const currentTabObj = TAB_OPTIONS.find((t) => t.id === tab) || TAB_OPTIONS[0];
 
   useEffect(() => {
     sessionStorage.setItem('eduvault_lib_tab', tab);
@@ -220,21 +230,58 @@ export function Library({ saved = [], toggle = () => {} }) {
             </div>
           )}
 
-          {/* 2. Circled Options: Source Tabs placed directly to the right of the Filter button */}
+          {/* 2. Circled Options: Combined into One Sleek Dropdown */}
           {!q && (
-            <div className="lib-tabs">
-              <button className={`lib-tab ${tab === 'class' ? 'active' : ''}`} onClick={() => setTab('class')}>
-                By Class (NCERT)
+            <div className="lib-tab-dropdown-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  setTabDropdownOpen(!tabDropdownOpen);
+                  setLibFilterOpen(false);
+                }}
+                className={`lib-tab-dropdown-btn ${tabDropdownOpen ? 'active' : ''}`}
+                aria-expanded={tabDropdownOpen}
+                aria-label="Select source curriculum"
+              >
+                <span style={{ fontSize: '13px' }}>{currentTabObj.icon}</span>
+                <span>{currentTabObj.label}</span>
+                <span style={{ fontSize: '9px', opacity: 0.8, marginLeft: '2px' }}>{tabDropdownOpen ? '▲' : '▼'}</span>
               </button>
-              <button className={`lib-tab ${tab === 'openstax' ? 'active' : ''}`} onClick={() => setTab('openstax')}>
-                OpenStax College
-              </button>
-              <button className={`lib-tab ${tab === 'openlib' ? 'active' : ''}`} onClick={() => setTab('openlib')}>
-                🌐 Open Library
-              </button>
-              <button className={`lib-tab ${tab === 'category' ? 'active' : ''}`} onClick={() => setTab('category')}>
-                By Category
-              </button>
+
+              {/* Tab Dropdown Menu Popover */}
+              {tabDropdownOpen && (
+                <>
+                  <div
+                    onClick={() => setTabDropdownOpen(false)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 190 }}
+                  />
+                  <div className="lib-tab-dropdown-menu">
+                    <div style={{ padding: '8px 12px 6px', fontSize: '11px', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                      Curriculum / Source
+                    </div>
+                    {TAB_OPTIONS.map((opt) => {
+                      const isSelected = tab === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setTab(opt.id);
+                            setTabDropdownOpen(false);
+                          }}
+                          className={`lib-tab-dropdown-item ${isSelected ? 'selected' : ''}`}
+                        >
+                          <span style={{ fontSize: '14px' }}>{opt.icon}</span>
+                          <span style={{ flex: 1, textAlign: 'left', fontWeight: isSelected ? 700 : 500 }}>
+                            {opt.label}
+                          </span>
+                          {isSelected && <span style={{ color: '#0F5E53', fontWeight: 800 }}>✓</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -247,6 +294,41 @@ export function Library({ saved = [], toggle = () => {} }) {
               style={{ position: 'fixed', inset: 0, zIndex: 190 }}
             />
             <div className="lib-filter-popover-panel">
+                {/* 0. CURRICULUM / SOURCE SWITCHER */}
+                <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(13, 148, 136, 0.12)' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.4px', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Curriculum / Source
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {TAB_OPTIONS.map((opt) => {
+                      const isSelected = tab === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setTab(opt.id);
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '16px',
+                            fontSize: '12px',
+                            fontWeight: isSelected ? 800 : 600,
+                            cursor: 'pointer',
+                            background: isSelected ? 'var(--p-gradient)' : '#f1f5f9',
+                            color: isSelected ? '#ffffff' : 'var(--ink)',
+                            border: isSelected ? '1px solid transparent' : '1px solid rgba(13, 148, 136, 0.15)',
+                            boxShadow: isSelected ? '0 2px 8px var(--p-glow)' : 'none',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          {isSelected ? '✓ ' : ''}{opt.icon} {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* 1. FILTER BY CLASS SECTION (NCERT) */}
                 {tab === 'class' && (
                   <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(13, 148, 136, 0.12)' }}>

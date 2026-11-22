@@ -973,6 +973,19 @@ function fetchUrl(url, attempt = 1) {
         return;
       }
 
+      // Check for 0-byte or corrupted stubs from R2
+      const rawContentLength = res.headers['content-length'];
+      const parsedLength = rawContentLength !== undefined ? parseInt(rawContentLength, 10) : null;
+      if (parsedLength !== null && parsedLength < 500 && url.includes('r2.dev/ncert/')) {
+        res.resume();
+        const filename = url.split('/').pop();
+        if (filename && filename.endsWith('.pdf')) {
+          const fallbackNcert = `https://ncert.nic.in/textbook/pdf/${filename}`;
+          console.warn(`[Server PDF Proxy] R2 returned corrupt/empty (${parsedLength}b) for ${filename}. Transparently falling back to NCERT: ${fallbackNcert}`);
+          return fetchUrl(fallbackNcert, attempt).then(resolve).catch(reject);
+        }
+      }
+
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
       res.on('end',  () => resolve({

@@ -126,6 +126,54 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
   const activeChapter = chapterPdfs[activeChapIdx] ?? chapterPdfs[0];
   const isSaved = Array.isArray(saved) && saved.includes(b.id);
 
+  // Derive real chapter metadata (excluding Prelims & Answers for chapter numbering)
+  const realChapters = chapterPdfs.filter(
+    (ch) => ch.id !== 'ps' && ch.id !== 'an' && ch.id !== 'full'
+  );
+  const totalRealChapters = realChapters.length > 0 ? realChapters.length : chapterPdfs.length;
+
+  const getChapterInfo = (ch, idx) => {
+    if (!ch) return { isSpecial: false, num: 1, label: 'Chapter 1', shortLabel: 'Ch. 1' };
+
+    if (ch.id === 'ps' || ch.name?.toLowerCase().includes('prelim')) {
+      return { isSpecial: true, type: 'prelims', label: 'Prelims & Index', shortLabel: 'Prelims' };
+    }
+    if (ch.id === 'an' || ch.name?.toLowerCase().includes('answer')) {
+      return { isSpecial: true, type: 'answers', label: 'Answers & Solutions', shortLabel: 'Answers' };
+    }
+    if (ch.id === 'full') {
+      return { isSpecial: true, type: 'full', label: 'Full PDF', shortLabel: 'Full Book' };
+    }
+
+    const match = ch.name ? ch.name.match(/^(\d+)\./) : null;
+    let num;
+    if (match) {
+      num = parseInt(match[1], 10);
+    } else {
+      const realIdx = realChapters.findIndex((c) => c.id === ch.id);
+      num = realIdx >= 0 ? realIdx + 1 : idx + 1;
+    }
+
+    return {
+      isSpecial: false,
+      num,
+      label: `Chapter ${num}`,
+      shortLabel: `Ch. ${num}`,
+    };
+  };
+
+  const activeChapInfo = getChapterInfo(activeChapter, activeChapIdx);
+
+  const getMobileChapterButtonLabel = () => {
+    if (totalRealChapters <= 1) {
+      return activeChapInfo.shortLabel;
+    }
+    if (activeChapInfo.isSpecial) {
+      return activeChapInfo.shortLabel;
+    }
+    return `Ch. ${activeChapInfo.num} of ${totalRealChapters}`;
+  };
+
   const handlePrevChapter = () => {
     if (activeChapIdx > 0) setActiveChapIdx(activeChapIdx - 1);
   };
@@ -170,7 +218,9 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
                   </svg>
                 </button>
                 <span className="reader-zoom-text" style={{ fontSize: '11px', fontWeight: 700, padding: '0 8px', whiteSpace: 'nowrap' }}>
-                  Chapter {activeChapIdx + 1} of {chapterPdfs.length}
+                  {activeChapInfo.isSpecial
+                    ? activeChapInfo.label
+                    : `Chapter ${activeChapInfo.num} of ${totalRealChapters}`}
                 </span>
                 <button
                   type="button"
@@ -228,15 +278,15 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
 
           <div className="mobile-book-info">
             <h4 title={b.title}>{b.title}</h4>
-            <span className="mobile-active-chap-badge">{activeChapter.name}</span>
           </div>
 
           <button
             className="mobile-chapter-menu-btn"
             onClick={() => setIsChapterDrawerOpen(true)}
+            aria-label="Open Chapters Menu"
           >
             <span>📖</span>
-            <span>Chapters ({chapterPdfs.length})</span>
+            <span>{getMobileChapterButtonLabel()}</span>
           </button>
         </div>
       )}
@@ -274,7 +324,7 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
           <div className="reader-sidebar">
             <div className="reader-sidebar-title">
               <span>CHAPTERS</span>
-              <span className="sidebar-count-badge">{chapterPdfs.length} PDFs</span>
+              <span className="sidebar-count-badge">{totalRealChapters} Chapters</span>
             </div>
 
             <div className="chapter-list-scroll" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '5px', padding: '10px' }}>
@@ -337,33 +387,47 @@ export function PDFReader({ saved = [], toggle = () => { } }) {
         )}
       </div>
 
-      {/* ─── 4. MOBILE CHAPTER DRAWER ─── */}
+      {/* ─── 4. MOBILE CHAPTER SHEET ─── */}
       {isMobile && isChapterDrawerOpen && (
-        <div className="mobile-chapter-drawer-overlay" onClick={() => setIsChapterDrawerOpen(false)}>
-          <div className="mobile-chapter-drawer-content" onClick={(e) => e.stopPropagation()}>
-            <div className="drawer-header">
-              <h3>Chapters ({chapterPdfs.length})</h3>
+        <div className="mobile-chapter-sheet-backdrop" onClick={() => setIsChapterDrawerOpen(false)}>
+          <div className="mobile-chapter-sheet-card" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-sheet-header">
+              <div className="mobile-sheet-title">
+                <h3>Chapters</h3>
+                <small>{totalRealChapters} Chapters Available</small>
+              </div>
               <button
-                className="drawer-close-btn"
+                className="mobile-sheet-close"
                 onClick={() => setIsChapterDrawerOpen(false)}
+                aria-label="Close"
               >
                 ✕
               </button>
             </div>
-            <div className="drawer-chapter-list">
-              {chapterPdfs.map((ch, idx) => (
-                <div
-                  key={ch.id}
-                  className={`drawer-chapter-item ${activeChapIdx === idx ? 'active' : ''}`}
-                  onClick={() => {
-                    setActiveChapIdx(idx);
-                    setIsChapterDrawerOpen(false);
-                  }}
-                >
-                  <span className="drawer-chap-index">#{idx + 1}</span>
-                  <span className="drawer-chap-name">{ch.name}</span>
-                </div>
-              ))}
+            <div className="mobile-sheet-list">
+              {chapterPdfs.map((ch, idx) => {
+                const info = getChapterInfo(ch, idx);
+                const isActive = activeChapIdx === idx;
+                return (
+                  <button
+                    key={ch.id}
+                    className={`mobile-sheet-item ${isActive ? 'active' : ''}`}
+                    onClick={() => {
+                      setActiveChapIdx(idx);
+                      setIsChapterDrawerOpen(false);
+                    }}
+                  >
+                    <span>{ch.name}</span>
+                    {isActive ? (
+                      <span className="mobile-sheet-active-tag">Active</span>
+                    ) : (
+                      <span className="mobile-sheet-pdf-tag">
+                        {info.isSpecial ? info.shortLabel : `Ch. ${info.num}`}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

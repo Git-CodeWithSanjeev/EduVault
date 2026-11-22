@@ -74,6 +74,19 @@ function fetchPdfStream(targetUrl, req, res, attempt = 1) {
         return res.end(JSON.stringify({ error: `Upstream HTTP ${proxyRes.statusCode}` }));
       }
 
+      // Check for 0-byte or corrupted stubs from R2
+      const rawContentLength = proxyRes.headers['content-length'];
+      const parsedLength = rawContentLength !== undefined ? parseInt(rawContentLength, 10) : null;
+      if (parsedLength !== null && parsedLength < 500 && targetUrl.includes('r2.dev/ncert/')) {
+        proxyRes.resume();
+        const filename = targetUrl.split('/').pop();
+        if (filename && filename.endsWith('.pdf')) {
+          const fallbackNcert = `https://ncert.nic.in/textbook/pdf/${filename}`;
+          console.warn(`[Vite PDF Proxy] R2 returned corrupt/empty (${parsedLength}b) for ${filename}. Transparently falling back to official NCERT: ${fallbackNcert}`);
+          return fetchPdfStream(fallbackNcert, req, res, attempt + 1);
+        }
+      }
+
       const responseHeaders = {
         'Content-Type': proxyRes.headers['content-type'] || 'application/pdf',
         'Access-Control-Allow-Origin': '*',
