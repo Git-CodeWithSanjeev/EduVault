@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:next": "next dev",
-    "build": "vite build",
-    "build:next": "next build",
-    "start:next": "next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "server": "node server.js",
-    "dev:all": "start cmd /k node server.js && vite",
+    "dev:all": "start cmd /k node server.js && next dev",
+    "dev:vite": "vite",
+    "build:vite": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
