@@ -3875,3 +3875,212 @@ nav a.active::after,
     color: #0f172a;
     text-decoration: underline;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   12. MY PERSONAL LIBRARY (SAVED) PAGE STYLES
+   ══════════════════════════════════════════════════════════════ */
+.saved-library-page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 20px 48px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+    .saved-library-page {
+        padding: 24px 32px 64px;
+    }
+}
+
+.saved-header {
+    margin-bottom: 24px;
+}
+
+.saved-title {
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 800;
+    color: var(--ink);
+    margin: 4px 0 6px;
+    letter-spacing: -0.02em;
+}
+
+.saved-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Guest Hero Card */
+.saved-guest-hero {
+    background: linear-gradient(135deg, #F0FDF9 0%, #E6F4F1 100%);
+    border: 1.5px solid rgba(15, 94, 83, 0.15);
+    border-radius: 24px;
+    padding: 36px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(15, 94, 83, 0.06);
+    margin-bottom: 32px;
+}
+
+.saved-guest-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: 0 4px 16px rgba(15, 94, 83, 0.12);
+    margin-bottom: 16px;
+}
+
+.saved-guest-hero h3 {
+    font-size: clamp(20px, 2.5vw, 26px);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+}
+
+.saved-guest-hero p {
+    font-size: 14px;
+    color: #475569;
+    max-width: 520px;
+    line-height: 1.55;
+    margin: 0 0 24px;
+}
+
+.saved-guest-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 28px;
+    max-width: 640px;
+}
+
+.saved-feature-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(15, 94, 83, 0.14);
+    border-radius: 9999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0F5E53;
+    backdrop-filter: blur(8px);
+}
+
+.saved-guest-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* Tabs */
+.saved-tabs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.saved-tab-pill {
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: #475569;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.saved-tab-pill:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.saved-tab-pill.active {
+    background: #0F5E53;
+    color: #ffffff;
+    box-shadow: 0 3px 12px rgba(15, 94, 83, 0.25);
+}
+
+/* Beautiful Empty State Cards */
+.saved-empty-card {
+    background: #ffffff;
+    border: 1.5px dashed rgba(15, 94, 83, 0.22);
+    border-radius: 20px;
+    padding: 40px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 18px rgba(15, 94, 83, 0.04);
+}
+
+.saved-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #E6F4F1;
+    color: #0F5E53;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 14px;
+}
+
+.saved-empty-card h4 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+}
+
+.saved-empty-card p {
+    font-size: 13.5px;
+    color: #64748b;
+    max-width: 440px;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.saved-empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border-radius: 9999px;
+    background: #0F5E53;
+    color: #ffffff !important;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(15, 94, 83, 0.2);
+    transition: all 0.15s ease;
+}
+
+.saved-empty-btn:hover {
+    background: #0d4e45;
+    transform: translateY(-1px);
+}
