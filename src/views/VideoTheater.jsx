@@ -301,7 +301,7 @@ export function VideoTheater() {
         {/* Main Learning Area */}
         <div className="learning-main">
           {/* Responsive 16:9 Video Player */}
-          <div className="player-wrapper" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#0f172a', borderRadius: '12px', overflow: 'hidden' }}>
+          <div className="player-wrapper" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', background: '#0f172a', borderRadius: '12px', overflow: 'hidden' }}>
             {isLoadingApi ? (
               <div className="skeleton" style={{ position: 'absolute', inset: 0 }} />
             ) : hasPlayerError ? (
@@ -351,9 +351,10 @@ export function VideoTheater() {
                   type="button"
                   onClick={() => handleSetSpeed(speed)}
                   style={{
-                    minWidth: '42px',
+                    minWidth: '36px',
+                    flex: '1 1 auto',
                     height: '28px',
-                    padding: '0 8px',
+                    padding: '0 6px',
                     borderRadius: '20px',
                     fontSize: '11px',
                     fontWeight: 700,
